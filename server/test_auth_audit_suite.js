@@ -6,9 +6,10 @@ import { User, Student, Staff } from "./models/index.js";
 import { deleteStudent, deleteStaff, deleteUser } from "./services/dataService.js";
 
 async function runAuditSuite() {
+  const adminEmail = process.env.INITIAL_ADMIN_EMAIL;
   const adminPassword = process.env.INITIAL_ADMIN_PASSWORD;
-  if (!adminPassword) {
-    throw new Error("Set INITIAL_ADMIN_PASSWORD before running the authentication audit suite.");
+  if (!adminEmail || !adminPassword) {
+    throw new Error("Set INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD before running the authentication audit suite.");
   }
 
   console.log("==================================================================");
@@ -58,7 +59,7 @@ async function runAuditSuite() {
     const adminLoginRes = await fetch(`${baseUrl}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ loginId: "admin@hunarskillhouse.com", password: adminPassword })
+      body: JSON.stringify({ loginId: adminEmail, password: adminPassword })
     });
     const adminData = await adminLoginRes.json();
     assert(adminLoginRes.status === 200 && adminData.success, "Admin login succeeds");

@@ -18,20 +18,10 @@ function hunarBackendPlugin() {
       apiApp.use(express.json());
       apiApp.use(express.urlencoded({ extended: true }));
       apiApp.use('/api', apiRouter);
-      server.middlewares.use(apiApp);
-
-      // Rewrite /admin SPA navigation routes to /admin/index.html
-      server.middlewares.use((req, res, next) => {
-        const url = req.url || '';
-        if (
-          url === '/admin' || 
-          url === '/admin/' || 
-          (url.startsWith('/admin/') && !url.includes('.'))
-        ) {
-          req.url = '/admin/index.html';
-        }
-        next();
+      apiApp.use('/api', (_req, res) => {
+        res.status(404).json({ success: false, message: 'API endpoint not found.' });
       });
+      server.middlewares.use(apiApp);
     }
   };
 }

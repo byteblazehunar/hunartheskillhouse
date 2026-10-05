@@ -108,7 +108,7 @@ export default function AdminPortal() {
   const [staffRoleFilter, setStaffRoleFilter] = useState("all");
 
   const [leadStatusFilter, setLeadStatusFilter] = useState("all");
-  const [selectedBatchForAttendance, setSelectedBatchForAttendance] = useState("Batch Alpha 2026");
+  const [selectedBatchForAttendance, setSelectedBatchForAttendance] = useState("");
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
 
   // Modal States
@@ -122,36 +122,36 @@ export default function AdminPortal() {
     name: "",
     email: "",
     phone: "",
-    course: "Full Stack Web Development",
-    batch: "Batch Alpha 2026"
+    course: "",
+    batch: ""
   });
 
   const [staffForm, setStaffForm] = useState({
     name: "",
     email: "",
     phone: "",
-    designation: "Senior Technical Instructor",
-    department: "Computer Applications & AI",
+    designation: "",
+    department: "",
     role: "teacher",
     roleId: "role-teacher",
     roleName: "Teacher / Faculty",
-    assignedSubjects: "Web Development, MERN Stack",
-    assignedCourses: "Full Stack Web Development"
+    assignedSubjects: "",
+    assignedCourses: ""
   });
 
   const [courseForm, setCourseForm] = useState({
     title: "",
-    category: "Full Stack Development",
-    duration: "6 Months",
+    category: "",
+    duration: "",
     description: "",
-    syllabus: "HTML/CSS, JavaScript ES6+, React, Node.js, MongoDB"
+    syllabus: ""
   });
 
   const [batchForm, setBatchForm] = useState({
     name: "",
-    course: "Full Stack Web Development",
-    timing: "Morning Batch (10:00 AM - 1:00 PM)",
-    assignedTeacher: "Paramjit Singh"
+    course: "",
+    timing: "",
+    assignedTeacher: ""
   });
 
   const [announcementForm, setAnnouncementForm] = useState({
@@ -161,22 +161,22 @@ export default function AdminPortal() {
   });
 
   const [timetableForm, setTimetableForm] = useState({
-    course: "Full Stack Web Development",
-    batch: "Batch Alpha 2026",
-    day: "Monday",
-    time: "10:00 AM - 01:00 PM",
-    subject: "Full Stack MERN Architecture",
-    teacher: "Paramjit Singh",
-    room: "Lab 1 (Silicon Room)"
+    course: "",
+    batch: "",
+    day: "",
+    time: "",
+    subject: "",
+    teacher: "",
+    room: ""
   });
 
   const [feeForm, setFeeForm] = useState({
     studentId: "",
     studentName: "",
-    course: "Full Stack Web Development",
-    totalFee: 45000,
-    paidAmount: 45000,
-    dueDate: "2026-05-15"
+    course: "",
+    totalFee: 0,
+    paidAmount: 0,
+    dueDate: ""
   });
 
   const [editingItem, setEditingItem] = useState(null);
@@ -240,6 +240,19 @@ export default function AdminPortal() {
         fetch("/api/roles", { headers }).catch(() => null)
       ]);
 
+      if (!overviewRes) {
+        throw new Error("Unable to connect to the backend API.");
+      }
+      if (overviewRes.status === 401 || overviewRes.status === 403) {
+        localStorage.removeItem("hunar_token");
+        localStorage.removeItem("hunar_user");
+        navigate("/login", { replace: true });
+        return;
+      }
+      if (!overviewRes.ok) {
+        throw new Error("Unable to load the admin dashboard from the backend.");
+      }
+
       if (overviewRes && overviewRes.ok) setOverviewMetrics(await overviewRes.json());
       if (usersRes && usersRes.ok) setUsers(await usersRes.json());
       if (studentsRes && studentsRes.ok) setStudents(await studentsRes.json());
@@ -259,7 +272,7 @@ export default function AdminPortal() {
       }
     } catch (err) {
       console.error("Error loading admin data:", err);
-      showToast("Error loading some dashboard data. Using local cache.", "error");
+      showToast(err.message || "Error loading dashboard data from the backend.", "error");
     } finally {
       setLoading(false);
     }
@@ -292,11 +305,22 @@ export default function AdminPortal() {
           const meRes = await fetch("/api/auth/me", {
             headers: { Authorization: `Bearer ${currentToken}` }
           });
+          if (meRes.status === 401 || meRes.status === 403) {
+            localStorage.removeItem("hunar_token");
+            localStorage.removeItem("hunar_user");
+            localStorage.removeItem("hunar_admin");
+            navigate("/login", { replace: true });
+            return;
+          }
           if (meRes.ok) {
             const meData = await meRes.json();
             if (meData.user) {
               if (meData.user.role === "student") {
                 navigate("/portal/student", { replace: true });
+                return;
+              }
+              if (meData.user.role !== "admin" && !meData.user.isSuperAdmin && meData.user.role !== "super_admin") {
+                navigate("/portal/operations", { replace: true });
                 return;
               }
               setAdminUser(meData.user);
@@ -357,8 +381,8 @@ export default function AdminPortal() {
         name: "",
         email: "",
         phone: "",
-        course: "Full Stack Web Development",
-        batch: "Batch Alpha 2026"
+        course: "",
+        batch: ""
       });
 
       // Show invitation details
@@ -461,7 +485,7 @@ export default function AdminPortal() {
 
   // Permanently Delete Staff Member
   const handleDeleteStaff = async (staffId, staffName) => {
-    if (staffId === "HUN-T-0001" || staffId === "HUN-A-0001") {
+    if (staffId === "HUN-A-0001") {
       showToast("The primary institute administrator account cannot be deleted.", "error");
       return;
     }
@@ -487,7 +511,7 @@ export default function AdminPortal() {
 
   // Permanently Delete User Account
   const handleDeleteUser = async (userId, userName, role, assignedId) => {
-    if (role === "admin" && (assignedId === "HUN-A-0001" || userName === "Gurlove Malhi")) {
+    if (role === "admin" && assignedId === "HUN-A-0001") {
       showToast("Cannot delete primary administrator user.", "error");
       return;
     }
@@ -702,8 +726,8 @@ export default function AdminPortal() {
       name: s.name || "",
       email: s.email || "",
       phone: s.phone || "",
-      course: s.course || (courses[0]?.title || "Full Stack Web Development"),
-      batch: s.batch || (batches[0]?.name || "Batch Alpha 2026"),
+      course: s.course || (courses[0]?.title || ""),
+      batch: s.batch || (batches[0]?.name || ""),
       enrollmentStatus: s.enrollmentStatus || "active",
       assignedTeacher: s.assignedTeacher || ""
     });
@@ -847,7 +871,7 @@ export default function AdminPortal() {
       duration: c.duration || "6 Months",
       description: c.description || "",
       syllabus: Array.isArray(c.syllabus) ? c.syllabus.join(", ") : (c.syllabus || ""),
-      assignedTeacher: c.assignedTeacher || "Paramjit Singh"
+      assignedTeacher: c.assignedTeacher || ""
     });
     setModalType("edit_course");
   };
@@ -900,9 +924,9 @@ export default function AdminPortal() {
     setEditingItem(b);
     setBatchForm({
       name: b.name || "",
-      course: b.course || (courses[0]?.title || "Full Stack Web Development"),
-      timing: b.timing || "Morning Batch (10:00 AM - 1:00 PM)",
-      assignedTeacher: b.assignedTeacher || "Paramjit Singh"
+      course: b.course || (courses[0]?.title || ""),
+      timing: b.timing || "",
+      assignedTeacher: b.assignedTeacher || ""
     });
     setModalType("edit_batch");
   };
@@ -950,13 +974,13 @@ export default function AdminPortal() {
   const openEditTimetable = (slot) => {
     setEditingItem(slot);
     setTimetableForm({
-      course: slot.course || (courses[0]?.title || "Full Stack Web Development"),
-      batch: slot.batch || (batches[0]?.name || "Batch Alpha 2026"),
-      day: slot.day || "Monday",
-      time: slot.time || "10:00 AM - 01:00 PM",
+      course: slot.course || (courses[0]?.title || ""),
+      batch: slot.batch || (batches[0]?.name || ""),
+      day: slot.day || "",
+      time: slot.time || "",
       subject: slot.subject || "",
-      teacher: slot.teacher || "Paramjit Singh",
-      room: slot.room || "Lab 1 (Silicon Room)"
+      teacher: slot.teacher || "",
+      room: slot.room || ""
     });
     setModalType("edit_timetable");
   };
@@ -990,10 +1014,10 @@ export default function AdminPortal() {
     setFeeForm({
       studentId: f.studentId || "",
       studentName: f.studentName || "",
-      course: f.course || (courses[0]?.title || "Full Stack Web Development"),
-      totalFee: f.totalFee || 45000,
+      course: f.course || (courses[0]?.title || ""),
+      totalFee: f.totalFee || 0,
       paidAmount: f.paidAmount !== undefined ? f.paidAmount : 0,
-      dueDate: f.dueDate || "2026-05-15"
+      dueDate: f.dueDate || ""
     });
     setModalType("edit_fee");
   };
@@ -1590,10 +1614,10 @@ export default function AdminPortal() {
             </div>
             <div style={{ overflow: "hidden" }}>
               <div style={{ fontSize: "0.85rem", fontWeight: 700, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
-                {adminUser ? adminUser.name : "Gurlove Malhi"}
+                {adminUser ? adminUser.name : "Administrator"}
               </div>
               <div style={{ fontSize: "0.72rem", color: "var(--color-text-secondary)", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>
-                {adminUser ? adminUser.email : "Founder & Director"}
+                {adminUser ? adminUser.email : ""}
               </div>
             </div>
           </div>
@@ -2245,7 +2269,7 @@ export default function AdminPortal() {
                               <Edit2 size={13} />
                               <span>Edit</span>
                             </button>
-                            {u.role === "admin" && (u.assignedId === "HUN-A-0001" || u.name === "Gurlove Malhi") ? (
+                            {u.role === "admin" && u.assignedId === "HUN-A-0001" ? (
                               <span
                                 style={{
                                   fontSize: "0.72rem",
@@ -2739,7 +2763,7 @@ export default function AdminPortal() {
                               <Edit2 size={13} />
                               <span>Edit</span>
                             </button>
-                            {st.staffId === "HUN-T-0001" || st.staffId === "HUN-A-0001" ? (
+                            {st.role === "admin" ? (
                               <span
                                 style={{
                                   fontSize: "0.72rem",
@@ -2967,7 +2991,7 @@ export default function AdminPortal() {
                       </p>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--color-border)", paddingTop: "10px", marginTop: "10px" }}>
                         <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                          Lead Faculty: {c.assignedTeacher || "Paramjit Singh"}
+                          Lead Faculty: {c.assignedTeacher || "Unassigned"}
                         </div>
                         <div style={{ display: "flex", gap: "6px" }}>
                           <button
@@ -3070,7 +3094,7 @@ export default function AdminPortal() {
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--color-border)", paddingTop: "10px", marginTop: "10px" }}>
                         <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>
-                          Instructor: {b.assignedTeacher || "Paramjit Singh"}
+                          Instructor: {b.assignedTeacher || "Unassigned"}
                         </div>
                         <div style={{ display: "flex", gap: "6px" }}>
                           <button
@@ -4325,7 +4349,7 @@ export default function AdminPortal() {
                       {c.title}
                     </option>
                   ))}
-                  {courses.length === 0 && <option value="Full Stack Web Development">Full Stack Web Development</option>}
+                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 
@@ -4349,7 +4373,7 @@ export default function AdminPortal() {
                       {b.name} ({b.timing})
                     </option>
                   ))}
-                  {batches.length === 0 && <option value="Batch Alpha 2026">Batch Alpha 2026</option>}
+                  <option value="" disabled>Select a batch</option>
                 </select>
               </div>
 
@@ -4875,7 +4899,7 @@ export default function AdminPortal() {
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>System Role *</label>
                   <select
                     value={userForm.role}
-                    disabled={editingItem?.role === "admin" && (editingItem?.assignedId === "HUN-A-0001" || editingItem?.name === "Gurlove Malhi")}
+                    disabled={editingItem?.role === "admin" && editingItem?.assignedId === "HUN-A-0001"}
                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
                     style={{
                       width: "100%",
@@ -5279,7 +5303,7 @@ export default function AdminPortal() {
                       {c.title}
                     </option>
                   ))}
-                  {courses.length === 0 && <option value="Full Stack Web Development">Full Stack Web Development</option>}
+                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 
@@ -5502,7 +5526,7 @@ export default function AdminPortal() {
                         {c.title}
                       </option>
                     ))}
-                    {courses.length === 0 && <option value="Full Stack Web Development">Full Stack Web Development</option>}
+                    <option value="" disabled>Select a course</option>
                   </select>
                 </div>
                 <div>
@@ -5732,7 +5756,7 @@ export default function AdminPortal() {
                       {c.title}
                     </option>
                   ))}
-                  {courses.length === 0 && <option value="Full Stack Web Development">Full Stack Web Development</option>}
+                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 

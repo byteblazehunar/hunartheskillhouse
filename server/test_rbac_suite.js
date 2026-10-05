@@ -5,9 +5,10 @@ import { signToken } from "./utils/auth.js";
 import { getAllRoles, getRoleById, deleteRole, deleteStaff, deleteUser, deleteStudent } from "./services/dataService.js";
 
 async function runRBACTestSuite() {
+  const adminEmail = process.env.INITIAL_ADMIN_EMAIL;
   const adminPassword = process.env.INITIAL_ADMIN_PASSWORD;
-  if (!adminPassword) {
-    throw new Error("Set INITIAL_ADMIN_PASSWORD before running the RBAC test suite.");
+  if (!adminEmail || !adminPassword) {
+    throw new Error("Set INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD before running the RBAC test suite.");
   }
 
   console.log("=================================================");
@@ -45,7 +46,7 @@ async function runRBACTestSuite() {
     const loginRes = await fetch(`${baseUrl}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifier: "admin@hunarskillhouse.com", password: adminPassword })
+      body: JSON.stringify({ identifier: adminEmail, password: adminPassword })
     });
     const loginData = await loginRes.json();
     assert(loginRes.status === 200 && loginData.success, "Super Admin login succeeds");

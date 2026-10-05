@@ -71,12 +71,7 @@ export default function OperationsPanel() {
   const [fees, setFees] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [tasks, setTasks] = useState([
-    { id: "task-1", title: "Follow up with Batch Beta graphic design applicants", priority: "high", completed: false, category: "Admissions" },
-    { id: "task-2", title: "Collect pending installment fee receipts for Silicon lab batch", priority: "medium", completed: false, category: "Accounts" },
-    { id: "task-3", title: "Verify student attendance log for Web Dev morning session", priority: "low", completed: true, category: "Attendance" },
-    { id: "task-4", title: "Prepare inquiry response sheet for weekend bootcamp", priority: "high", completed: false, category: "Front Desk" }
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   // Filters & Search
   const [leadSearch, setLeadSearch] = useState("");
@@ -162,6 +157,9 @@ export default function OperationsPanel() {
     try {
       // 1. Fetch current user identity & verified permissions
       const meRes = await fetch("/api/auth/me", { headers }).catch(() => null);
+      if (!meRes) {
+        throw new Error("Unable to connect to the backend API.");
+      }
       if (meRes && meRes.ok) {
         const meData = await meRes.json();
         if (meData.user?.role === "student") {
@@ -171,6 +169,11 @@ export default function OperationsPanel() {
         }
         setUser(meData.user);
         localStorage.setItem("hunar_user", JSON.stringify(meData.user));
+      } else if (meRes && (meRes.status === 401 || meRes.status === 403)) {
+        localStorage.removeItem("hunar_token");
+        localStorage.removeItem("hunar_user");
+        navigate("/login", { replace: true });
+        return;
       } else {
         const cached = localStorage.getItem("hunar_user");
         if (cached) {
@@ -207,6 +210,7 @@ export default function OperationsPanel() {
       if (attRes && attRes.ok) setAttendanceRecords(await attRes.json());
     } catch (err) {
       console.error("Error loading operations data:", err);
+      showToast(err.message || "Unable to load operations data from the backend.", "error");
     } finally {
       setLoading(false);
     }

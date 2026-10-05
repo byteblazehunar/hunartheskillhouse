@@ -53,39 +53,31 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
     setErrorMsg("");
 
     const newLead = {
-      id: "lead-" + Date.now(),
       name: formData.name.trim(),
       phone: formData.phone.trim(),
       email: formData.email.trim(),
       course: formData.course || "General Inquiry",
       preferredTiming: formData.timing,
-      message: formData.message.trim(),
-      status: "New",
-      createdAt: new Date().toISOString()
+      message: formData.message.trim()
     };
 
     try {
-      // 1. Send to Node backend API
-      await fetch("/api/leads", {
+      const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newLead)
       });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to submit your inquiry. Please try again.");
+      }
+      setSubmitted(true);
     } catch (err) {
-      console.warn("Node API offline, falling back to local storage:", err);
+      console.error("Inquiry submission failed:", err);
+      setErrorMsg(err.message || "Unable to reach the admissions service. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    try {
-      // 2. Sync to browser localStorage for Admin Panel offline/client compatibility
-      const currentLeads = JSON.parse(localStorage.getItem("hunar_leads") || "[]");
-      localStorage.setItem("hunar_leads", JSON.stringify([newLead, ...currentLeads]));
-      window.dispatchEvent(new Event("hunar_data_changed"));
-    } catch (err) {
-      console.warn("Error saving to localStorage:", err);
-    }
-
-    setLoading(false);
-    setSubmitted(true);
   };
 
   return (

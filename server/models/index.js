@@ -43,16 +43,16 @@ const StudentSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     course: { type: String, required: true },
     courseId: { type: String, default: "" },
-    batch: { type: String, default: "Batch Alpha 2026" },
+    batch: { type: String, default: "" },
     batchId: { type: String, default: "" },
     enrollmentDate: { type: Date, default: Date.now },
-    enrollmentYear: { type: Number, default: 2026 },
+    enrollmentYear: { type: Number },
     enrollmentStatus: {
       type: String,
       enum: ["active", "pending_activation", "completed", "suspended"],
       default: "pending_activation"
     },
-    assignedTeacher: { type: String, default: "Paramjit Singh" },
+    assignedTeacher: { type: String, default: "" },
     guardianContact: { type: String, default: "" }
   },
   { timestamps: true }
@@ -88,7 +88,7 @@ const CourseSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
-    duration: { type: String, default: "6 Months" },
+    duration: { type: String, default: "" },
     active: { type: Boolean, default: true },
     syllabus: [{ type: String }],
     assignedTeacher: { type: String, default: "" }
@@ -103,8 +103,8 @@ const BatchSchema = new mongoose.Schema(
     course: { type: String, required: true },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date },
-    timing: { type: String, default: "Morning Batch (10:00 AM - 1:00 PM)" },
-    assignedTeacher: { type: String, default: "Paramjit Singh" },
+    timing: { type: String, default: "" },
+    assignedTeacher: { type: String, default: "" },
     active: { type: Boolean, default: true }
   },
   { timestamps: true }
@@ -118,7 +118,7 @@ const AttendanceSchema = new mongoose.Schema(
     batch: { type: String, required: true, index: true },
     date: { type: String, required: true, index: true }, // YYYY-MM-DD
     status: { type: String, enum: ["present", "absent", "late"], default: "present" },
-    markedBy: { type: String, default: "System Admin" }
+    markedBy: { type: String, default: "" }
   },
   { timestamps: true }
 );
@@ -130,11 +130,11 @@ const AssignmentSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     course: { type: String, required: true },
-    batch: { type: String, default: "All Batches" },
+    batch: { type: String, default: "" },
     deadline: { type: Date, required: true },
     maxMarks: { type: Number, default: 100 },
     published: { type: Boolean, default: true },
-    assignedBy: { type: String, default: "Paramjit Singh" }
+    assignedBy: { type: String, default: "" }
   },
   { timestamps: true }
 );
@@ -162,8 +162,8 @@ const AnnouncementSchema = new mongoose.Schema(
     title: { type: String, required: true },
     message: { type: String, required: true },
     audience: { type: String, enum: ["all", "students", "staff"], default: "all" },
-    authorName: { type: String, default: "Gurlove Malhi" },
-    authorRole: { type: String, default: "Founder & Director" },
+    authorName: { type: String, default: "" },
+    authorRole: { type: String, default: "" },
     pinned: { type: Boolean, default: false },
     publishDate: { type: Date, default: Date.now }
   },
@@ -192,8 +192,8 @@ const TimetableSchema = new mongoose.Schema(
     day: { type: String, required: true }, // e.g. "Monday", "Tuesday"
     time: { type: String, required: true }, // e.g. "10:00 AM - 1:00 PM"
     subject: { type: String, required: true },
-    teacher: { type: String, default: "Paramjit Singh" },
-    room: { type: String, default: "Lab 1 (Silicon Room)" }
+    teacher: { type: String, default: "" },
+    room: { type: String, default: "" }
   },
   { timestamps: true }
 );
@@ -207,7 +207,7 @@ const FeeRecordSchema = new mongoose.Schema(
     totalFee: { type: Number, required: true },
     paidAmount: { type: Number, default: 0 },
     dueAmount: { type: Number, default: 0 },
-    dueDate: { type: String, default: "2026-10-15" },
+    dueDate: { type: String, default: "" },
     status: { type: String, enum: ["paid", "partial", "pending", "overdue"], default: "pending" },
     receiptNumber: { type: String, default: "" },
     lastPaymentDate: { type: Date, default: null }
@@ -244,5 +244,3 @@ export const AuditLog = mongoose.models.AuditLog || mongoose.model("AuditLog", A
 export const Timetable = mongoose.models.Timetable || mongoose.model("Timetable", TimetableSchema);
 export const FeeRecord = mongoose.models.FeeRecord || mongoose.model("FeeRecord", FeeRecordSchema);
 export const Role = mongoose.models.Role || mongoose.model("Role", RoleSchema);
-
-

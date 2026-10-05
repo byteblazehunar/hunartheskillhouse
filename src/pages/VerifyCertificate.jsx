@@ -20,40 +20,6 @@ export default function VerifyCertificate() {
   const [result, setResult] = useState(null);
   const [searched, setSearched] = useState(false);
 
-  // Sample valid certificates for demonstration
-  const sampleRecords = {
-    "HNR-2026-A1B2C3D4": {
-      studentName: "Simran Singh",
-      course: "Diploma in Digital Marketing",
-      grade: "Distinction (A+)",
-      issueDate: "February 2026",
-      valid: true,
-      batch: "Winter 2025-26",
-      partner: "Byteblaze Technologies",
-      iso: "ISO 9001:2015 Certified"
-    },
-    "HNR-2025-FS9921": {
-      studentName: "Rahul Sharma",
-      course: "Full Stack / Website Development",
-      grade: "Distinction (A)",
-      issueDate: "November 2025",
-      valid: true,
-      batch: "Summer-Fall 2025",
-      partner: "Byteblaze Technologies",
-      iso: "ISO 9001:2015 Certified"
-    },
-    "HNR-2026-AI3001": {
-      studentName: "Priya Singh",
-      course: "30 Days AI Workshop",
-      grade: "Outstanding (A+)",
-      issueDate: "January 2026",
-      valid: true,
-      batch: "AI Cohort 04",
-      partner: "Byteblaze Technologies",
-      iso: "ISO 9001:2015 Certified"
-    }
-  };
-
   const handleVerify = (e) => {
     e.preventDefault();
     if (!certCode.trim()) return;
@@ -65,23 +31,15 @@ export default function VerifyCertificate() {
     setTimeout(() => {
       setLoading(false);
       const cleaned = certCode.trim().toUpperCase();
-      if (sampleRecords[cleaned]) {
-        setResult({ ...sampleRecords[cleaned], code: cleaned });
-      } else if (cleaned.startsWith("HNR-")) {
-        // Fallback valid result for any format matching HNR-XXXX-XXXX
+
+      if (cleaned.startsWith("HNR-")) {
         setResult({
+          valid: false,
           code: cleaned,
-          studentName: "Verified Hunar Graduate",
-          course: "Professional Skill Program",
-          grade: "Grade A",
-          issueDate: "Verified Active Credential",
-          valid: true,
-          batch: "Certified Alumnus",
-          partner: "Byteblaze Technologies",
-          iso: "ISO 9001:2015 Certified"
+          message: "This certificate code is not available in the live Hunar verification registry. Please contact the admissions team for confirmation."
         });
       } else {
-        setResult({ valid: false });
+        setResult({ valid: false, code: cleaned, message: "Enter a valid Hunar certificate code to verify the credential." });
       }
     }, 500);
   };
@@ -157,41 +115,6 @@ export default function VerifyCertificate() {
                 </div>
               </div>
 
-              {/* Sample Code Helper */}
-              <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginTop: "12px" }}>
-                <span>Try sample code: </span>
-                <button
-                  type="button"
-                  onClick={() => setCertCode("HNR-2026-A1B2C3D4")}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--color-brand-text)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    fontWeight: "600",
-                    padding: "2px 4px"
-                  }}
-                >
-                  HNR-2026-A1B2C3D4
-                </button>
-                {" or "}
-                <button
-                  type="button"
-                  onClick={() => setCertCode("HNR-2026-AI3001")}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--color-brand-text)",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                    fontWeight: "600",
-                    padding: "2px 4px"
-                  }}
-                >
-                  HNR-2026-AI3001
-                </button>
-              </div>
             </form>
           </div>
 

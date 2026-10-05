@@ -21,6 +21,7 @@ export default function StaffPortal() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [portalData, setPortalData] = useState(null);
   const [students, setStudents] = useState([]);
   const [activeTab, setActiveTab] = useState("overview");
@@ -66,7 +67,8 @@ export default function StaffPortal() {
       })
       .catch((err) => {
         console.error("Staff portal error:", err);
-        navigate("/login");
+        setLoadError(err.message || "Unable to connect to the backend.");
+        setLoading(false);
       });
   }, [navigate]);
 
@@ -199,6 +201,15 @@ export default function StaffPortal() {
         <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem" }}>
           Authenticating Faculty Workspace...
         </p>
+      </div>
+    );
+  }
+
+  if (loadError || !portalData) {
+    return (
+      <div className="container" style={{ minHeight: "60vh", display: "grid", placeContent: "center", gap: "16px" }}>
+        <p role="alert" style={{ color: "var(--color-danger)" }}>{loadError || "Staff data is unavailable."}</p>
+        <button className="btn btn-outline" onClick={() => window.location.reload()}>Retry</button>
       </div>
     );
   }

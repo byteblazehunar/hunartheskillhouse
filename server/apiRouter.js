@@ -81,6 +81,7 @@ import {
   ROLE_TEMPLATES,
   ALL_PERMISSION_KEYS
 } from "./constants/permissions.js";
+import { isDbConnected } from "./config/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,8 +98,8 @@ async function readSettings() {
     return {
       instituteName: "HUNAR — The Skill House",
       phone: "+91 94637 95116",
-      announcementActive: true,
-      announcementText: "Academic Year 2026 Admissions Open!"
+      announcementActive: false,
+      announcementText: ""
     };
   }
 }
@@ -107,12 +108,22 @@ async function readSettings() {
 // 1. HEALTH & SYSTEM DIAGNOSTICS
 // ══════════════════════════════════════════════
 router.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
+  let databaseConnected = false;
+  try {
+    databaseConnected = isDbConnected();
+  } catch (error) {
+    console.error("[Health Check] MongoDB is not ready:", error.message);
+  }
+
+  const health = {
+    status: databaseConnected ? "ok" : "unavailable",
     service: "Hunar Institute Management Core",
     version: "2.0.0",
+    database: databaseConnected ? "connected" : "disconnected",
     time: new Date().toISOString()
-  });
+  };
+
+  res.status(databaseConnected ? 200 : 503).json(health);
 });
 
 // ══════════════════════════════════════════════
@@ -1117,10 +1128,10 @@ router.post(
       email: email.trim(),
       phone: phone.trim(),
       course: course.trim(),
-      batch: batch || "Batch Alpha 2026",
+      batch: typeof batch === "string" ? batch.trim() : "",
       enrollmentDate: enrollmentDate || new Date(),
       enrollmentStatus: "pending_activation",
-      assignedTeacher: "Paramjit Singh"
+      assignedTeacher: ""
     });
 
     await logAction(req.user.name, req.user.role, "REGISTER_STUDENT", "Student", studentId, `Enrolled into ${course}`);
@@ -1393,7 +1404,7 @@ router.post(
         roleName: assignedRoleName,
         assignedSubjects: assignedSubjects || ["Computer Science"],
         assignedCourses: assignedCourses || ["All Programs"],
-        assignedBatches: ["All Batches"]
+        assignedBatches: []
       });
 
       await logAction(
@@ -1609,7 +1620,7 @@ router.post("/courses", authenticate, requireRole(["admin"]), async (req, res) =
     if (!title || !description) {
       return res.status(400).json({ success: false, message: "Title and description are required." });
     }
-    const course = await createCourse({ title, category: category || "Design & Tech", description, duration: duration || "6 Months", syllabus: syllabus || [], assignedTeacher: assignedTeacher || "Paramjit Singh" });
+    const course = await createCourse({ title, category: category || "Design & Tech", description, duration, syllabus: syllabus || [], assignedTeacher: assignedTeacher || "" });
     await logAction(req.user.name, req.user.role, "CREATE_COURSE", "Course", course.title);
     res.status(201).json({ success: true, course });
   } catch (error) {
@@ -1695,7 +1706,7 @@ router.post("/timetable", authenticate, requireRole(["admin", "teacher"]), async
     if (!course || !batch || !day || !time || !subject) {
       return res.status(400).json({ success: false, message: "Course, batch, day, time, and subject are required." });
     }
-    const item = await createTimetableItem({ course, batch, day, time, subject, teacher: teacher || "Paramjit Singh", room: room || "Lab 1" });
+    const item = await createTimetableItem({ course, batch, day, time, subject, teacher: teacher || "", room: room || "" });
     await logAction(req.user.name, req.user.role, "CREATE_TIMETABLE", "Timetable", `${batch} - ${day}`);
     res.status(201).json({ success: true, item });
   } catch (error) {
@@ -1955,7 +1966,7 @@ router.get("/portal/student", authenticate, requireRole(["student"]), async (req
 // GET /api/portal/staff - Complete staff/faculty data bundle
 router.get("/portal/staff", authenticate, requireRole(["admin", "teacher"]), async (req, res) => {
   try {
-    const staff = await getStaffByStaffId(req.user.assignedId || "HUN-T-0001");
+    const staff = await getStaffByStaffId(req.user.assignedId);
     const batches = await getAllBatches();
     const students = await getAllStudents();
     const assignments = await getAllAssignments();
@@ -2011,7 +2022,7 @@ router.post("/leads", async (req, res) => {
     phone: phone.trim(),
     email: email ? email.trim() : "",
     course: course || "General Inquiry",
-    preferredTiming: preferredTiming || "Morning Batch (10:00 AM - 1:00 PM)",
+    preferredTiming: preferredTiming || "",
     message: message ? message.trim() : "",
     status: "New",
     createdAt: new Date().toISOString()

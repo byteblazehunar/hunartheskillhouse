@@ -20,6 +20,7 @@ export default function StudentPortal() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [portalData, setPortalData] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -41,9 +42,14 @@ export default function StudentPortal() {
     fetch("/api/portal/student", {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthorized");
-        return res.json();
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          const error = new Error(data.message || "Unable to load your student portal.");
+          error.status = res.status;
+          throw error;
+        }
+        return data;
       })
       .then((data) => {
         if (data.success) {
@@ -55,9 +61,14 @@ export default function StudentPortal() {
       })
       .catch((err) => {
         console.error("Portal error:", err);
-        localStorage.removeItem("hunar_token");
-        localStorage.removeItem("hunar_user");
-        navigate("/login");
+        if (err.status === 401 || err.status === 403) {
+          localStorage.removeItem("hunar_token");
+          localStorage.removeItem("hunar_user");
+          navigate("/login", { replace: true });
+          return;
+        }
+        setLoadError(err.message || "Unable to connect to the backend.");
+        setLoading(false);
       });
   }, [navigate]);
 
@@ -75,6 +86,15 @@ export default function StudentPortal() {
     if (!submissionContent.trim()) {
       setSubmitError("Please enter your project repository URL or submission text.");
       return;
+    }
+
+    if (loadError || !portalData) {
+      return (
+        <div className="container" style={{ minHeight: "60vh", display: "grid", placeContent: "center", gap: "16px" }}>
+          <p role="alert" style={{ color: "var(--color-danger)" }}>{loadError || "Student data is unavailable."}</p>
+          <button className="btn btn-outline" onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      );
     }
 
     try {

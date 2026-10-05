@@ -27,7 +27,7 @@ export default function Enroll() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.phone.trim()) {
       setErrorMsg("Please fill in your name and phone number.");
@@ -36,10 +36,30 @@ export default function Enroll() {
     setLoading(true);
     setErrorMsg("");
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          email: formData.email.trim(),
+          course: formData.course,
+          preferredTiming: formData.timing,
+          message: [formData.qualification, formData.message.trim()].filter(Boolean).join("\n")
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to submit your enrollment request. Please try again.");
+      }
       setSubmitted(true);
-    }, 600);
+    } catch (err) {
+      console.error("Enrollment request submission failed:", err);
+      setErrorMsg(err.message || "Unable to reach the admissions service. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

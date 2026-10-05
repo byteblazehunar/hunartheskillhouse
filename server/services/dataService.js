@@ -1,6 +1,3 @@
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import { isDbConnected } from "../config/db.js";
 import {
@@ -19,64 +16,19 @@ import {
   Role
 } from "../models/index.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_DIR = path.join(__dirname, "..", "data");
+const DISABLED_FALLBACK_MESSAGE = "MongoDB must be connected. Local JSON storage and demo data are disabled.";
 
-// Helper for local JSON files
+// Local JSON storage is intentionally disabled. The app must use MongoDB-backed data only.
 async function readJson(file, defaultValue = []) {
-  try {
-    const filePath = path.join(DATA_DIR, file);
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  } catch (err) {
-    if (err.code === "ENOENT") {
-      await writeJson(file, defaultValue);
-      return defaultValue;
-    }
-    console.error(`Error reading ${file}:`, err);
-    return defaultValue;
-  }
+  throw new Error(DISABLED_FALLBACK_MESSAGE);
 }
 
-let writeLock = Promise.resolve();
 async function writeJson(file, data) {
-  return new Promise((resolve, reject) => {
-    writeLock = writeLock.then(async () => {
-      try {
-        const filePath = path.join(DATA_DIR, file);
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
+  throw new Error(DISABLED_FALLBACK_MESSAGE);
 }
 
-// Atomic read-modify-write serializer
-let fileQueues = {};
 async function mutateJson(file, mutator, defaultValue = []) {
-  if (!fileQueues[file]) fileQueues[file] = Promise.resolve();
-  let release;
-  const current = fileQueues[file];
-  fileQueues[file] = new Promise((res) => { release = res; });
-  await current;
-  try {
-    const filePath = path.join(DATA_DIR, file);
-    let items = defaultValue;
-    try {
-      const raw = await fs.readFile(filePath, "utf-8");
-      items = JSON.parse(raw);
-    } catch (e) {
-      if (e.code !== "ENOENT") console.error(`Error reading ${file}:`, e);
-    }
-    const updated = mutator(items);
-    await fs.writeFile(filePath, JSON.stringify(updated, null, 2), "utf-8");
-    return updated;
-  } finally {
-    release();
-  }
+  throw new Error(DISABLED_FALLBACK_MESSAGE);
 }
 
 // ==========================================
@@ -99,7 +51,7 @@ export async function logAction(actorName, actorRole, action, targetType, target
       await AuditLog.create(entry);
       return entry;
     } catch (e) {
-      console.warn("[AuditLog] Mongo error, writing to fallback:", e.message);
+      throw new Error(`MongoDB could not write the audit log: ${e.message}`);
     }
   }
 
@@ -113,7 +65,7 @@ export async function getAuditLogs(limit = 100) {
     try {
       return await AuditLog.find().sort({ timestamp: -1 }).limit(limit).lean();
     } catch (e) {
-      console.warn("[AuditLog] Mongo error, reading from fallback:", e.message);
+      throw new Error(`MongoDB could not read audit logs: ${e.message}`);
     }
   }
   const logs = await readJson("audit_logs.json", []);
@@ -148,9 +100,9 @@ export async function findUserByEmailOrId(identifier) {
           { loginId: { $regex: new RegExp(`^${escaped}$`, "i") } }
         ]
       }).lean();
-      if (user) return user;
+      return user;
     } catch (e) {
-      console.warn("[User] Mongo error, checking fallback:", e.message);
+      throw new Error(`MongoDB could not find the user: ${e.message}`);
     }
   }
 
@@ -178,7 +130,9 @@ export async function findUserById(id) {
       return await User.findOne({
         $or: [{ assignedId: idStr }, { loginId: idStr }, { normalizedEmail: idStr.toLowerCase() }]
       }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not find the user: ${error.message}`);
+    }
   }
   const users = await readJson("users.json", []);
   return (
@@ -199,7 +153,9 @@ export async function findUserByInvitationTokenHash(tokenHash) {
         invitationTokenHash: tokenHash,
         invitationExpires: { $gt: new Date() }
       }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not find the invitation: ${error.message}`);
+    }
   }
 
   const users = await readJson("users.json", []);
@@ -232,7 +188,6 @@ export async function createUser(userData) {
     createdAt: new Date().toISOString()
   };
 
-  let createdDoc = null;
   if (isDbConnected()) {
     try {
       const mongoData = { ...fullData };
@@ -244,9 +199,10 @@ export async function createUser(userData) {
         { $set: mongoData },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      createdDoc = created ? created.toObject() : null;
+      if (!created) throw new Error("MongoDB did not return the created user.");
+      return created.toObject();
     } catch (e) {
-      console.warn("[User] Mongo create error, saving locally:", e.message);
+      throw new Error(`MongoDB could not create the user: ${e.message}`);
     }
   }
 
@@ -254,7 +210,7 @@ export async function createUser(userData) {
     fullData,
     ...users.filter((u) => u.normalizedEmail !== normEmail && (!cleanAssignedId || u.assignedId !== cleanAssignedId))
   ]);
-  return createdDoc || fullData;
+  return fullData;
 }
 
 export async function updateUser(id, updateFields) {
@@ -308,8 +264,9 @@ export async function updateUser(id, updateFields) {
       }
       updatedDoc = await User.findOneAndUpdate(query, { $set: finalUpdates }, { returnDocument: "after" }).lean();
     } catch (err) {
-      console.warn(`[User Update] Mongo sync notice: ${err.message}`);
+      throw new Error(`MongoDB could not update the user: ${err.message}`);
     }
+    return updatedDoc;
   }
 
   const users = await readJson("users.json", []);
@@ -338,8 +295,10 @@ export async function getAllUsers() {
   if (isDbConnected()) {
     try {
       const users = await User.find({}, { passwordHash: 0, invitationTokenHash: 0 }).sort({ createdAt: -1 }).lean();
-      if (users && users.length > 0) return users;
-    } catch {}
+      return users;
+    } catch (error) {
+      throw new Error(`MongoDB could not read users: ${error.message}`);
+    }
   }
   const users = await readJson("users.json", []);
   return users.map(({ passwordHash, invitationTokenHash, ...u }) => u);
@@ -367,8 +326,9 @@ export async function deleteUser(id) {
       }
     } catch (e) {
       if (e.message.includes("Primary administrator")) throw e;
-      console.error("[deleteUser DB error]:", e);
+      throw new Error(`MongoDB could not delete the user: ${e.message}`);
     }
+    return true;
   }
 
   await mutateJson("users.json", (users) => {
@@ -403,8 +363,10 @@ export async function getAllStudents(filters = {}) {
       if (filters.batch) query.batch = filters.batch;
       if (filters.status) query.enrollmentStatus = filters.status;
       list = await Student.find(query).sort({ createdAt: -1 }).lean();
-      if (list && list.length > 0) return list;
-    } catch {}
+      return list;
+    } catch (error) {
+      throw new Error(`MongoDB could not read students: ${error.message}`);
+    }
   }
 
   let jsonList = await readJson("students.json", []);
@@ -433,8 +395,10 @@ export async function getStudentByStudentId(studentId) {
           { loginId: { $regex: new RegExp(`^${escaped}$`, "i") } }
         ]
       }).lean();
-      if (student) return student;
-    } catch {}
+      return student;
+    } catch (error) {
+      throw new Error(`MongoDB could not find the student: ${error.message}`);
+    }
   }
   const list = await readJson("students.json", []);
   return (
@@ -451,8 +415,10 @@ export async function getStudentByEmail(email) {
   if (isDbConnected()) {
     try {
       const student = await Student.findOne({ email: norm }).lean();
-      if (student) return student;
-    } catch {}
+      return student;
+    } catch (error) {
+      throw new Error(`MongoDB could not find the student: ${error.message}`);
+    }
   }
   const list = await readJson("students.json", []);
   return list.find((s) => s.email.toLowerCase() === norm) || null;
@@ -468,7 +434,6 @@ export async function createStudent(data) {
     createdAt: new Date().toISOString()
   };
 
-  let createdDoc = null;
   if (isDbConnected()) {
     try {
       const mongoRecord = { ...record };
@@ -480,9 +445,10 @@ export async function createStudent(data) {
         { $set: mongoRecord },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      createdDoc = created ? created.toObject() : null;
+      if (!created) throw new Error("MongoDB did not return the created student.");
+      return created.toObject();
     } catch (e) {
-      console.warn("[Student] Mongo create error, saving locally:", e.message);
+      throw new Error(`MongoDB could not create the student: ${e.message}`);
     }
   }
 
@@ -490,7 +456,7 @@ export async function createStudent(data) {
     record,
     ...list.filter((s) => s.studentId !== cleanId && s.loginId !== cleanId)
   ]);
-  return createdDoc || record;
+  return record;
 }
 
 export async function updateStudent(studentId, updateFields) {
@@ -502,7 +468,10 @@ export async function updateStudent(studentId, updateFields) {
         { $set: updateFields },
         { new: true }
       ).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the student: ${error.message}`);
+    }
+    return updatedDoc;
   }
 
   const list = await readJson("students.json", []);
@@ -531,8 +500,9 @@ export async function deleteStudent(studentId) {
       await User.deleteMany({ assignedId: sId });
       await FeeRecord.deleteMany({ studentId: sId });
     } catch (e) {
-      console.error("[deleteStudent DB error]:", e);
+      throw new Error(`MongoDB could not delete the student: ${e.message}`);
     }
+    return true;
   }
 
   await mutateJson("students.json", (list) =>
@@ -556,9 +526,10 @@ export async function deleteStudent(studentId) {
 export async function getAllStaff() {
   if (isDbConnected()) {
     try {
-      const staffList = await Staff.find().sort({ designation: 1 }).lean();
-      if (staffList && staffList.length > 0) return staffList;
-    } catch {}
+      return await Staff.find().sort({ designation: 1 }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read staff: ${error.message}`);
+    }
   }
   return await readJson("staff.json", []);
 }
@@ -582,8 +553,10 @@ export async function getStaffByStaffId(staffId) {
           { loginId: { $regex: new RegExp(`^${escaped}$`, "i") } }
         ]
       }).lean();
-      if (member) return member;
-    } catch {}
+      return member;
+    } catch (error) {
+      throw new Error(`MongoDB could not find the staff member: ${error.message}`);
+    }
   }
   const list = await readJson("staff.json", []);
   return (
@@ -600,8 +573,10 @@ export async function getStaffByEmail(email) {
   if (isDbConnected()) {
     try {
       const member = await Staff.findOne({ email: norm }).lean();
-      if (member) return member;
-    } catch {}
+      return member;
+    } catch (error) {
+      throw new Error(`MongoDB could not find the staff member: ${error.message}`);
+    }
   }
   const list = await readJson("staff.json", []);
   return list.find((s) => s.email.toLowerCase() === norm) || null;
@@ -617,7 +592,6 @@ export async function createStaff(data) {
     createdAt: new Date().toISOString()
   };
 
-  let createdDoc = null;
   if (isDbConnected()) {
     try {
       const mongoRecord = { ...record };
@@ -629,9 +603,10 @@ export async function createStaff(data) {
         { $set: mongoRecord },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      createdDoc = created ? created.toObject() : null;
+      if (!created) throw new Error("MongoDB did not return the created staff member.");
+      return created.toObject();
     } catch (e) {
-      console.warn("[Staff] Mongo create error, saving locally:", e.message);
+      throw new Error(`MongoDB could not create the staff member: ${e.message}`);
     }
   }
 
@@ -639,7 +614,7 @@ export async function createStaff(data) {
     record,
     ...list.filter((s) => s.staffId !== cleanId && s.loginId !== cleanId)
   ]);
-  return createdDoc || record;
+  return record;
 }
 
 export async function updateStaff(staffId, updateFields) {
@@ -651,7 +626,10 @@ export async function updateStaff(staffId, updateFields) {
         { $set: updateFields },
         { new: true }
       ).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the staff member: ${error.message}`);
+    }
+    return updatedDoc;
   }
 
   const list = await readJson("staff.json", []);
@@ -669,7 +647,7 @@ export async function updateStaff(staffId, updateFields) {
 }
 
 export async function deleteStaff(staffId) {
-  if (staffId === "HUN-T-0001" || staffId === "HUN-A-0001") {
+  if (staffId === "HUN-A-0001") {
     throw new Error("The primary institute administrator account cannot be deleted.");
   }
 
@@ -683,8 +661,9 @@ export async function deleteStaff(staffId) {
       if (isObjectId) await Staff.deleteMany({ _id: staffId });
       await User.deleteMany({ assignedId: sId });
     } catch (e) {
-      console.error("[deleteStaff DB error]:", e);
+      throw new Error(`MongoDB could not delete the staff member: ${e.message}`);
     }
+    return true;
   }
 
   await mutateJson("staff.json", (list) =>
@@ -704,9 +683,10 @@ export async function deleteStaff(staffId) {
 export async function getAllCourses() {
   if (isDbConnected()) {
     try {
-      const courses = await Course.find({ active: true }).lean();
-      if (courses && courses.length > 0) return courses;
-    } catch {}
+      return await Course.find({ active: true }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read courses: ${error.message}`);
+    }
   }
   return await readJson("courses.json", []);
 }
@@ -714,9 +694,10 @@ export async function getAllCourses() {
 export async function getAllBatches() {
   if (isDbConnected()) {
     try {
-      const batches = await Batch.find({ active: true }).lean();
-      if (batches && batches.length > 0) return batches;
-    } catch {}
+      return await Batch.find({ active: true }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read batches: ${error.message}`);
+    }
   }
   return await readJson("batches.json", []);
 }
@@ -728,7 +709,6 @@ export async function createBatch(data) {
     active: true,
     createdAt: new Date().toISOString()
   };
-  let createdDoc = null;
   if (isDbConnected()) {
     try {
       const created = await Batch.findOneAndUpdate(
@@ -736,13 +716,14 @@ export async function createBatch(data) {
         { $set: record },
         { upsert: true, new: true }
       );
-      createdDoc = created ? created.toObject() : null;
+      if (!created) throw new Error("MongoDB did not return the created batch.");
+      return created.toObject();
     } catch (e) {
-      console.warn("[Batch] Mongo create error:", e.message);
+      throw new Error(`MongoDB could not create the batch: ${e.message}`);
     }
   }
   await mutateJson("batches.json", (list) => [record, ...list.filter((b) => b.name !== record.name)]);
-  return createdDoc || record;
+  return record;
 }
 
 export async function updateBatch(idOrName, updateFields) {
@@ -753,8 +734,9 @@ export async function updateBatch(idOrName, updateFields) {
       const q = isObjectId ? { $or: [{ _id: idOrName }, { name: idOrName }] } : { name: idOrName };
       updatedDoc = await Batch.findOneAndUpdate(q, { $set: updateFields }, { new: true }).lean();
     } catch (e) {
-      console.warn("[Batch] Mongo update error:", e.message);
+      throw new Error(`MongoDB could not update the batch: ${e.message}`);
     }
+    return updatedDoc;
   }
 
   let found = null;
@@ -777,7 +759,10 @@ export async function deleteBatch(idOrName) {
       const isObjectId = typeof idOrName === "string" && idOrName.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: idOrName }, { name: idOrName }] } : { name: idOrName };
       await Batch.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the batch: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("batches.json", (list) => list.filter((b) => b.name !== idOrName && String(b._id || b.id) !== String(idOrName)));
   return true;
@@ -789,9 +774,10 @@ export async function deleteBatch(idOrName) {
 export async function getAttendanceByBatchAndDate(batch, date) {
   if (isDbConnected()) {
     try {
-      const records = await Attendance.find({ batch, date }).lean();
-      if (records && records.length > 0) return records;
-    } catch {}
+      return await Attendance.find({ batch, date }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read attendance: ${error.message}`);
+    }
   }
   const list = await readJson("attendance.json", []);
   return list.filter((a) => a.batch === batch && a.date === date);
@@ -800,9 +786,10 @@ export async function getAttendanceByBatchAndDate(batch, date) {
 export async function getStudentAttendance(studentId) {
   if (isDbConnected()) {
     try {
-      const records = await Attendance.find({ studentId }).sort({ date: -1 }).lean();
-      if (records && records.length > 0) return records;
-    } catch {}
+      return await Attendance.find({ studentId }).sort({ date: -1 }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read student attendance: ${error.message}`);
+    }
   }
   const list = await readJson("attendance.json", []);
   return list.filter((a) => a.studentId === studentId);
@@ -820,8 +807,9 @@ export async function recordAttendance(records) {
         );
       }
     } catch (e) {
-      console.warn("[Attendance] Mongo record error:", e.message);
+      throw new Error(`MongoDB could not record attendance: ${e.message}`);
     }
+    return true;
   }
 
   const existing = await readJson("attendance.json", []);
@@ -843,9 +831,10 @@ export async function getAllAssignments(batch = null) {
   if (isDbConnected()) {
     try {
       const q = batch ? { $or: [{ batch }, { batch: "All Batches" }] } : {};
-      const items = await Assignment.find(q).sort({ deadline: 1 }).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await Assignment.find(q).sort({ deadline: 1 }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read assignments: ${error.message}`);
+    }
   }
   const list = await readJson("assignments.json", []);
   if (batch) return list.filter((a) => a.batch === batch || a.batch === "All Batches");
@@ -858,22 +847,24 @@ export async function createAssignment(data) {
     _id: data._id || "assign-" + Date.now(),
     createdAt: new Date().toISOString()
   };
-  let result = rec;
   if (isDbConnected()) {
     try {
-      result = (await Assignment.create(rec)).toObject();
-    } catch {}
+      return (await Assignment.create(rec)).toObject();
+    } catch (error) {
+      throw new Error(`MongoDB could not create the assignment: ${error.message}`);
+    }
   }
-  await mutateJson("assignments.json", (list) => [result, ...list.filter((a) => (a._id || a.id) !== (result._id || result.id))]);
-  return result;
+  await mutateJson("assignments.json", (list) => [rec, ...list.filter((a) => (a._id || a.id) !== (rec._id || rec.id))]);
+  return rec;
 }
 
 export async function getSubmissionsForStudent(studentId) {
   if (isDbConnected()) {
     try {
-      const items = await Submission.find({ studentId }).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await Submission.find({ studentId }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read submissions: ${error.message}`);
+    }
   }
   const list = await readJson("submissions.json", []);
   return list.filter((s) => s.studentId === studentId);
@@ -885,14 +876,15 @@ export async function createSubmission(data) {
     _id: data._id || "sub-" + Date.now(),
     submittedAt: new Date().toISOString()
   };
-  let result = rec;
   if (isDbConnected()) {
     try {
-      result = (await Submission.create(rec)).toObject();
-    } catch {}
+      return (await Submission.create(rec)).toObject();
+    } catch (error) {
+      throw new Error(`MongoDB could not create the submission: ${error.message}`);
+    }
   }
-  await mutateJson("submissions.json", (list) => [result, ...list.filter((s) => (s._id || s.id) !== (result._id || result.id))]);
-  return result;
+  await mutateJson("submissions.json", (list) => [rec, ...list.filter((s) => (s._id || s.id) !== (rec._id || rec.id))]);
+  return rec;
 }
 
 // ==========================================
@@ -902,9 +894,10 @@ export async function getAnnouncements(audience = "all") {
   if (isDbConnected()) {
     try {
       const q = audience === "all" ? {} : { $or: [{ audience: "all" }, { audience }] };
-      const items = await Announcement.find(q).sort({ publishDate: -1 }).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await Announcement.find(q).sort({ publishDate: -1 }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read announcements: ${error.message}`);
+    }
   }
   const list = await readJson("announcements.json", []);
   if (audience === "all") return list;
@@ -917,14 +910,15 @@ export async function createAnnouncement(data) {
     _id: data._id || "ann-" + Date.now(),
     publishDate: new Date().toISOString()
   };
-  let result = rec;
   if (isDbConnected()) {
     try {
-      result = (await Announcement.create(rec)).toObject();
-    } catch {}
+      return (await Announcement.create(rec)).toObject();
+    } catch (error) {
+      throw new Error(`MongoDB could not create the announcement: ${error.message}`);
+    }
   }
-  await mutateJson("announcements.json", (list) => [result, ...list.filter((a) => (a._id || a.id) !== (result._id || result.id))]);
-  return result;
+  await mutateJson("announcements.json", (list) => [rec, ...list.filter((a) => (a._id || a.id) !== (rec._id || rec.id))]);
+  return rec;
 }
 
 export async function updateAnnouncement(id, data) {
@@ -934,7 +928,10 @@ export async function updateAnnouncement(id, data) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { id }] } : { _id: id };
       result = await Announcement.findOneAndUpdate(q, { $set: data }, { new: true }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the announcement: ${error.message}`);
+    }
+    return result;
   }
   await mutateJson("announcements.json", (list) => {
     return list.map((a) => {
@@ -955,7 +952,10 @@ export async function deleteAnnouncement(id) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { id }] } : { _id: id };
       await Announcement.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the announcement: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("announcements.json", (list) => list.filter((a) => String(a._id || a.id) !== String(id)));
   return true;
@@ -968,9 +968,10 @@ export async function getTimetable(batch = null) {
   if (isDbConnected()) {
     try {
       const q = batch ? { $or: [{ batch }, { batch: "All Batches" }] } : {};
-      const items = await Timetable.find(q).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await Timetable.find(q).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read the timetable: ${error.message}`);
+    }
   }
   const list = await readJson("timetable.json", []);
   if (batch) return list.filter((t) => t.batch === batch || t.batch === "All Batches");
@@ -982,14 +983,15 @@ export async function createTimetableItem(data) {
     ...data,
     _id: data._id || "time-" + Date.now()
   };
-  let result = rec;
   if (isDbConnected()) {
     try {
-      result = (await Timetable.create(rec)).toObject();
-    } catch {}
+      return (await Timetable.create(rec)).toObject();
+    } catch (error) {
+      throw new Error(`MongoDB could not create the timetable item: ${error.message}`);
+    }
   }
-  await mutateJson("timetable.json", (list) => [result, ...list.filter((t) => (t._id || t.id) !== (result._id || result.id))]);
-  return result;
+  await mutateJson("timetable.json", (list) => [rec, ...list.filter((t) => (t._id || t.id) !== (rec._id || rec.id))]);
+  return rec;
 }
 
 export async function updateTimetableItem(id, data) {
@@ -999,7 +1001,10 @@ export async function updateTimetableItem(id, data) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { id }] } : { id };
       result = await Timetable.findOneAndUpdate(q, { $set: data }, { new: true }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the timetable item: ${error.message}`);
+    }
+    return result;
   }
   await mutateJson("timetable.json", (list) => {
     return list.map((t) => {
@@ -1020,7 +1025,10 @@ export async function deleteTimetableItem(id) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { id }] } : { id };
       await Timetable.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the timetable item: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("timetable.json", (list) => list.filter((t) => String(t._id || t.id) !== String(id)));
   return true;
@@ -1033,9 +1041,10 @@ export async function getFeeRecords(studentId = null) {
   if (isDbConnected()) {
     try {
       const q = studentId ? { studentId } : {};
-      const items = await FeeRecord.find(q).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await FeeRecord.find(q).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read fee records: ${error.message}`);
+    }
   }
   const list = await readJson("fee_records.json", []);
   if (studentId) return list.filter((f) => f.studentId === studentId);
@@ -1052,7 +1061,7 @@ export async function createOrUpdateFeeRecord(data) {
     paidAmount: Number(data.paidAmount),
     dueAmount,
     status,
-    receiptNumber: data.receiptNumber || ("RCPT-2026-" + Math.floor(1000 + Math.random() * 9000)),
+    receiptNumber: data.receiptNumber || (`RCPT-${new Date().getFullYear()}-` + Math.floor(1000 + Math.random() * 9000)),
     lastPaymentDate: new Date().toISOString()
   };
 
@@ -1064,8 +1073,11 @@ export async function createOrUpdateFeeRecord(data) {
         { $set: rec },
         { upsert: true, new: true }
       ).lean();
-      if (saved) result = saved;
-    } catch {}
+      if (!saved) throw new Error("MongoDB did not return the saved fee record.");
+      return saved;
+    } catch (error) {
+      throw new Error(`MongoDB could not save the fee record: ${error.message}`);
+    }
   }
 
   await mutateJson("fee_records.json", (list) => {
@@ -1092,7 +1104,10 @@ export async function deleteFeeRecord(idOrStudentId) {
       const isObjectId = typeof idOrStudentId === "string" && idOrStudentId.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: idOrStudentId }, { studentId: idOrStudentId }] } : { studentId: idOrStudentId };
       await FeeRecord.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the fee record: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("fee_records.json", (list) =>
     list.filter((f) => f.studentId !== idOrStudentId && String(f._id || f.id) !== String(idOrStudentId))
@@ -1112,14 +1127,15 @@ export async function createCourse(data) {
     active: true,
     createdAt: new Date().toISOString()
   };
-  let result = rec;
   if (isDbConnected()) {
     try {
-      result = (await Course.create(rec)).toObject();
-    } catch {}
+      return (await Course.create(rec)).toObject();
+    } catch (error) {
+      throw new Error(`MongoDB could not create the course: ${error.message}`);
+    }
   }
-  await mutateJson("courses.json", (list) => [result, ...list.filter((c) => (c.slug || c._id) !== (result.slug || result._id))]);
-  return result;
+  await mutateJson("courses.json", (list) => [rec, ...list.filter((c) => (c.slug || c._id) !== (rec.slug || rec._id))]);
+  return rec;
 }
 
 export async function updateCourse(id, data) {
@@ -1129,7 +1145,10 @@ export async function updateCourse(id, data) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { slug: id }] } : { slug: id };
       result = await Course.findOneAndUpdate(q, { $set: data }, { new: true }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the course: ${error.message}`);
+    }
+    return result;
   }
   await mutateJson("courses.json", (list) => {
     let found = false;
@@ -1153,7 +1172,10 @@ export async function deleteCourse(id) {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { slug: id }] } : { slug: id };
       await Course.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the course: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("courses.json", (list) => {
     return list.filter((c) => String(c._id || c.id) !== String(id) && c.slug !== id);
@@ -1168,9 +1190,10 @@ export async function getAllSubmissions(assignmentId = null) {
   if (isDbConnected()) {
     try {
       const q = assignmentId ? { assignmentId } : {};
-      const items = await Submission.find(q).sort({ submittedAt: -1 }).lean();
-      if (items && items.length > 0) return items;
-    } catch {}
+      return await Submission.find(q).sort({ submittedAt: -1 }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not read submissions: ${error.message}`);
+    }
   }
   const list = await readJson("submissions.json", []);
   if (assignmentId) return list.filter((s) => String(s.assignmentId) === String(assignmentId));
@@ -1189,7 +1212,10 @@ export async function gradeSubmission(submissionId, marks, feedback) {
   if (isDbConnected()) {
     try {
       result = await Submission.findByIdAndUpdate(submissionId, { $set: update }, { new: true }).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not grade the submission: ${error.message}`);
+    }
+    return result;
   }
 
   await mutateJson("submissions.json", (list) => {
@@ -1211,10 +1237,9 @@ export async function gradeSubmission(submissionId, marks, feedback) {
 export async function getAllRoles() {
   if (isDbConnected()) {
     try {
-      const roles = await Role.find().sort({ isSystem: -1, name: 1 }).lean();
-      if (roles && roles.length > 0) return roles;
+      return await Role.find().sort({ isSystem: -1, name: 1 }).lean();
     } catch (e) {
-      console.warn("[Roles] Mongo error, reading fallback:", e.message);
+      throw new Error(`MongoDB could not read roles: ${e.message}`);
     }
   }
   return await readJson("roles.json", []);
@@ -1225,9 +1250,10 @@ export async function getRoleById(roleId) {
     try {
       const isObjectId = typeof roleId === "string" && roleId.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ roleId }, { _id: roleId }] } : { roleId };
-      const doc = await Role.findOne(q).lean();
-      if (doc) return doc;
-    } catch {}
+      return await Role.findOne(q).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not find the role: ${error.message}`);
+    }
   }
   const list = await readJson("roles.json", []);
   return list.find((r) => r.roleId === roleId || String(r._id || r.id) === String(roleId)) || null;
@@ -1238,8 +1264,10 @@ export async function getRoleByName(name) {
   if (isDbConnected()) {
     try {
       const doc = await Role.findOne({ name: { $regex: new RegExp(`^${norm}$`, "i") } }).lean();
-      if (doc) return doc;
-    } catch {}
+      return doc;
+    } catch (error) {
+      throw new Error(`MongoDB could not find the role: ${error.message}`);
+    }
   }
   const list = await readJson("roles.json", []);
   return list.find((r) => r.name && r.name.trim().toLowerCase() === norm) || null;
@@ -1264,7 +1292,6 @@ export async function createRole(data) {
     updatedAt: new Date().toISOString()
   };
 
-  let createdDoc = null;
   if (isDbConnected()) {
     try {
       const mongoRecord = { ...record };
@@ -1276,9 +1303,10 @@ export async function createRole(data) {
         { $set: mongoRecord },
         { upsert: true, new: true }
       );
-      createdDoc = created ? created.toObject() : null;
+      if (!created) throw new Error("MongoDB did not return the created role.");
+      return created.toObject();
     } catch (e) {
-      console.warn("[Role] Mongo create error, saving locally:", e.message);
+      throw new Error(`MongoDB could not create the role: ${e.message}`);
     }
   }
 
@@ -1286,7 +1314,7 @@ export async function createRole(data) {
     record,
     ...list.filter((r) => r.roleId !== record.roleId)
   ]);
-  return createdDoc || record;
+  return record;
 }
 
 export async function updateRole(roleId, updateFields) {
@@ -1301,7 +1329,10 @@ export async function updateRole(roleId, updateFields) {
         { $set: fields },
         { new: true }
       ).lean();
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not update the role: ${error.message}`);
+    }
+    return updatedDoc;
   }
 
   const list = await readJson("roles.json", []);
@@ -1324,7 +1355,10 @@ export async function deleteRole(roleId) {
       const isObjectId = typeof roleId === "string" && roleId.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ roleId }, { _id: roleId }] } : { roleId };
       await Role.findOneAndDelete(q);
-    } catch {}
+    } catch (error) {
+      throw new Error(`MongoDB could not delete the role: ${error.message}`);
+    }
+    return true;
   }
   await mutateJson("roles.json", (list) =>
     list.filter((r) => r.roleId !== roleId && String(r._id || r.id) !== String(roleId))
@@ -1337,7 +1371,7 @@ export async function getStaffAssignedToRole(roleId, roleName = "") {
   return allStaffMembers.filter((s) => {
     if (s.roleId && s.roleId === roleId) return true;
     if (roleName && s.roleName && s.roleName.toLowerCase() === roleName.toLowerCase()) return true;
-    if (roleId === "role-super-admin" && (s.role === "admin" || s.staffId === "HUN-T-0001")) return true;
+    if (roleId === "role-super-admin" && s.role === "admin") return true;
     if (roleId === "role-teacher" && s.role === "teacher" && (!s.roleId || s.roleId === "role-teacher")) return true;
     return false;
   });
@@ -1360,5 +1394,3 @@ export async function reassignStaffRole(fromRoleId, toRoleId, toRoleName) {
   }
   return staffToReassign.length;
 }
-
-

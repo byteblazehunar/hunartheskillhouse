@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "server": "node server/server.js",
+    "start": "node server/server.js",
     "build": "vite build",
+    "test:integration": "node --test server/test_server_routes.js server/test_db_config.js",
     "lint": "oxlint",
     "preview": "vite preview",
     "reset-password": "node server/reset_admin_password.js"
