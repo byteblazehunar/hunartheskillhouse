@@ -19,6 +19,9 @@ dist-ssr
 *.pem
 *.key
 
+# Runtime database records
+server/data/*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

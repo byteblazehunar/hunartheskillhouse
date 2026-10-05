@@ -44,16 +44,20 @@ npm install
 ```
 
 ### 3. Environment Setup
-Copy `.env.example` to `.env` and configure your local environment. Do not commit `.env`.
-Set `JWT_SECRET` to a unique, long random value:
+Copy `.env.example` to `.env` and replace all placeholders with private values:
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/hunar_db
-JWT_SECRET=replace-with-a-long-random-secret
+JWT_SECRET=replace-with-a-unique-random-secret
+INITIAL_ADMIN_PASSWORD=replace-with-a-unique-admin-password
+INITIAL_TEACHER_PASSWORD=replace-with-a-unique-teacher-password
+INITIAL_RECEPTIONIST_PASSWORD=replace-with-a-unique-receptionist-password
+INITIAL_ACCOUNTANT_PASSWORD=replace-with-a-unique-accountant-password
 INVITATION_EXPIRY_HOURS=72
 NODE_ENV=development
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5000
 ```
+Set `JWT_SECRET` to a unique random value and configure a unique initial password for each account before starting a fresh installation. Keep `.env` private; it is excluded from Git.
 
 ### 4. Running the Application
 Start the development server:
@@ -64,6 +68,12 @@ Open your browser at **http://localhost:5173**
 
 ---
 
+## Resetting the Admin Password
+If you ever need to reset the admin password from the command line:
+```bash
+npm run reset-password your_new_password
+```
+
 ---
 
 ## 🏗️ Production Build
@@ -73,5 +83,3 @@ To build the optimized static bundle for deployment:
 npm run build
 ```
 The compiled assets will be created in the `dist/` directory, ready to deploy to any modern web hosting service.
-"# hunartheskillhouse" 
-# hunartheskillhouse
