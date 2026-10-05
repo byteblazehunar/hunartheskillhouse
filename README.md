@@ -44,11 +44,12 @@ npm install
 ```
 
 ### 3. Environment Setup
-Review or configure your environment variables in `.env`:
+Copy `.env.example` to `.env` and configure your local environment. Do not commit `.env`.
+Set `JWT_SECRET` to a unique, long random value:
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/hunar_db
-JWT_SECRET=hunar-super-secret-jwt-key-2026-mullanpur-dakha
+JWT_SECRET=replace-with-a-long-random-secret
 INVITATION_EXPIRY_HOURS=72
 NODE_ENV=development
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5000
@@ -62,19 +63,6 @@ npm run dev
 Open your browser at **http://localhost:5173**
 
 ---
-
-## 🔑 Default Admin Credentials
-
-* **Login URL:** `http://localhost:5173/portal/login`
-* **Admin Email:** `admin@hunarskillhouse.com`
-* **Password:** `hunar2026`
-* **Admin ID:** `HUN-A-0001` (Gurlove Malhi)
-
-### Resetting Admin Password via Terminal
-If you ever need to reset the admin password from the command line:
-```bash
-npm run reset-password your_new_password
-```
 
 ---
 
