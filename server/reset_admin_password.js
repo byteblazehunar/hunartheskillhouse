@@ -46,9 +46,17 @@ function promptHidden(prompt) {
 }
 
 async function resetPassword() {
-  const newPassword = await promptHidden("New admin password (8-128 characters): ");
-  if (newPassword.length < 8 || newPassword.length > 128) {
-    throw new Error("Password must be between 8 and 128 characters.");
+  const adminEmail = "byteblaze.hunar@gmail.com";
+  const newPassword = await promptHidden("New unique admin password (8-128 characters): ");
+  if (
+    newPassword.length < 8 ||
+    newPassword.length > 128 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword) ||
+    newPassword.toLowerCase() === adminEmail.toLowerCase()
+  ) {
+    throw new Error("Use a unique password of 8-128 characters with uppercase and lowercase letters and a number; do not use the email address as the password.");
   }
 
   const confirmation = await promptHidden("Confirm new admin password: ");
@@ -58,12 +66,17 @@ async function resetPassword() {
 
   try {
     await connectDB();
-    const admin = await findUserByEmailOrId("admin@hunarskillhouse.com");
+    const admin = await findUserByEmailOrId(adminEmail);
     if (!admin) {
       throw new Error("Admin user not found.");
     }
     const passwordHash = await hashPassword(newPassword);
-    await updateUser(admin._id || admin.id || "HUN-A-0001", { passwordHash });
+    await updateUser(admin._id || admin.id || "HUN-A-0001", {
+      passwordHash,
+      passwordSet: true,
+      isActive: true,
+      status: "active"
+    });
     console.log("Admin password successfully updated.");
   } finally {
     await mongoose.disconnect();
