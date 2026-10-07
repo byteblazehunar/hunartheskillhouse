@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
 assert.match(vercelConfig.rewrites[0].source, /\(\?!api\\?\//);
+await Promise.all([
+  access(new URL("../api/auth/login.js", import.meta.url)),
+  access(new URL("../api/auth/forgot-password.js", import.meta.url))
+]);
 
 process.env.JWT_SECRET ||= "integration-test-secret";
 process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
