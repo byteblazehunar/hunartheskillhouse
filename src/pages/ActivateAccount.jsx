@@ -38,8 +38,9 @@ export default function ActivateAccount() {
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
+  const hasMaxLength = password.length <= 128;
   const passwordsMatch = password.length > 0 && password === confirmPassword;
-  const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber;
+  const isPasswordValid = hasMinLength && hasMaxLength && hasUppercase && hasLowercase && hasNumber;
 
   // Step 1: Verify invitation token on mount and retrieve Login ID
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function ActivateAccount() {
     }
 
     if (!isPasswordValid) {
-      setError("Please meet all password requirements: minimum 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number.");
+      setError("Please meet all password requirements: 8–128 characters, 1 uppercase letter, 1 lowercase letter, and 1 number.");
       return;
     }
 
@@ -455,9 +456,9 @@ export default function ActivateAccount() {
                   Password Requirements
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "0.76rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: hasMinLength ? "var(--color-success)" : "var(--color-text-muted)" }}>
-                    <CheckCircle2 size={13} color={hasMinLength ? "var(--color-success)" : "var(--color-text-muted)"} />
-                    <span>8+ characters</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: hasMinLength && hasMaxLength ? "var(--color-success)" : "var(--color-text-muted)" }}>
+                    <CheckCircle2 size={13} color={hasMinLength && hasMaxLength ? "var(--color-success)" : "var(--color-text-muted)"} />
+                    <span>8 to 128 characters</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: hasUppercase ? "var(--color-success)" : "var(--color-text-muted)" }}>
                     <CheckCircle2 size={13} color={hasUppercase ? "var(--color-success)" : "var(--color-text-muted)"} />

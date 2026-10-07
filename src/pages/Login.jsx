@@ -13,9 +13,6 @@ import {
   X,
   PhoneCall,
   Mail,
-  Copy,
-  Check,
-  ExternalLink,
   Sparkles
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
@@ -42,13 +39,11 @@ export default function Login() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotError, setForgotError] = useState("");
   const [forgotResult, setForgotResult] = useState(null);
-  const [forgotCopied, setForgotCopied] = useState(false);
 
   const handleOpenForgotModal = () => {
     setForgotIdentifier(loginId || "");
     setForgotError("");
     setForgotResult(null);
-    setForgotCopied(false);
     setShowForgotModal(true);
   };
 
@@ -77,14 +72,6 @@ export default function Login() {
     } finally {
       setForgotLoading(false);
     }
-  };
-
-  const handleCopyResetLink = () => {
-    if (!forgotResult?.resetUrl) return;
-    const fullUrl = `${window.location.origin}${forgotResult.resetUrl}`;
-    navigator.clipboard.writeText(fullUrl);
-    setForgotCopied(true);
-    setTimeout(() => setForgotCopied(false), 2500);
   };
 
   useEffect(() => {
@@ -558,7 +545,7 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Success State with Direct Reset Link */}
+            {/* Password reset email confirmation */}
             {forgotResult ? (
               <div>
                 <div
@@ -573,45 +560,15 @@ export default function Login() {
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                     <CheckCircle2 size={18} color="#22c55e" />
                     <span style={{ fontWeight: 800, fontSize: "0.9rem", color: "#22c55e" }}>
-                      Account Located Successfully
+                      Check Your Email
                     </span>
-                  </div>
-                  <div style={{ fontSize: "0.85rem", color: "var(--color-text-primary)", marginBottom: "4px" }}>
-                    User: <strong>{forgotResult.userName}</strong>
-                  </div>
-                  <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                    Login ID: <code style={{ backgroundColor: "var(--color-surface)", padding: "2px 6px", borderRadius: "4px", fontWeight: "700" }}>{forgotResult.loginId}</code>
                   </div>
                 </div>
 
                 <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", lineHeight: "1.5", marginBottom: "16px" }}>
-                  A one-time secure password creation link has been generated. Click below to choose your new password:
+                  {forgotResult.message} If the account exists, use the secure, one-time link in the message to set a new password. The link expires after the configured period.
                 </p>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "16px" }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotModal(false);
-                      navigate(forgotResult.resetUrl);
-                    }}
-                    className="btn btn-primary btn-full"
-                    style={{ minHeight: "42px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-                  >
-                    <span>Proceed to Set New Password</span>
-                    <ArrowRight size={16} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyResetLink}
-                    className="btn btn-secondary btn-full"
-                    style={{ minHeight: "38px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-                  >
-                    {forgotCopied ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
-                    <span>{forgotCopied ? "Link Copied to Clipboard!" : "Copy Reset Link"}</span>
-                  </button>
-                </div>
               </div>
             ) : (
               /* Input Form */

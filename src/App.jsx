@@ -35,6 +35,7 @@ import AdminPortal from "./pages/AdminPortal";
 import OperationsPanel from "./pages/OperationsPanel";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
+import NotFound from "./pages/NotFound";
 
 function AppContent() {
   const [demoModalOpen, setDemoModalOpen] = useState(false);
@@ -123,7 +124,7 @@ function AppContent() {
                 <Route path="/admin/*" element={<AdminPortal />} />
                 <Route path="/page/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/page/terms-conditions" element={<TermsConditions />} />
-                <Route path="*" element={<Home onOpenDemo={handleOpenDemo} />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </motion.div>
           </AnimatePresence>

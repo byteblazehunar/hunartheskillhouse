@@ -27,6 +27,7 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [emailWarning, setEmailWarning] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +56,7 @@ export default function Contact() {
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your inquiry. Please try again.");
       }
+      setEmailWarning(result.emailSent ? "" : result.message);
       setSubmitted(true);
     } catch (err) {
       console.error("Contact inquiry submission failed:", err);
@@ -241,9 +243,15 @@ export default function Contact() {
                       Thank you for contacting Hunar The Skill House. Our team will review your message
                       and respond to <strong>{formData.phone}</strong> within 24 hours.
                     </p>
+                    {emailWarning && (
+                      <p role="status" style={{ color: "var(--color-danger)", fontSize: "0.85rem", marginBottom: "16px" }}>
+                        {emailWarning}
+                      </p>
+                    )}
                     <button
                       onClick={() => {
                         setSubmitted(false);
+                        setEmailWarning("");
                         setFormData({ name: "", phone: "", email: "", course: "", message: "" });
                       }}
                       className="btn btn-outline"

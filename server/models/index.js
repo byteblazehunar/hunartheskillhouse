@@ -230,6 +230,30 @@ const RoleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const LeadSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true, maxlength: 120 },
+    phone: { type: String, required: true, trim: true, maxlength: 40 },
+    email: { type: String, default: "", trim: true, lowercase: true, maxlength: 254 },
+    course: { type: String, default: "General Inquiry", trim: true, maxlength: 160 },
+    preferredTiming: { type: String, default: "", trim: true, maxlength: 120 },
+    message: { type: String, default: "", trim: true, maxlength: 2000 },
+    status: {
+      type: String,
+      enum: ["New", "Contacted", "Interested", "Enrolled", "Dropped"],
+      default: "New"
+    },
+    notes: { type: String, default: "", trim: true, maxlength: 2000 },
+    source: { type: String, default: "website", trim: true },
+    emailNotificationStatus: {
+      type: String,
+      enum: ["pending", "sent", "failed"],
+      default: "pending"
+    }
+  },
+  { timestamps: true }
+);
+
 // Export Mongoose Models with model-reuse guard
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 export const Student = mongoose.models.Student || mongoose.model("Student", StudentSchema);
@@ -244,3 +268,4 @@ export const AuditLog = mongoose.models.AuditLog || mongoose.model("AuditLog", A
 export const Timetable = mongoose.models.Timetable || mongoose.model("Timetable", TimetableSchema);
 export const FeeRecord = mongoose.models.FeeRecord || mongoose.model("FeeRecord", FeeRecordSchema);
 export const Role = mongoose.models.Role || mongoose.model("Role", RoleSchema);
+export const Lead = mongoose.models.Lead || mongoose.model("Lead", LeadSchema);

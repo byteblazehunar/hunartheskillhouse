@@ -230,7 +230,7 @@ export default function AdminPortal() {
         fetch("/api/staff", { headers }).catch(() => null),
         fetch("/api/courses").catch(() => null),
         fetch("/api/batches").catch(() => null),
-        fetch("/api/leads").catch(() => null),
+        fetch("/api/leads", { headers }).catch(() => null),
         fetch("/api/announcements").catch(() => null),
         fetch("/api/timetable").catch(() => null),
         fetch("/api/fees", { headers }).catch(() => null),
@@ -390,12 +390,12 @@ export default function AdminPortal() {
         studentId: data.student.studentId,
         name: data.student.name,
         email: data.student.email,
-        activationUrl: window.location.origin + data.invitation.activationUrl,
+        activationUrl: data.invitation.activationUrl,
         rawToken: data.invitation.token,
         expiresAt: data.invitation.expiresAt
       });
 
-      showToast(`Student registered! ID: ${data.student.studentId}`, "success");
+      showToast(data.message, data.invitation.emailSent ? "success" : "error");
       loadAllData();
     } catch (err) {
       showToast(err.message, "error");
@@ -428,11 +428,11 @@ export default function AdminPortal() {
         studentId: data.staff.staffId,
         name: data.staff.name,
         email: data.staff.email,
-        activationUrl: window.location.origin + data.invitation.activationUrl,
+        activationUrl: data.invitation.activationUrl,
         rawToken: data.invitation.token,
         expiresAt: data.invitation.expiresAt
       });
-      showToast(`Staff registered! ID: ${data.staff.staffId}`, "success");
+      showToast(data.message, data.invitation.emailSent ? "success" : "error");
       loadAllData();
     } catch (err) {
       showToast(err.message, "error");
@@ -550,11 +550,11 @@ export default function AdminPortal() {
 
       setInvitationModal({
         studentId,
-        activationUrl: window.location.origin + data.invitationUrl,
+        activationUrl: data.invitationUrl,
         rawToken: data.token,
         expiresAt: data.expiresAt
       });
-      showToast(`New activation link generated for ${studentId}.`);
+      showToast(data.message, data.emailSent ? "success" : "error");
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -573,11 +573,11 @@ export default function AdminPortal() {
       setInvitationModal({
         studentId: staffId,
         name: staffName,
-        activationUrl: window.location.origin + data.invitationUrl,
+        activationUrl: data.invitationUrl,
         rawToken: data.token,
         expiresAt: data.expiresAt
       });
-      showToast(`New activation link generated for ${staffName || staffId}.`);
+      showToast(data.message, data.emailSent ? "success" : "error");
     } catch (err) {
       showToast(err.message, "error");
     }
@@ -1117,7 +1117,7 @@ export default function AdminPortal() {
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status })
       });
       if (!res.ok) throw new Error("Failed to update inquiry status");

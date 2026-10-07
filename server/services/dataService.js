@@ -13,7 +13,8 @@ import {
   AuditLog,
   Timetable,
   FeeRecord,
-  Role
+  Role,
+  Lead
 } from "../models/index.js";
 
 const DISABLED_FALLBACK_MESSAGE = "MongoDB must be connected. Local JSON storage and demo data are disabled.";
@@ -168,6 +169,28 @@ export async function findUserByInvitationTokenHash(tokenHash) {
         new Date(u.invitationExpires) > now
     ) || null
   );
+}
+
+export async function consumeInvitationToken(tokenHash, updates) {
+  if (!isDbConnected()) throw new Error(DISABLED_FALLBACK_MESSAGE);
+  try {
+    return await User.findOneAndUpdate(
+      {
+        invitationTokenHash: tokenHash,
+        invitationExpires: { $gt: new Date() }
+      },
+      {
+        $set: {
+          ...updates,
+          invitationTokenHash: null,
+          invitationExpires: null
+        }
+      },
+      { new: true, runValidators: true }
+    ).lean();
+  } catch (error) {
+    throw new Error(`MongoDB could not consume the invitation token: ${error.message}`);
+  }
 }
 
 export async function createUser(userData) {
@@ -1052,13 +1075,35 @@ export async function getFeeRecords(studentId = null) {
 }
 
 export async function createOrUpdateFeeRecord(data) {
-  const dueAmount = Math.max(0, (Number(data.totalFee) || 0) - (Number(data.paidAmount) || 0));
-  const status = dueAmount === 0 ? "paid" : (Number(data.paidAmount) > 0 ? "partial" : "pending");
+  const totalFee = Number(data.totalFee);
+  const paidAmount = Number(data.paidAmount ?? 0);
+  if (!Number.isFinite(totalFee) || totalFee <= 0) {
+    throw new Error("Total fee must be a positive amount.");
+  }
+  if (!Number.isFinite(paidAmount) || paidAmount < 0 || paidAmount > totalFee) {
+    throw new Error("Paid amount must be between zero and the total fee.");
+  }
+  if (data.dueDate) {
+    const dueDateTimestamp = Date.parse(`${data.dueDate}T00:00:00.000Z`);
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(data.dueDate) ||
+      Number.isNaN(dueDateTimestamp) ||
+      new Date(dueDateTimestamp).toISOString().slice(0, 10) !== data.dueDate
+    ) {
+      throw new Error("Due date must be a valid date in YYYY-MM-DD format.");
+    }
+  }
+
+  const dueAmount = totalFee - paidAmount;
+  const today = new Date().toISOString().slice(0, 10);
+  const status = dueAmount === 0
+    ? "paid"
+    : (data.dueDate && data.dueDate < today ? "overdue" : (paidAmount > 0 ? "partial" : "pending"));
 
   const rec = {
     ...data,
-    totalFee: Number(data.totalFee),
-    paidAmount: Number(data.paidAmount),
+    totalFee,
+    paidAmount,
     dueAmount,
     status,
     receiptNumber: data.receiptNumber || (`RCPT-${new Date().getFullYear()}-` + Math.floor(1000 + Math.random() * 9000)),
@@ -1184,7 +1229,49 @@ export async function deleteCourse(id) {
 }
 
 // ==========================================
-// 12. SUBMISSION REVIEWS
+// 12. WEBSITE LEADS & INQUIRIES
+// ==========================================
+export async function getAllLeads() {
+  if (!isDbConnected()) throw new Error(DISABLED_FALLBACK_MESSAGE);
+  try {
+    const records = await Lead.find().sort({ createdAt: -1 }).lean();
+    return records.map((lead) => ({ ...lead, id: String(lead._id) }));
+  } catch (error) {
+    throw new Error(`MongoDB could not read inquiries: ${error.message}`);
+  }
+}
+
+export async function createLead(data) {
+  if (!isDbConnected()) throw new Error(DISABLED_FALLBACK_MESSAGE);
+  try {
+    const lead = await Lead.create(data);
+    return { ...lead.toObject(), id: String(lead._id) };
+  } catch (error) {
+    throw new Error(`MongoDB could not save the inquiry: ${error.message}`);
+  }
+}
+
+export async function updateLead(id, data) {
+  if (!isDbConnected()) throw new Error(DISABLED_FALLBACK_MESSAGE);
+  try {
+    const lead = await Lead.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean();
+    return lead ? { ...lead, id: String(lead._id) } : null;
+  } catch (error) {
+    throw new Error(`MongoDB could not update the inquiry: ${error.message}`);
+  }
+}
+
+export async function deleteLead(id) {
+  if (!isDbConnected()) throw new Error(DISABLED_FALLBACK_MESSAGE);
+  try {
+    return Boolean(await Lead.findByIdAndDelete(id));
+  } catch (error) {
+    throw new Error(`MongoDB could not delete the inquiry: ${error.message}`);
+  }
+}
+
+// ==========================================
+// 13. SUBMISSION REVIEWS
 // ==========================================
 export async function getAllSubmissions(assignmentId = null) {
   if (isDbConnected()) {

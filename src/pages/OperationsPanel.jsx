@@ -190,7 +190,7 @@ export default function OperationsPanel() {
 
       // 2. Fetch parallel operational datasets
       const [leadsRes, studentsRes, coursesRes, batchesRes, timeRes, feesRes, annRes, attRes] = await Promise.all([
-        fetch("/api/leads").catch(() => null),
+        fetch("/api/leads", { headers }).catch(() => null),
         fetch("/api/students", { headers }).catch(() => null),
         fetch("/api/courses").catch(() => null),
         fetch("/api/batches").catch(() => null),
@@ -249,7 +249,7 @@ export default function OperationsPanel() {
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           name: leadForm.name.trim(),
           email: leadForm.email.trim(),
@@ -265,7 +265,7 @@ export default function OperationsPanel() {
       setLeads((prev) => [data.lead, ...prev]);
       setModalType(null);
       setLeadForm({ name: "", email: "", phone: "", course: "Full Stack Web Development", notes: "" });
-      showToast("New inquiry logged successfully!");
+      showToast(data.message, data.emailSent ? "success" : "error");
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -277,7 +277,7 @@ export default function OperationsPanel() {
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status })
       });
       if (!res.ok) throw new Error("Failed to update status");
@@ -308,12 +308,12 @@ export default function OperationsPanel() {
           studentId: data.student.studentId,
           name: data.student.name,
           email: data.student.email,
-          activationUrl: window.location.origin + data.invitation.activationUrl,
+          activationUrl: data.invitation.activationUrl,
           rawToken: data.invitation.token,
           expiresAt: data.invitation.expiresAt
         });
       }
-      showToast(`Student registered! ID: ${data.student.studentId}`, "success");
+      showToast(data.message, data.invitation.emailSent ? "success" : "error");
     } catch (err) {
       showToast(err.message, "error");
     } finally {

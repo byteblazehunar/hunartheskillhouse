@@ -26,6 +26,7 @@ export default function Enroll() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [emailWarning, setEmailWarning] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,6 +54,7 @@ export default function Enroll() {
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your enrollment request. Please try again.");
       }
+      setEmailWarning(result.emailSent ? "" : result.message);
       setSubmitted(true);
     } catch (err) {
       console.error("Enrollment request submission failed:", err);
@@ -111,6 +113,11 @@ export default function Enroll() {
                   <strong style={{ color: "var(--color-brand-text)" }}>{formData.phone}</strong> within 24 hours
                   to confirm your admission, batch timing, and campus orientation details.
                 </p>
+                {emailWarning && (
+                  <p role="status" style={{ color: "var(--color-danger)", fontSize: "0.85rem", marginBottom: "16px" }}>
+                    {emailWarning}
+                  </p>
+                )}
 
                 <div style={{
                   backgroundColor: "var(--color-surface-secondary)",

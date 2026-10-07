@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
@@ -12,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
+if (process.env.VERCEL === "1") app.set("trust proxy", 1);
 const allowedOrigins = new Set(
   (process.env.ALLOWED_ORIGINS || "https://hunar.courses,https://www.hunar.courses")
     .split(",")
@@ -22,14 +24,21 @@ const clientDistPath = path.join(__dirname, "..", "dist");
 const clientEntryPath = path.join(clientDistPath, "index.html");
 
 app.use(
-  cors({
-    origin: (origin, callback) => callback(null, !origin || allowedOrigins.has(origin)),
-    credentials: true
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    hsts: process.env.NODE_ENV === "production"
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => callback(null, !origin || allowedOrigins.has(origin))
+  })
+);
+
+app.use(express.json({ limit: "32kb" }));
+app.use(express.urlencoded({ extended: true, limit: "32kb" }));
 
 // API Router
 app.use("/api", apiRouter);
@@ -46,6 +55,25 @@ app.use((req, res, next) => {
     return res.status(503).type("text").send("Frontend build not found. Run npm run build before starting the server.");
   }
   res.sendFile(clientEntryPath);
+});
+app.use((req, res) => {
+  if (req.accepts("html")) {
+    return res.status(404).sendFile(clientEntryPath, (error) => {
+      if (error && !res.headersSent) res.status(404).type("text").send("Page not found.");
+    });
+  }
+  res.status(404).json({ success: false, message: "Route not found." });
+});
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ success: false, message: "Request body is too large." });
+  }
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({ success: false, message: "Request body contains invalid JSON." });
+  }
+  console.error("[Request Error]:", error);
+  res.status(500).json({ success: false, message: "Internal server error." });
 });
 
 export async function startServer() {

@@ -2,10 +2,12 @@ import express from "express";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { rateLimit } from "express-rate-limit";
 import {
   findUserByEmailOrId,
   findUserById,
   findUserByInvitationTokenHash,
+  consumeInvitationToken,
   createUser,
   updateUser,
   deleteUser,
@@ -49,6 +51,10 @@ import {
   getFeeRecords,
   createOrUpdateFeeRecord,
   deleteFeeRecord,
+  getAllLeads,
+  createLead,
+  updateLead,
+  deleteLead,
   getAllSubmissions,
   gradeSubmission,
   getAllRoles,
@@ -82,12 +88,79 @@ import {
   ALL_PERMISSION_KEYS
 } from "./constants/permissions.js";
 import { isDbConnected } from "./config/db.js";
+import { buildFrontendUrl, sendEmail } from "./services/emailService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_DIR = path.join(__dirname, "data");
 
 const router = express.Router();
+const rateLimitResponse = {
+  success: false,
+  error: "RATE_LIMITED",
+  message: "Too many requests. Please wait before trying again."
+};
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 240,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: rateLimitResponse
+});
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: rateLimitResponse
+});
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: rateLimitResponse
+});
+const activationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: rateLimitResponse
+});
+const inquiryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: rateLimitResponse
+});
+
+router.use(apiLimiter);
+
+async function sendActivationEmail(user, rawToken, subject, purpose) {
+  const activationUrl = buildFrontendUrl(`/activate/${encodeURIComponent(rawToken)}`);
+  try {
+    await sendEmail({
+      to: user.email,
+      subject,
+      text: [
+        `Hello ${user.name},`,
+        "",
+        `Use this secure link to ${purpose} your Hunar portal account:`,
+        activationUrl,
+        "",
+        `This link expires in ${process.env.INVITATION_EXPIRY_HOURS || 72} hours.`,
+        "If you were not expecting this email, please contact the institute."
+      ].join("\n")
+    });
+    return { activationUrl, emailSent: true };
+  } catch (error) {
+    console.error("[Account Email Error]:", error.message);
+    return { activationUrl, emailSent: false };
+  }
+}
 
 // Helper to safely read settings
 async function readSettings() {
@@ -131,17 +204,18 @@ router.get("/health", (req, res) => {
 // ══════════════════════════════════════════════
 
 // POST /api/auth/login - Supports Canonical Login ID (HUN-S-XXXX, HUN-T-XXXX, HUN-A-XXXX) or Email
-router.post("/auth/login", async (req, res) => {
+router.post("/auth/login", loginLimiter, async (req, res) => {
   try {
-    const rawIdentifier = req.body.loginId || req.body.identifier || req.body.email || "";
+    const body = req.body || {};
+    const rawIdentifier = body.loginId || body.identifier || body.email || "";
     const identifier = String(rawIdentifier).trim();
-    const password = String(req.body.password || "");
+    const password = typeof body.password === "string" ? body.password : "";
 
-    if (!identifier || !password) {
+    if (!identifier || !password || identifier.length > 254 || password.length > 128) {
       return res.status(400).json({
         success: false,
         error: "MISSING_CREDENTIALS",
-        message: "Please enter your Login ID or institutional email and password."
+        message: "Enter a valid Login ID or email and a password of at most 128 characters."
       });
     }
 
@@ -154,19 +228,11 @@ router.post("/auth/login", async (req, res) => {
       });
     }
 
-    if (user.status === "suspended") {
-      return res.status(403).json({
+    if (user.status === "suspended" || user.status === "pending_activation" || !user.passwordHash) {
+      return res.status(401).json({
         success: false,
-        error: "ACCOUNT_SUSPENDED",
-        message: "Your account is currently suspended. Please contact the administrative office."
-      });
-    }
-
-    if (user.status === "pending_activation" || !user.passwordHash) {
-      return res.status(403).json({
-        success: false,
-        error: "ACCOUNT_NOT_ACTIVATED",
-        message: "This account has not been activated yet. Please click the invitation link to set your password."
+        error: "INVALID_CREDENTIALS",
+        message: "Invalid Login ID or password."
       });
     }
 
@@ -221,7 +287,7 @@ router.post("/auth/login", async (req, res) => {
 });
 
 // GET /api/auth/verify-invitation/:token - Inspect invitation token and retrieve user Login ID
-router.get("/auth/verify-invitation/:token", async (req, res) => {
+router.get("/auth/verify-invitation/:token", activationLimiter, async (req, res) => {
   try {
     const { token } = req.params;
     if (!token) {
@@ -302,10 +368,15 @@ router.get("/auth/me", authenticate, async (req, res) => {
 });
 
 // POST /api/auth/activate - Activate invited account & set personal password
-router.post("/auth/activate", async (req, res) => {
+router.post("/auth/activate", activationLimiter, async (req, res) => {
   try {
-    const { token, password, confirmPassword } = req.body;
-    if (!token || !password) {
+    const { token, password, confirmPassword } = req.body || {};
+    if (
+      typeof token !== "string" ||
+      !token ||
+      typeof password !== "string" ||
+      !password
+    ) {
       return res.status(400).json({
         success: false,
         error: "MISSING_FIELDS",
@@ -324,6 +395,7 @@ router.post("/auth/activate", async (req, res) => {
     // Strict Password Policy: Min 8 chars, 1 uppercase, 1 lowercase, 1 number
     if (
       password.length < 8 ||
+      password.length > 128 ||
       !/[A-Z]/.test(password) ||
       !/[a-z]/.test(password) ||
       !/[0-9]/.test(password)
@@ -331,7 +403,7 @@ router.post("/auth/activate", async (req, res) => {
       return res.status(400).json({
         success: false,
         error: "WEAK_PASSWORD",
-        message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+        message: "Password must be 8 to 128 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
       });
     }
 
@@ -350,14 +422,19 @@ router.post("/auth/activate", async (req, res) => {
     const passwordHash = await hashPassword(password);
 
     // Atomically activate User record in MongoDB and fallback storage
-    await updateUser(user._id || user.id, {
+    const activatedUser = await consumeInvitationToken(tokenHash, {
       passwordHash,
       status: "active",
       passwordSet: true,
-      isActive: true,
-      invitationTokenHash: null,
-      invitationExpires: null
+      isActive: true
     });
+    if (!activatedUser) {
+      return res.status(400).json({
+        success: false,
+        error: "INVALID_OR_EXPIRED_TOKEN",
+        message: "This invitation link is invalid, expired, or has already been used. Please request a new invitation."
+      });
+    }
 
     // If student, update student status as well
     if (user.role === "student" && canonicalLoginId) {
@@ -1135,14 +1212,23 @@ router.post(
     });
 
     await logAction(req.user.name, req.user.role, "REGISTER_STUDENT", "Student", studentId, `Enrolled into ${course}`);
+    const delivery = await sendActivationEmail(
+      user,
+      rawToken,
+      "Activate your Hunar student portal account",
+      "activate"
+    );
 
     res.status(201).json({
       success: true,
-      message: `Student registered successfully with Student ID: ${studentId}`,
+      message: delivery.emailSent
+        ? `Student registered with ID ${studentId}; activation email sent to ${student.email}.`
+        : `Student registered with ID ${studentId}, but activation email could not be sent. Copy and share the link securely.`,
       student,
       invitation: {
         token: rawToken,
-        activationUrl: `/activate/${rawToken}`,
+        activationUrl: delivery.activationUrl,
+        emailSent: delivery.emailSent,
         expiresAt
       }
     });
@@ -1204,11 +1290,20 @@ router.post(
     });
 
     await logAction(req.user.name, req.user.role, "GENERATE_INVITATION", "Student", id, `New activation link generated.`);
+    const delivery = await sendActivationEmail(
+      user,
+      rawToken,
+      "Activate your Hunar student portal account",
+      "activate"
+    );
 
     res.json({
       success: true,
-      message: `Account activation invitation generated for ${student.name}.`,
-      invitationUrl: `/activate/${rawToken}`,
+      emailSent: delivery.emailSent,
+      message: delivery.emailSent
+        ? `Account activation link emailed to ${student.email}.`
+        : "Activation link generated, but email could not be sent. Copy and share the link securely.",
+      invitationUrl: delivery.activationUrl,
       token: rawToken,
       expiresAt
     });
@@ -1415,14 +1510,23 @@ router.post(
         staffId,
         `${designation} registered. Assigned Role: "${assignedRoleName}" (${assignedRoleId}).`
       );
+      const delivery = await sendActivationEmail(
+        user,
+        rawToken,
+        "Activate your Hunar staff portal account",
+        "activate"
+      );
 
       res.status(201).json({
         success: true,
-        message: `Staff member registered with Staff ID: ${staffId}`,
+        message: delivery.emailSent
+          ? `Staff member registered with ID ${staffId}; activation email sent to ${staff.email}.`
+          : `Staff member registered with ID ${staffId}, but activation email could not be sent. Copy and share the link securely.`,
         staff,
         invitation: {
           token: rawToken,
-          activationUrl: `/activate/${rawToken}`,
+          activationUrl: delivery.activationUrl,
+          emailSent: delivery.emailSent,
           expiresAt
         }
       });
@@ -1574,11 +1678,20 @@ router.post(
       });
 
       await logAction(req.user.name, req.user.roleName || req.user.role, "GENERATE_INVITATION", "Staff", id, "New staff activation link generated.");
+      const delivery = await sendActivationEmail(
+        user,
+        rawToken,
+        "Activate your Hunar staff portal account",
+        "activate"
+      );
 
       res.json({
         success: true,
-        message: `Account activation invitation generated for ${staff.name}.`,
-        invitationUrl: `/activate/${rawToken}`,
+        emailSent: delivery.emailSent,
+        message: delivery.emailSent
+          ? `Account activation link emailed to ${staff.email}.`
+          : "Activation link generated, but email could not be sent. Copy and share the link securely.",
+        invitationUrl: delivery.activationUrl,
         token: rawToken,
         expiresAt
       });
@@ -1995,80 +2108,124 @@ router.get("/portal/staff", authenticate, requireRole(["admin", "teacher"]), asy
 // ══════════════════════════════════════════════
 // 12. LEADS & INQUIRIES
 // ══════════════════════════════════════════════
-router.get("/leads", async (req, res) => {
+router.get("/leads", authenticate, requirePermission(["inquiries.view", "inquiries.web_requests_view"]), async (req, res) => {
   try {
-    const raw = await fs.readFile(path.join(DATA_DIR, "leads.json"), "utf-8");
-    res.json(JSON.parse(raw));
-  } catch {
-    res.json([]);
+    res.json(await getAllLeads());
+  } catch (error) {
+    console.error("[Get Leads Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to fetch inquiries." });
   }
 });
 
-router.post("/leads", async (req, res) => {
-  const { name, phone, email, course, preferredTiming, message } = req.body;
-  if (!name || !phone) {
+router.post("/leads", inquiryLimiter, async (req, res) => {
+  const { name, phone, email, course, preferredTiming, message } = req.body || {};
+  const leadData = {
+    name: typeof name === "string" ? name.trim() : "",
+    phone: typeof phone === "string" ? phone.trim() : "",
+    email: typeof email === "string" ? email.trim().toLowerCase() : "",
+    course: typeof course === "string" && course.trim() ? course.trim() : "General Inquiry",
+    preferredTiming: typeof preferredTiming === "string" ? preferredTiming.trim() : "",
+    message: typeof message === "string" ? message.trim() : ""
+  };
+  if (!leadData.name || !leadData.phone) {
     return res.status(400).json({ success: false, message: "Name and phone are required." });
   }
+  if (
+    leadData.name.length > 120 ||
+    leadData.phone.length > 40 ||
+    leadData.email.length > 254 ||
+    leadData.course.length > 160 ||
+    leadData.preferredTiming.length > 120 ||
+    leadData.message.length > 2000
+  ) {
+    return res.status(400).json({ success: false, message: "One or more inquiry fields exceed the allowed length." });
+  }
+  if (leadData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(leadData.email)) {
+    return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+  }
 
-  let leads = [];
   try {
-    const raw = await fs.readFile(path.join(DATA_DIR, "leads.json"), "utf-8");
-    leads = JSON.parse(raw);
-  } catch {}
+    const newLead = await createLead({ ...leadData, source: "website" });
+    let emailSent = false;
+    try {
+      await sendEmail({
+        to: process.env.INQUIRY_NOTIFICATION_EMAIL,
+        replyTo: leadData.email || undefined,
+        subject: "New Hunar website inquiry",
+        text: [
+          "A new inquiry was submitted on the Hunar website.",
+          "",
+          `Name: ${leadData.name}`,
+          `Phone: ${leadData.phone}`,
+          `Email: ${leadData.email || "Not provided"}`,
+          `Course: ${leadData.course}`,
+          `Preferred timing: ${leadData.preferredTiming || "Not specified"}`,
+          `Message: ${leadData.message || "No message provided"}`,
+          `Inquiry ID: ${newLead.id}`
+        ].join("\n")
+      });
+      emailSent = true;
+    } catch (emailError) {
+      console.error("[Inquiry Email Error]:", emailError.message);
+    }
+    try {
+      await updateLead(newLead.id, { emailNotificationStatus: emailSent ? "sent" : "failed" });
+    } catch (statusError) {
+      console.error("[Inquiry Email Status Error]:", statusError.message);
+    }
 
-  const newLead = {
-    id: "lead-" + Date.now(),
-    name: name.trim(),
-    phone: phone.trim(),
-    email: email ? email.trim() : "",
-    course: course || "General Inquiry",
-    preferredTiming: preferredTiming || "",
-    message: message ? message.trim() : "",
-    status: "New",
-    createdAt: new Date().toISOString()
-  };
-
-  const updated = [newLead, ...leads];
-  await fs.writeFile(path.join(DATA_DIR, "leads.json"), JSON.stringify(updated, null, 2));
-
-  res.status(201).json({ success: true, message: "Inquiry received.", lead: newLead });
+    res.status(201).json({
+      success: true,
+      emailSent,
+      message: emailSent
+        ? "Inquiry received and saved. The admissions team has been notified."
+        : "Inquiry received and saved, but the admissions email could not be sent. Please contact the institute directly.",
+      lead: newLead
+    });
+  } catch (error) {
+    console.error("[Create Lead Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to save your inquiry. Please try again." });
+  }
 });
 
-router.put("/leads/:id", async (req, res) => {
+router.put("/leads/:id", authenticate, requirePermission(["inquiries.status_update", "inquiries.edit"]), async (req, res) => {
   const { id } = req.params;
   const { status, notes } = req.body;
-  let leads = [];
-  try {
-    const raw = await fs.readFile(path.join(DATA_DIR, "leads.json"), "utf-8");
-    leads = JSON.parse(raw);
-  } catch {}
-
-  let found = false;
-  const updated = leads.map((l) => {
-    if (l.id === id) {
-      found = true;
-      return { ...l, status: status || l.status, notes: notes !== undefined ? notes : l.notes };
+  const updates = {};
+  if (status !== undefined) {
+    if (!["New", "Contacted", "Interested", "Dropped"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid inquiry status." });
     }
-    return l;
-  });
-
-  if (!found) return res.status(404).json({ success: false, message: "Lead not found." });
-  await fs.writeFile(path.join(DATA_DIR, "leads.json"), JSON.stringify(updated, null, 2));
-  const updatedLead = updated.find((l) => l.id === id);
-  res.json({ success: true, message: "Lead updated.", lead: updatedLead });
+    updates.status = status;
+  }
+  if (notes !== undefined) {
+    if (typeof notes !== "string" || notes.length > 2000) {
+      return res.status(400).json({ success: false, message: "Inquiry notes must be text of at most 2,000 characters." });
+    }
+    updates.notes = notes.trim();
+  }
+  if (!Object.keys(updates).length) {
+    return res.status(400).json({ success: false, message: "No inquiry updates were provided." });
+  }
+  try {
+    const updatedLead = await updateLead(id, updates);
+    if (!updatedLead) return res.status(404).json({ success: false, message: "Lead not found." });
+    res.json({ success: true, message: "Lead updated.", lead: updatedLead });
+  } catch (error) {
+    console.error("[Update Lead Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to update the inquiry." });
+  }
 });
 
-router.delete("/leads/:id", async (req, res) => {
+router.delete("/leads/:id", authenticate, requirePermission("inquiries.edit"), async (req, res) => {
   const { id } = req.params;
-  let leads = [];
   try {
-    const raw = await fs.readFile(path.join(DATA_DIR, "leads.json"), "utf-8");
-    leads = JSON.parse(raw);
-  } catch {}
-
-  const filtered = leads.filter((l) => l.id !== id);
-  await fs.writeFile(path.join(DATA_DIR, "leads.json"), JSON.stringify(filtered, null, 2));
-  res.json({ success: true, message: "Lead deleted." });
+    if (!await deleteLead(id)) return res.status(404).json({ success: false, message: "Lead not found." });
+    res.json({ success: true, message: "Lead deleted." });
+  } catch (error) {
+    console.error("[Delete Lead Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to delete the inquiry." });
+  }
 });
 
 // ══════════════════════════════════════════════
@@ -2126,6 +2283,11 @@ router.post(
       if (!studentId || !studentName || !totalFee) {
         return res.status(400).json({ success: false, message: "Student ID, name, and total fee are required." });
       }
+      if (!Number.isFinite(Number(totalFee)) || Number(totalFee) <= 0 ||
+        !Number.isFinite(Number(paidAmount ?? 0)) || Number(paidAmount ?? 0) < 0 ||
+        Number(paidAmount ?? 0) > Number(totalFee)) {
+        return res.status(400).json({ success: false, message: "Fee must be positive and paid amount must be between zero and the total fee." });
+      }
       const record = await createOrUpdateFeeRecord({ studentId, studentName, course: course || "Standard Course", totalFee, paidAmount: paidAmount || 0, dueDate });
       await logAction(req.user.name, req.user.roleName || req.user.role, "UPDATE_FEES", "FeeRecord", studentId, `Recorded payment: ₹${paidAmount}`);
       res.status(201).json({ success: true, message: "Fee record saved successfully.", record });
@@ -2143,6 +2305,11 @@ router.put(
     try {
       const { studentId, studentName, course, totalFee, paidAmount, dueDate } = req.body;
       const targetStudentId = studentId || req.params.id;
+      if (!studentName || !Number.isFinite(Number(totalFee)) || Number(totalFee) <= 0 ||
+        !Number.isFinite(Number(paidAmount ?? 0)) || Number(paidAmount ?? 0) < 0 ||
+        Number(paidAmount ?? 0) > Number(totalFee)) {
+        return res.status(400).json({ success: false, message: "Student name, a positive fee, and a paid amount within the fee total are required." });
+      }
       const record = await createOrUpdateFeeRecord({ studentId: targetStudentId, studentName, course: course || "Standard Course", totalFee, paidAmount: paidAmount !== undefined ? paidAmount : 0, dueDate });
       await logAction(req.user.name, req.user.roleName || req.user.role, "UPDATE_FEES", "FeeRecord", targetStudentId, `Edited payment record: ₹${paidAmount}/${totalFee}`);
       res.json({ success: true, message: "Fee record updated successfully.", record });
@@ -2247,11 +2414,7 @@ router.get(
           csv += `"${s.staffId}","${s.name}","${s.email}","${s.phone || ''}","${s.designation}","${s.department}","${s.role}","${s.roleName || ''}","${s.employmentStatus}"\n`;
         });
       } else if (type === "leads") {
-        let leads = [];
-        try {
-          const raw = await fs.readFile(path.join(DATA_DIR, "leads.json"), "utf-8");
-          leads = JSON.parse(raw);
-        } catch {}
+        const leads = await getAllLeads();
         csv = "ID,Name,Phone,Email,Course,Preferred Timing,Status,Created At\n";
         leads.forEach((l) => {
           csv += `"${l.id}","${l.name}","${l.phone}","${l.email}","${l.course}","${l.preferredTiming}","${l.status}","${l.createdAt}"\n`;
@@ -2280,10 +2443,11 @@ router.get(
 // ══════════════════════════════════════════════
 // 17. PASSWORD RECOVERY FLOW
 // ══════════════════════════════════════════════
-router.post("/auth/forgot-password", async (req, res) => {
+router.post("/auth/forgot-password", passwordResetLimiter, async (req, res) => {
   try {
-    const rawIdentifier = (req.body?.email || req.body?.loginId || req.body?.identifier || "").trim();
-    if (!rawIdentifier) {
+    const body = req.body || {};
+    const rawIdentifier = String(body.email || body.loginId || body.identifier || "").trim();
+    if (!rawIdentifier || rawIdentifier.length > 254) {
       return res.status(400).json({ success: false, message: "Please enter your Login ID or registered Email." });
     }
 
@@ -2295,23 +2459,30 @@ router.post("/auth/forgot-password", async (req, res) => {
         invitationTokenHash: tokenHash,
         invitationExpires: expiresAt
       });
-      const resetLink = `/activate/${rawToken}`;
+      const resetLink = buildFrontendUrl(`/activate/${encodeURIComponent(rawToken)}`);
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: "Reset your Hunar portal password",
+          text: `Hello ${user.name},\n\nUse this secure, one-time link to set a new password for your Hunar portal account:\n${resetLink}\n\nThis link expires in ${process.env.INVITATION_EXPIRY_HOURS || 72} hours. If you did not request a password reset, you can ignore this email.`
+        });
+      } catch (emailError) {
+        console.error("[Password Reset Email Error]:", emailError.name);
+        try {
+          await updateUser(user._id || user.id, {
+            invitationTokenHash: null,
+            invitationExpires: null
+          });
+        } catch (cleanupError) {
+          console.error("[Password Reset Cleanup Error]:", cleanupError.name);
+        }
+      }
       await logAction("System", "System", "REQUEST_PASSWORD_RESET", "User", user.assignedId || user.email);
-
-      return res.json({
-        success: true,
-        found: true,
-        message: `Password reset link created for ${user.name} (${user.assignedId || user.loginId}).`,
-        resetUrl: resetLink,
-        loginId: user.assignedId || user.loginId,
-        userName: user.name
-      });
     }
 
-    return res.status(404).json({
-      success: false,
-      found: false,
-      message: `No account found with identifier "${rawIdentifier}". Please verify your Login ID or contact the administration desk.`
+    return res.json({
+      success: true,
+      message: "If an account matches those details, reset instructions will be sent to its registered email address."
     });
   } catch (error) {
     console.error("[Forgot Password Error]:", error);

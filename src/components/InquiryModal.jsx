@@ -16,6 +16,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [emailWarning, setEmailWarning] = useState("");
 
   useEffect(() => {
     if (preselectedCourseTitle) {
@@ -34,6 +35,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
       document.body.style.overflow = "unset";
       setSubmitted(false);
       setErrorMsg("");
+      setEmailWarning("");
     }
     return () => {
       document.body.style.overflow = "unset";
@@ -71,6 +73,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your inquiry. Please try again.");
       }
+      setEmailWarning(result.emailSent ? "" : result.message);
       setSubmitted(true);
     } catch (err) {
       console.error("Inquiry submission failed:", err);
@@ -174,6 +177,11 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
               within 24 hours to confirm your free demo for{" "}
               <strong>{formData.course || "your chosen program"}</strong>.
             </p>
+            {emailWarning && (
+              <p role="status" style={{ color: "var(--color-danger)", fontSize: "0.85rem", marginBottom: "16px" }}>
+                {emailWarning}
+              </p>
+            )}
 
             <div style={{
               background: "var(--color-surface-secondary)",
