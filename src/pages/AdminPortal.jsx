@@ -1289,7 +1289,7 @@ export default function AdminPortal() {
       items: [
         { id: "staff", label: "All Staff", icon: Briefcase, count: staff.length, perms: ["staff.list_view", "staff.profile_view"] },
         { id: "add_staff", label: "Add Staff", icon: Plus, isAction: true, perms: ["staff.add"] },
-        { id: "staff_invitations", label: "Staff Invitations", icon: Mail, perms: ["staff.add", "staff.edit"] },
+        { id: "staff_invitations", label: "Staff Invitations", icon: Mail, count: users.filter((user) => user.role !== "student" && user.status === "pending_activation").length, perms: ["staff.add", "staff.edit"] },
         { id: "departments", label: "Departments", icon: Layers, perms: ["staff.dept_assign", "staff.edit"] },
         { id: "teaching_assignments", label: "Teaching Assignments", icon: UserCheck, perms: ["batches.teachers_assign", "staff.schedules_manage"] },
         { id: "timetable", label: "Staff Timetable", icon: Calendar, perms: ["timetable.institute_view", "timetable.personal_view", "staff.schedules_view"] }
@@ -2868,7 +2868,7 @@ export default function AdminPortal() {
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 4: ACCOUNT INVITATIONS & ACTIVATION TRACKER */}
           {/* ══════════════════════════════════════════════ */}
-          {activeTab === "invitations" && (
+          {(activeTab === "invitations" || activeTab === "staff_invitations") && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
                 style={{
@@ -2878,10 +2878,11 @@ export default function AdminPortal() {
                   border: "1px solid var(--color-border)"
                 }}
               >
-                <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 6px 0" }}>Single-Use Invitation Tokens</h3>
+                <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 6px 0" }}>
+                  {activeTab === "staff_invitations" ? "Staff Invitations" : "Student Invitations"}
+                </h3>
                 <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
-                  Cryptographically hashed, single-use invitation tokens created when an administrator registers a student or staff member.
-                  Users open the invitation link to set their own password and activate their portal account.
+                  View pending account activations and generate a fresh single-use invitation link when needed.
                 </p>
               </div>
 
@@ -2896,7 +2897,7 @@ export default function AdminPortal() {
                 <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.85rem" }}>
                   <thead>
                     <tr style={{ borderBottom: "1px solid var(--color-border)", backgroundColor: "rgba(0,0,0,0.02)" }}>
-                      <th style={{ padding: "14px 18px", fontWeight: 700, color: "var(--color-text-secondary)" }}>Assigned ID</th>
+                      <th style={{ padding: "14px 18px", fontWeight: 700, color: "var(--color-text-secondary)" }}>{activeTab === "staff_invitations" ? "Staff ID" : "Student ID"}</th>
                       <th style={{ padding: "14px 18px", fontWeight: 700, color: "var(--color-text-secondary)" }}>Recipient</th>
                       <th style={{ padding: "14px 18px", fontWeight: 700, color: "var(--color-text-secondary)" }}>Type</th>
                       <th style={{ padding: "14px 18px", fontWeight: 700, color: "var(--color-text-secondary)" }}>Activation Status</th>
@@ -2904,7 +2905,7 @@ export default function AdminPortal() {
                     </tr>
                   </thead>
                   <tbody>
-                    {students
+                    {activeTab === "invitations" && students
                       .filter((s) => s.enrollmentStatus === "pending_activation")
                       .map((s) => (
                         <tr key={s.studentId} style={{ borderBottom: "1px solid var(--color-border)" }}>
@@ -2951,10 +2952,64 @@ export default function AdminPortal() {
                           </td>
                         </tr>
                       ))}
-                    {students.filter((s) => s.enrollmentStatus === "pending_activation").length === 0 && (
+                    {activeTab === "staff_invitations" && staff
+                      .filter((member) => users.some((user) =>
+                        user.assignedId === member.staffId && user.status === "pending_activation"
+                      ))
+                      .map((member) => (
+                        <tr key={member.staffId} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                          <td style={{ padding: "14px 18px", fontFamily: "monospace", fontWeight: 700, color: "var(--color-brand)" }}>
+                            {member.staffId}
+                          </td>
+                          <td style={{ padding: "14px 18px" }}>
+                            <div style={{ fontWeight: 700 }}>{member.name}</div>
+                            <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>{member.email}</div>
+                          </td>
+                          <td style={{ padding: "14px 18px" }}>
+                            <span style={{ fontSize: "0.75rem", fontWeight: 600 }}>Staff Invitation</span>
+                          </td>
+                          <td style={{ padding: "14px 18px" }}>
+                            <span
+                              style={{
+                                padding: "4px 9px",
+                                borderRadius: "12px",
+                                fontSize: "0.72rem",
+                                fontWeight: 700,
+                                backgroundColor: "rgba(245, 158, 11, 0.15)",
+                                color: "#F59E0B"
+                              }}
+                            >
+                              Pending Password Setup
+                            </span>
+                          </td>
+                          <td style={{ padding: "14px 18px", textAlign: "right" }}>
+                            <button
+                              type="button"
+                              onClick={() => handleResendStaffInvitation(member.staffId, member.name)}
+                              style={{
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                backgroundColor: "var(--color-brand)",
+                                color: "#191A17",
+                                border: "none",
+                                fontWeight: 700,
+                                fontSize: "0.78rem",
+                                cursor: "pointer"
+                              }}
+                            >
+                              Generate Activation Link
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    {(activeTab === "invitations"
+                      ? students.filter((s) => s.enrollmentStatus === "pending_activation").length
+                      : staff.filter((member) => users.some((user) =>
+                          user.assignedId === member.staffId && user.status === "pending_activation"
+                        )).length) === 0 && (
                       <tr>
                         <td colSpan={5} style={{ padding: "40px", textAlign: "center", color: "var(--color-text-secondary)" }}>
-                          No pending invitations. All registered accounts are activated!
+                          No pending {activeTab === "staff_invitations" ? "staff" : "student"} invitations.
                         </td>
                       </tr>
                     )}
@@ -4406,10 +4461,14 @@ export default function AdminPortal() {
                   }}
                 >
                   <option value="">No batch selected</option>
-                  {modalType === "edit_student" && studentForm.batch && !batches.some((b) => b.name === studentForm.batch) && (
+                  {modalType === "edit_student" && studentForm.batch &&
+                    studentForm.batch.trim().toLowerCase() !== "no batch selected" &&
+                    !batches.some((b) => b.name === studentForm.batch) && (
                     <option value={studentForm.batch}>{studentForm.batch} (Current)</option>
                   )}
-                  {batches.map((b) => (
+                  {batches
+                    .filter((b) => b.name?.trim() && b.name.trim().toLowerCase() !== "no batch selected")
+                    .map((b) => (
                     <option key={b._id || b.name} value={b.name}>
                       {b.name} ({b.timing})
                     </option>

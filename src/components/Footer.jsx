@@ -194,41 +194,26 @@ export default function Footer() {
                 { to: "/testimonials", label: "Testimonials" },
                 { to: "/faq", label: "FAQ" },
                 { to: "/blog", label: "Articles" },
+                { to: "/contact", label: "Contact" },
+                { to: "/enroll", label: "Enroll" },
                 { to: "/verify", label: "Verify Certificate" },
-                { to: "/admin", label: "Admin Portal", external: true }
+                { to: "/admin", label: "Admin Portal" }
               ].map((item) => (
                 <li key={item.to}>
-                  {item.external ? (
-                    <a
-                      href={item.to}
-                      style={{
-                        color: "var(--color-text-secondary)",
-                        fontSize: "0.88rem",
-                        display: "inline-block",
-                        padding: "4px 0",
-                        transition: "color var(--transition-fast)"
-                      }}
-                      onMouseEnter={(e) => (e.target.style.color = "var(--color-brand-text)")}
-                      onMouseLeave={(e) => (e.target.style.color = "var(--color-text-secondary)")}
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={item.to}
-                      style={{
-                        color: "var(--color-text-secondary)",
-                        fontSize: "0.88rem",
-                        display: "inline-block",
-                        padding: "4px 0",
-                        transition: "color var(--transition-fast)"
-                      }}
-                      onMouseEnter={(e) => (e.target.style.color = "var(--color-brand-text)")}
-                      onMouseLeave={(e) => (e.target.style.color = "var(--color-text-secondary)")}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={item.to}
+                    style={{
+                      color: "var(--color-text-secondary)",
+                      fontSize: "0.88rem",
+                      display: "inline-block",
+                      padding: "4px 0",
+                      transition: "color var(--transition-fast)"
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-brand-text)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-secondary)")}
+                  >
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>

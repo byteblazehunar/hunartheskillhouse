@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Globe,
   FileText,
@@ -1155,16 +1156,30 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
               {[
                 { label: "Home", url: "/", section: "Main Landing", active: true },
                 { label: "All Programs", url: "/courses", section: "Course Directory", active: true },
+                { label: "AI Workshop", url: "/workshop", section: "Featured Program", active: true },
                 { label: "About Us", url: "/about", section: "Campus & Leadership", active: true },
                 { label: "Contact & Campus", url: "/contact", section: "Admissions & Map", active: true },
                 { label: "Frequently Asked Questions", url: "/faq", section: "Knowledge Base", active: true },
                 { label: "Student Reviews", url: "/testimonials", section: "Success Stories", active: true },
+                { label: "Articles", url: "/blog", section: "Learning Resources", active: true },
+                { label: "Verify Certificate", url: "/verify", section: "Student Services", active: true },
+                { label: "Enrollment", url: "/enroll", section: "Admissions", active: true },
                 { label: "Student & Staff Login", url: "/login", section: "Institutional Auth", active: true },
-                { label: "Account Activation", url: "/activate", section: "Single-Use Onboarding", active: true }
+                { label: "Privacy Policy", url: "/page/privacy-policy", section: "Legal", active: true },
+                { label: "Terms & Conditions", url: "/page/terms-conditions", section: "Legal", active: true },
+                { label: "Account Activation", url: "/activate/:token", section: "Single-Use Onboarding", active: true }
               ].map((item, idx) => (
                 <tr key={idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "14px 18px", fontWeight: 700 }}>{item.label}</td>
-                  <td style={{ padding: "14px 18px", fontFamily: "monospace", color: "var(--color-brand)" }}>{item.url}</td>
+                  <td style={{ padding: "14px 18px", fontFamily: "monospace", color: "var(--color-brand)" }}>
+                    {item.url.includes(":") ? (
+                      item.url
+                    ) : (
+                      <Link to={item.url} style={{ textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                        {item.url}
+                      </Link>
+                    )}
+                  </td>
                   <td style={{ padding: "14px 18px", color: "var(--color-text-secondary)" }}>{item.section}</td>
                   <td style={{ padding: "14px 18px", textAlign: "center" }}>
                     <span style={{ padding: "3px 8px", borderRadius: "10px", backgroundColor: "rgba(16, 185, 129, 0.15)", color: "#10B981", fontSize: "0.72rem", fontWeight: 700 }}>

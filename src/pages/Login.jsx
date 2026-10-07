@@ -290,13 +290,13 @@ export default function Login() {
                 System control & audit center
               </span>
             </div>
-            <a
-              href="/admin"
+            <Link
+              to="/admin"
               className="btn btn-primary btn-sm"
               style={{ padding: "5px 10px", fontSize: "0.76rem", whiteSpace: "nowrap" }}
             >
               Admin →
-            </a>
+            </Link>
           </div>
         )}
 

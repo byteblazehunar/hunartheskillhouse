@@ -52,6 +52,7 @@ export default function Navbar({ onOpenDemo }) {
     { label: "Courses", path: "/courses" },
     { label: "AI Workshop", path: "/workshop" },
     { label: "About", path: "/about" },
+    { label: "Testimonials", path: "/testimonials" },
     { label: "FAQ", path: "/faq" },
     { label: "Blog", path: "/blog" },
     { label: "Verify", path: "/verify" },
@@ -60,7 +61,7 @@ export default function Navbar({ onOpenDemo }) {
 
   const isActive = (path) => {
     if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   return (
