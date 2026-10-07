@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { test } from "node:test";
+
+const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
+assert.match(vercelConfig.rewrites[0].source, /\(\?!api\\?\//);
 
 process.env.JWT_SECRET ||= "integration-test-secret";
 process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
@@ -26,6 +30,14 @@ test("Express serves the API and client-side portal routes", async (t) => {
 
   const privateLeadsResponse = await fetch(`${baseUrl}/api/leads`);
   assert.equal(privateLeadsResponse.status, 401);
+
+  const invalidResetResponse = await fetch(`${baseUrl}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier: "" })
+  });
+  assert.equal(invalidResetResponse.status, 400);
+  assert.match(invalidResetResponse.headers.get("content-type"), /application\/json/);
 
   for (const endpoint of ["/api/batches", "/api/timetable", "/api/announcements"]) {
     const response = await fetch(`${baseUrl}${endpoint}`);
@@ -75,6 +87,12 @@ test("Express serves the API and client-side portal routes", async (t) => {
       body: JSON.stringify({ loginId: "x".repeat(255), password: "WrongPassword123" })
     });
     if (attempt === 10) assert.equal(loginResponse.status, 429);
-    else assert.equal(loginResponse.status, 400);
+    else {
+      assert.equal(loginResponse.status, 400);
+      if (attempt === 0) {
+        assert.match(loginResponse.headers.get("content-type"), /application\/json/);
+        assert.equal((await loginResponse.json()).error, "MISSING_CREDENTIALS");
+      }
+    }
   }
 });
