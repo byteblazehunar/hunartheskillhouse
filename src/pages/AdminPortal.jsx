@@ -85,6 +85,7 @@ export default function AdminPortal() {
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
   const [leads, setLeads] = useState([]);
+  const [leadNotes, setLeadNotes] = useState({});
   const [announcements, setAnnouncements] = useState([]);
   const [timetable, setTimetable] = useState([]);
   const [fees, setFees] = useState([]);
@@ -1146,20 +1147,26 @@ export default function AdminPortal() {
   };
 
   // 11. Update Lead Status
-  const handleUpdateLeadStatus = async (id, status) => {
+  const handleUpdateLead = async (id, updates) => {
     try {
       const res = await fetch(`/api/leads/${id}`, {
         method: "PUT",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
+        body: JSON.stringify(updates)
       });
-      if (!res.ok) throw new Error("Failed to update inquiry status");
-      setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
-      showToast(`Inquiry marked as ${status}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to update inquiry.");
+      setLeads((prev) => prev.map((lead) =>
+        String(lead._id || lead.id) === String(id) ? { ...lead, ...updates } : lead
+      ));
+      showToast(updates.status ? `Inquiry marked as ${updates.status}` : "Inquiry notes saved.");
     } catch (err) {
       showToast(err.message, "error");
     }
   };
+
+  const handleUpdateLeadStatus = (id, status) => handleUpdateLead(id, { status });
+  const handleSaveLeadNotes = (id) => handleUpdateLead(id, { notes: leadNotes[id] || "" });
 
   // 12. Submit Batch Attendance
   const handleSaveAttendance = async () => {
@@ -3827,7 +3834,7 @@ export default function AdminPortal() {
                   </p>
                 </div>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  {["all", "New", "Contacted", "Enrolled"].map((status) => (
+                  {["all", "New", "Contacted", "Interested", "Enrolled", "Dropped"].map((status) => (
                     <button
                       key={status}
                       onClick={() => setLeadStatusFilter(status)}
@@ -3867,14 +3874,29 @@ export default function AdminPortal() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredLeads.map((l) => (
-                      <tr key={l.id} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                    {filteredLeads.map((l) => {
+                      const leadId = String(l._id || l.id);
+                      return (
+                      <tr key={leadId} style={{ borderBottom: "1px solid var(--color-border)" }}>
                         <td style={{ padding: "14px 18px" }}>
                           <div style={{ fontWeight: 700 }}>{l.name}</div>
-                          <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>{l.phone}</div>
-                          {l.email && <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>{l.email}</div>}
+                          <a href={`tel:${l.phone}`} style={{ display: "block", fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>{l.phone}</a>
+                          {l.email && <a href={`mailto:${l.email}`} style={{ display: "block", fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>{l.email}</a>}
+                          {l.createdAt && <div style={{ fontSize: "0.72rem", color: "var(--color-text-muted)", marginTop: "4px" }}>{new Date(l.createdAt).toLocaleDateString()}</div>}
                         </td>
-                        <td style={{ padding: "14px 18px", fontWeight: 600 }}>{l.course}</td>
+                        <td style={{ padding: "14px 18px", fontWeight: 600 }}>
+                          <div>{l.course || "Not specified"}</div>
+                          {l.message && <div style={{ maxWidth: "280px", marginTop: "6px", color: "var(--color-text-secondary)", fontSize: "0.78rem", fontWeight: 400, whiteSpace: "pre-wrap" }}>{l.message}</div>}
+                          <textarea
+                            aria-label={`Follow-up notes for ${l.name}`}
+                            maxLength={2000}
+                            placeholder="Add follow-up notes"
+                            value={leadNotes[leadId] ?? l.notes ?? ""}
+                            onChange={(e) => setLeadNotes((previous) => ({ ...previous, [leadId]: e.target.value }))}
+                            style={{ display: "block", width: "100%", minWidth: "180px", marginTop: "8px", padding: "7px", borderRadius: "6px", border: "1px solid var(--color-border)", background: "var(--color-background)", color: "var(--color-text-primary)", font: "inherit" }}
+                          />
+                          <button type="button" className="btn btn-outline" onClick={() => handleSaveLeadNotes(leadId)} style={{ marginTop: "6px", padding: "5px 9px", fontSize: "0.72rem" }}>Save notes</button>
+                        </td>
                         <td style={{ padding: "14px 18px", color: "var(--color-text-secondary)" }}>{l.preferredTiming}</td>
                         <td style={{ padding: "14px 18px" }}>
                           <span
@@ -3904,7 +3926,7 @@ export default function AdminPortal() {
                         <td style={{ padding: "14px 18px", textAlign: "right" }}>
                           <select
                             value={l.status}
-                            onChange={(e) => handleUpdateLeadStatus(l.id, e.target.value)}
+                            onChange={(e) => handleUpdateLeadStatus(leadId, e.target.value)}
                             style={{
                               padding: "5px 10px",
                               borderRadius: "6px",
@@ -3916,12 +3938,16 @@ export default function AdminPortal() {
                           >
                             <option value="New">New</option>
                             <option value="Contacted">Contacted</option>
+                            <option value="Interested">Interested</option>
                             <option value="Enrolled">Enrolled</option>
-                            <option value="Closed">Closed</option>
+                            <option value="Dropped">Dropped</option>
                           </select>
                         </td>
                       </tr>
-                    ))}
+                    );})}
+                    {filteredLeads.length === 0 && (
+                      <tr><td colSpan={5} style={{ padding: "24px", textAlign: "center", color: "var(--color-text-secondary)" }}>No inquiries found for this status.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>

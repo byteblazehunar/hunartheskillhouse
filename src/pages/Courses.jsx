@@ -1,39 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, ArrowRight } from "lucide-react";
-import { coursesData, courseCategories } from "../data/coursesData";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 import { siteConfig } from "../data/siteConfig";
 import CourseCard from "../components/CourseCard";
 
 export default function Courses({ onOpenDemo }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [allCourses, setAllCourses] = useState(coursesData);
-
-  useEffect(() => {
-    fetch("/api/courses")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data && Array.isArray(data) && data.length > 0) {
-          // Merge API courses ensuring required fields for CourseCard
-          const apiCourses = data.map((c, idx) => ({
-            id: c._id || c.id || `c-${idx}`,
-            title: c.title,
-            slug: c.slug || c.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-            category: c.category || "Full Stack Development",
-            duration: c.duration || "6 Months",
-            shortDesc: c.description || c.shortDesc || "Comprehensive institutional curriculum at Hunar.",
-            mode: c.mode || "Classroom + Lab",
-            rating: 4.9,
-            reviewsCount: 35,
-            tools: c.tools || ["React", "Node.js", "MongoDB", "Tailwind CSS"],
-            badge: c.featured ? "Featured Track" : null
-          }));
-          setAllCourses(apiCourses);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const { courses: allCourses } = usePublicCatalog();
+  const courseCategories = useMemo(
+    () => ["All", ...new Set(allCourses.map((course) => course.category).filter(Boolean))],
+    [allCourses]
+  );
 
   const filteredCourses = allCourses.filter((course) => {
     const matchesCategory =

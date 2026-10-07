@@ -15,8 +15,18 @@ import {
 import { siteConfig } from "../data/siteConfig";
 import { ScrollReveal, ScrollItem } from "../components/ScrollReveal";
 import { motion } from "framer-motion";
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function About({ onOpenDemo }) {
+  const { content } = useSiteContent();
+  const about = content.about || {};
+  const founder = content.founder || {};
+  const faculty = content.faculty || {};
+  const contact = content.contact || {};
+  const facultyDomains = (faculty.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+    .split(",")
+    .map((domain) => domain.trim())
+    .filter(Boolean);
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
       {/* ═══ HERO ══════════════════════════════════════════════════════ */}
@@ -37,8 +47,7 @@ export default function About({ onOpenDemo }) {
           </div>
 
           <h1 style={{ fontSize: "clamp(2.2rem, 4vw, 3.4rem)", fontWeight: "700", marginBottom: "18px" }}>
-            Mullanpur's First AI-Powered, <br />
-            Job-Ready Skill Institute
+            {about.heading || "Mullanpur's First AI-Powered, Job-Ready Skill Institute"}
           </h1>
 
           <p style={{
@@ -47,9 +56,10 @@ export default function About({ onOpenDemo }) {
             maxWidth: "760px",
             lineHeight: "1.8"
           }}>
-            Hunar – The Skill House is an institutional skill development center powered by Byteblaze Technologies.
-            Founded with a singular mission: bridge the divide between textbook theory and actual industry execution
-            through individual workstations, live ad budgets, and daily mentor guidance.
+            {about.description || "Hunar – The Skill House is an institutional skill development center powered by Byteblaze Technologies. Founded with a singular mission: bridge the divide between textbook theory and actual industry execution through individual workstations, live ad budgets, and daily mentor guidance."}
+          </p>
+          <p style={{ marginTop: "12px", color: "var(--color-text-muted)", fontSize: "0.88rem" }}>
+            Established {about.establishedYear || "2024"} · {about.campus || contact.address || siteConfig.location}
           </p>
         </div>
       </section>
@@ -115,13 +125,13 @@ export default function About({ onOpenDemo }) {
                 Our Genesis & Mission
               </div>
               <h2 style={{ fontSize: "clamp(1.8rem, 3vw, 2.5rem)", marginBottom: "20px" }}>
-                Closing the Practical Skills Gap in Punjab
+                {about.heading || "Closing the Practical Skills Gap in Punjab"}
               </h2>
               <p style={{ fontSize: "1.02rem", color: "var(--color-text-secondary)", lineHeight: "1.8", marginBottom: "16px" }}>
-                For decades, students in regional centers outside major metro hubs were faced with a frustrating dilemma: travel long distances to metropolitan institutes, or purchase pre-recorded online courses that offer zero accountability and no real feedback.
+                {about.mission || "For decades, students in regional centers outside major metro hubs were faced with a frustrating dilemma: travel long distances to metropolitan institutes, or purchase pre-recorded online courses that offer zero accountability and no real feedback."}
               </p>
               <p style={{ fontSize: "1.02rem", color: "var(--color-text-secondary)", lineHeight: "1.8", marginBottom: "24px" }}>
-                Hunar was established right on Ferozpur Road in Mullanpur Dakha, Ludhiana, to deliver world-class, production-grade training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios.
+                {about.vision || "Hunar was established right on Ferozpur Road in Mullanpur Dakha, Ludhiana, to deliver world-class, production-grade training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios."}
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "28px" }}>
@@ -280,10 +290,10 @@ export default function About({ onOpenDemo }) {
                 }}>
                   <div>
                     <div style={{ fontSize: "0.95rem", fontWeight: "700", color: "#F5F3E9" }}>
-                      Gurlove Malhi
+                      {founder.name || "Gurlove Malhi"}
                     </div>
                     <div style={{ fontSize: "0.75rem", color: "var(--color-brand)", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      Founder &amp; Institutional Director
+                      {founder.title || "Founder & Institutional Director"}
                     </div>
                   </div>
                   <div style={{
@@ -291,7 +301,7 @@ export default function About({ onOpenDemo }) {
                     color: "rgba(245, 243, 233, 0.6)",
                     textAlign: "right"
                   }}>
-                    Mullanpur Dakha
+                    {founder.location || "Mullanpur Dakha"}
                   </div>
                 </div>
               </div>
@@ -313,16 +323,16 @@ export default function About({ onOpenDemo }) {
                 lineHeight: "1.2",
                 letterSpacing: "-0.02em"
               }}>
-                Meet Gurlove Malhi
+                Meet {founder.name || "Gurlove Malhi"}
               </h2>
               <div style={{ fontSize: "0.95rem", color: "var(--color-brand-text)", fontWeight: "600", marginBottom: "20px" }}>
-                Founder, Hunar The Skill House
+                {founder.title || "Founder"}, {founder.organization || "Hunar The Skill House"}
               </div>
 
               {/* Factual Institutional Biography */}
               <div style={{ color: "var(--color-text-secondary)", fontSize: "1.02rem", lineHeight: "1.8", marginBottom: "24px" }}>
                 <p style={{ marginBottom: "14px" }}>
-                  Gurlove Malhi founded Hunar The Skill House with a commitment to making world-class, production-grade technical training directly accessible to learners in Mullanpur Dakha and surrounding regions of Punjab.
+                  {founder.experience || "Gurlove Malhi founded Hunar The Skill House with a commitment to making world-class, production-grade technical training directly accessible to learners in Mullanpur Dakha and surrounding regions of Punjab."}
                 </p>
                 <p style={{ marginBottom: "14px" }}>
                   Recognizing that traditional institutes often focus on rote memorization while online tutorials lack accountability, he partnered with Byteblaze Technologies to engineer an institutional curriculum anchored entirely in practical workstation execution, live advertising budgets, and daily desk mentorship.
@@ -350,15 +360,7 @@ export default function About({ onOpenDemo }) {
                   fontWeight: "500",
                   fontStyle: "normal"
                 }}>
-                  "When we founded Hunar The Skill House, powered by Byteblaze Technologies, our objective was straightforward: remove the academic pretense and teach students what modern industries and businesses actually pay for.
-                </p>
-                <p style={{
-                  fontSize: "0.98rem",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: "1.75",
-                  margin: 0
-                }}>
-                  A student who has managed a live ad campaign with real funds, deployed full-stack web applications to cloud servers, or integrated modern artificial intelligence into business workflows is vastly more valuable to employers than someone holding twenty generic certificates. That is the standard we uphold every day at Hunar."
+                  “{founder.quote || "When we founded Hunar The Skill House, powered by Byteblaze Technologies, our objective was straightforward: remove the academic pretense and teach students what modern industries and businesses actually pay for."}”
                 </p>
               </div>
 
@@ -381,7 +383,7 @@ export default function About({ onOpenDemo }) {
                     fontWeight: "700",
                     lineHeight: "1.2"
                   }}>
-                    Gurlove Malhi
+                    {founder.name || "Gurlove Malhi"}
                   </div>
                   <div style={{
                     fontSize: "0.78rem",
@@ -390,7 +392,7 @@ export default function About({ onOpenDemo }) {
                     letterSpacing: "0.06em",
                     marginTop: "2px"
                   }}>
-                    Founder &amp; Institutional Director
+                    {founder.title || "Founder & Institutional Director"}
                   </div>
                 </div>
 
@@ -465,14 +467,14 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  PS
+                  {(faculty.leadInstructor || "Paramjit Singh").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    Paramjit Singh
+                    {faculty.leadInstructor || "Paramjit Singh"}
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
-                    Teacher
+                    {faculty.title || "Teacher"}
                   </div>
                 </div>
               </div>
@@ -482,15 +484,11 @@ export default function About({ onOpenDemo }) {
                   Teaches:
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                  <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.8rem", padding: "4px 12px" }}>
-                    Web Development
-                  </span>
-                  <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.8rem", padding: "4px 12px" }}>
-                    Artificial Intelligence (AI)
-                  </span>
-                  <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.8rem", padding: "4px 12px" }}>
-                    Digital Marketing
-                  </span>
+                  {facultyDomains.map((domain) => (
+                    <span key={domain} className="badge-pill badge-pill-brand" style={{ fontSize: "0.8rem", padding: "4px 12px" }}>
+                      {domain}
+                    </span>
+                  ))}
                 </div>
               </div>
 
@@ -501,7 +499,7 @@ export default function About({ onOpenDemo }) {
                 marginBottom: "20px",
                 flex: 1
               }}>
-                Leads curriculum delivery across full-stack web engineering, practical AI automation workflows, and performance-based digital marketing campaigns with real client ad budgets.
+                {faculty.pedagogy || "Leads curriculum delivery across full-stack web engineering, practical AI automation workflows, and performance-based digital marketing campaigns with real client ad budgets."}
               </p>
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -687,7 +685,7 @@ export default function About({ onOpenDemo }) {
                 Experience the Lab in Person
               </h3>
               <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem", maxWidth: "560px" }}>
-                {siteConfig.location}. Walk in Monday to Saturday, 9:00 AM – 7:00 PM IST.
+                {contact.address || siteConfig.location}. {contact.officeHours || "Walk in Monday to Saturday, 9:00 AM – 7:00 PM IST."}
               </p>
             </div>
 
@@ -705,4 +703,3 @@ export default function About({ onOpenDemo }) {
     </div>
   );
 }
-

@@ -3,9 +3,18 @@ import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, Clock, ArrowUp } from "lucide-react";
 import { siteConfig } from "../data/siteConfig";
 import { useTheme } from "../context/ThemeContext";
+import { useSiteContent } from "../context/SiteContentContext";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 
 export default function Footer() {
   const { theme } = useTheme();
+  const { content } = useSiteContent();
+  const { courses } = usePublicCatalog();
+  const contact = content.contact || {};
+  const location = contact.address || siteConfig.location;
+  const phone = contact.phone || siteConfig.phone;
+  const email = contact.email || siteConfig.email;
+  const officeHours = contact.officeHours || siteConfig.officeHours.weekdays;
   const logoSrc = theme === "light" ? "/assets/LOGO BG - HUNAR.png" : "/assets/LOGO BG 2- HUNAR.png";
 
   const scrollToTop = (e) => {
@@ -232,18 +241,10 @@ export default function Footer() {
               Programs
             </h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-              {[
-                { to: "/course/diploma-in-digital-marketing", label: "Digital Marketing" },
-                { to: "/course/30-days-ai-workshop", label: "AI Workshop" },
-                { to: "/course/full-stack-web-dev", label: "Web Development" },
-                { to: "/course/graphic-designing-ai", label: "Graphic Design" },
-                { to: "/course/video-editing-motion-graphics", label: "Video Editing" },
-                { to: "/course/performance-marketing", label: "Performance Marketing" },
-                { to: "/course/basic-computer-course", label: "Basic Computer" }
-              ].map((item) => (
-                <li key={item.to}>
+              {courses.map((course) => (
+                <li key={course.slug}>
                   <Link
-                    to={item.to}
+                    to={`/course/${course.slug}`}
                     style={{
                       color: "var(--color-text-secondary)",
                       fontSize: "0.88rem",
@@ -254,7 +255,7 @@ export default function Footer() {
                     onMouseEnter={(e) => (e.target.style.color = "var(--color-brand-text)")}
                     onMouseLeave={(e) => (e.target.style.color = "var(--color-text-secondary)")}
                   >
-                    {item.label}
+                    {course.title}
                   </Link>
                 </li>
               ))}
@@ -276,28 +277,28 @@ export default function Footer() {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "0.88rem" }}>
               <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <MapPin size={16} style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-text-muted)" }} />
-                <span>{siteConfig.location}</span>
+                <span>{location}</span>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Phone size={16} style={{ flexShrink: 0, color: "var(--color-text-muted)" }} />
-                <a href={`tel:${siteConfig.phone}`} style={{
+                <a href={`tel:${phone}`} style={{
                   color: "var(--color-text-primary)",
                   fontWeight: "600"
                 }}>
-                  {siteConfig.phone}
+                  {phone}
                 </a>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Mail size={16} style={{ flexShrink: 0, color: "var(--color-text-muted)" }} />
-                <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--color-text-secondary)" }}>
-                  {siteConfig.email}
+                <a href={`mailto:${email}`} style={{ color: "var(--color-text-secondary)" }}>
+                  {email}
                 </a>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <Clock size={16} style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-text-muted)" }} />
                 <div>
-                  <div style={{ fontSize: "0.82rem" }}>{siteConfig.officeHours.weekdays}</div>
-                  <div style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>{siteConfig.officeHours.sunday}</div>
+                  <div style={{ fontSize: "0.82rem" }}>{officeHours}</div>
+                  {!contact.officeHours && <div style={{ fontSize: "0.82rem", color: "var(--color-text-muted)" }}>{siteConfig.officeHours.sunday}</div>}
                 </div>
               </div>
             </div>

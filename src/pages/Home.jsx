@@ -8,7 +8,7 @@ import {
   Users,
   ShieldCheck
 } from "lucide-react";
-import { coursesData, courseCategories } from "../data/coursesData";
+import { courseCategories } from "../data/coursesData";
 import { placementsData } from "../data/placementsData";
 import { testimonialsData } from "../data/testimonialsData";
 import { siteConfig } from "../data/siteConfig";
@@ -18,18 +18,31 @@ import TrustBadges from "../components/TrustBadges";
 import LearningJourney from "../components/LearningJourney";
 import { ScrollReveal, ScrollItem } from "../components/ScrollReveal";
 import AnimatedCounter from "../components/AnimatedCounter";
+import { useSiteContent } from "../context/SiteContentContext";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 
 export default function Home({ onOpenDemo }) {
   const shouldReduceMotion = useReducedMotion();
   const [activeCategory, setActiveCategory] = useState("All");
+  const { content } = useSiteContent();
+  const { courses } = usePublicCatalog();
+  const homepage = content.homepage || {};
+  const founder = content.founder || {};
+  const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : [
+    { label: "Industry Programs", value: "12+" },
+    { label: "Students Trained", value: "1,000+" },
+    { label: "Internship Support", value: "100%" },
+    { label: "Placement Rating", value: "4.9/5" }
+  ];
 
   const filteredCourses =
     activeCategory === "All"
-      ? coursesData.slice(0, 6)
-      : coursesData.filter((c) => c.category === activeCategory);
+      ? courses.slice(0, 6)
+      : courses.filter((c) => c.category === activeCategory);
 
-  const featuredCourse = coursesData.find((c) => c.slug === "diploma-in-digital-marketing");
-  const aiWorkshop = coursesData.find((c) => c.slug === "30-days-ai-workshop");
+  const featuredCourse = courses.find((c) => c.slug === "diploma-in-digital-marketing") || courses[0];
+  const aiWorkshop = courses.find((c) => c.slug === "30-days-ai-workshop");
+  const categories = ["All", ...new Set([...courseCategories.filter((category) => category !== "All"), ...courses.map((course) => course.category)])];
 
   return (
     <div>
@@ -55,7 +68,7 @@ export default function Home({ onOpenDemo }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: shouldReduceMotion ? 0.2 : 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
-                Academic Year 2026 · Mullanpur Dakha, Ludhiana
+                {homepage.badge || "Academic Year 2026 · Mullanpur Dakha, Ludhiana"}
               </motion.div>
 
               {/* Headline — requirement 1: opacity 0 -> 1, y 30px -> 0, duration 0.8s */}
@@ -72,7 +85,7 @@ export default function Home({ onOpenDemo }) {
                   color: "var(--color-text-primary)"
                 }}
               >
-                Practical AI & Technology Courses in Mullanpur Dakha.
+                {homepage.heroTitle || "Practical AI & Technology Courses in Mullanpur Dakha."}
               </motion.h1>
 
               {/* Subtitle — requirement 1: delay 0.15s */}
@@ -88,7 +101,7 @@ export default function Home({ onOpenDemo }) {
                   maxWidth: "540px"
                 }}
               >
-                Mullanpur Dakha's premier institute for job-ready skills. Experience 100% practical workstation labs with live ₹10,000 advertising budgets, real client repositories, and dedicated placement support across India.
+                {homepage.heroSubtitle || "Mullanpur Dakha's premier institute for job-ready skills. Experience 100% practical workstation labs with live ₹10,000 advertising budgets, real client repositories, and dedicated placement support across India."}
               </motion.p>
 
               {/* CTAs — requirement 1: delay 0.25s */}
@@ -173,7 +186,7 @@ export default function Home({ onOpenDemo }) {
                 {/* Clean Cutout Founder Image */}
                 <img
                   src="/assets/founder-transparent.png"
-                  alt="Gurlove Malhi, Founder of Hunar The Skill House"
+                  alt={`${founder.name || "Gurlove Malhi"}, Founder of Hunar The Skill House`}
                   style={{
                     width: "100%",
                     maxHeight: "520px",
@@ -222,7 +235,7 @@ export default function Home({ onOpenDemo }) {
                       fontFamily: "var(--font-heading)",
                       letterSpacing: "-0.01em"
                     }}>
-                      Gurlove Malhi
+                      {founder.name || "Gurlove Malhi"}
                     </span>
                   </div>
                   <span style={{
@@ -232,7 +245,7 @@ export default function Home({ onOpenDemo }) {
                     textTransform: "uppercase",
                     letterSpacing: "0.05em"
                   }}>
-                    Founder & Director · Hunar The Skill House
+                    {founder.title || "Founder & Director"} · Hunar The Skill House
                   </span>
                 </div>
               </motion.div>
@@ -259,7 +272,26 @@ export default function Home({ onOpenDemo }) {
       {/* ═══ TRUST STRIP ═════════════════════════════════════════════ */}
       <TrustBadges />
 
-
+      <section className="section-tight" aria-label="Hunar at a glance">
+        <div className="container" style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+          gap: "16px"
+        }}>
+          {homepageStats.map((stat, index) => (
+            <div key={`${stat.label}-${index}`} style={{
+              padding: "20px",
+              textAlign: "center",
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-lg)"
+            }}>
+              <div style={{ fontSize: "1.55rem", fontWeight: 800, color: "var(--color-brand-text)" }}>{stat.value}</div>
+              <div style={{ marginTop: "4px", color: "var(--color-text-secondary)", fontSize: "0.82rem" }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* ═══ PROGRAMS ════════════════════════════════════════════════ */}
       <ScrollReveal as="section" className="section" id="programs">
@@ -296,7 +328,7 @@ export default function Home({ onOpenDemo }) {
             paddingBottom: "12px",
             marginBottom: "32px"
           }}>
-            {courseCategories.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -791,7 +823,7 @@ export default function Home({ onOpenDemo }) {
                     PS
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    Paramjit Singh
+                    {content.faculty?.leadInstructor || "Paramjit Singh"}
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",
@@ -799,7 +831,7 @@ export default function Home({ onOpenDemo }) {
                     fontSize: "0.82rem",
                     marginBottom: "10px"
                   }}>
-                    Teacher — Web Dev, AI &amp; Digital Marketing
+                    {content.faculty?.domains || "Teacher — Web Dev, AI & Digital Marketing"}
                   </div>
                   <p style={{
                     fontSize: "0.88rem",
@@ -807,13 +839,16 @@ export default function Home({ onOpenDemo }) {
                     lineHeight: "1.65",
                     marginBottom: "12px"
                   }}>
-                    Lead faculty member dedicated to hands-on student mastery across Web Development,
-                    Artificial Intelligence (AI), and Digital Marketing.
+                    {content.faculty?.pedagogy || "Lead faculty member dedicated to hands-on student mastery across Web Development, Artificial Intelligence (AI), and Digital Marketing."}
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.72rem" }}>Web Development</span>
-                    <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.72rem" }}>Artificial Intelligence (AI)</span>
-                    <span className="badge-pill badge-pill-brand" style={{ fontSize: "0.72rem" }}>Digital Marketing</span>
+                    {(content.faculty?.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+                      .split(",")
+                      .map((domain) => domain.trim())
+                      .filter(Boolean)
+                      .map((domain) => (
+                        <span key={domain} className="badge-pill badge-pill-brand" style={{ fontSize: "0.72rem" }}>{domain}</span>
+                      ))}
                   </div>
                 </div>
               </ScrollItem>

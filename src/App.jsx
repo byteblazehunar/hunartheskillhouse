@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SiteContentProvider } from "./context/SiteContentContext";
 
 import "lenis/dist/lenis.css";
 
@@ -149,7 +150,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <AppContent />
+        <SiteContentProvider>
+          <AppContent />
+        </SiteContentProvider>
       </BrowserRouter>
     </ThemeProvider>
   );

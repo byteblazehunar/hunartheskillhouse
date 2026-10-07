@@ -9,16 +9,17 @@ import {
   Phone,
   ArrowRight
 } from "lucide-react";
-import { coursesData } from "../data/coursesData";
 import { siteConfig } from "../data/siteConfig";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 
 export default function Enroll() {
+  const { courses, batches } = usePublicCatalog();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
-    course: "Diploma in Digital Marketing",
-    timing: "Morning Batch (10:00 AM - 1:00 PM)",
+    course: "",
+    timing: "Flexible - discuss with admissions",
     qualification: "Undergraduate / Graduate",
     message: ""
   });
@@ -92,7 +93,7 @@ export default function Enroll() {
             color: "var(--color-text-secondary)",
             lineHeight: "1.7"
           }}>
-            Secure your seat in our upcoming batches at Mullanpur Dakha. Experience 100% practical lab training,
+            Secure your seat in an upcoming course and batch at Mullanpur Dakha. Experience 100% practical lab training,
             dedicated workstations, and placement support.
           </p>
         </div>
@@ -207,12 +208,14 @@ export default function Enroll() {
                   <div className="form-group">
                     <label className="form-label">Select Program *</label>
                     <select
+                      required
                       className="form-select"
                       style={{ minHeight: "44px" }}
                       value={formData.course}
                       onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                     >
-                      {coursesData.map((c) => (
+                      <option value="" disabled>Select a course</option>
+                      {courses.map((c) => (
                         <option key={c.id} value={c.title}>
                           {c.title} ({c.category})
                         </option>
@@ -229,10 +232,12 @@ export default function Enroll() {
                         value={formData.timing}
                         onChange={(e) => setFormData({ ...formData, timing: e.target.value })}
                       >
-                        <option value="Morning Batch (10:00 AM - 1:00 PM)">Morning Batch (10:00 AM - 1:00 PM)</option>
-                        <option value="Afternoon Batch (2:00 PM - 5:00 PM)">Afternoon Batch (2:00 PM - 5:00 PM)</option>
-                        <option value="Evening Batch (5:00 PM - 7:00 PM)">Evening Batch (5:00 PM - 7:00 PM)</option>
-                        <option value="Weekend Special">Weekend Special</option>
+                        <option value="Flexible - discuss with admissions">Flexible - discuss with admissions</option>
+                        {batches.map((batch) => (
+                          <option key={batch.name} value={`${batch.name} — ${batch.timing}`}>
+                            {batch.name} — {batch.timing}{batch.course ? ` (${batch.course})` : ""}
+                          </option>
+                        ))}
                       </select>
                     </div>
 

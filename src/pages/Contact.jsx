@@ -11,11 +11,19 @@ import {
   Building2
 } from "lucide-react";
 import { siteConfig } from "../data/siteConfig";
-import { coursesData } from "../data/coursesData";
 import { useTheme } from "../context/ThemeContext";
+import { useSiteContent } from "../context/SiteContentContext";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 
 export default function Contact() {
   const { theme } = useTheme();
+  const { content } = useSiteContent();
+  const { courses } = usePublicCatalog();
+  const contact = content.contact || {};
+  const phone = contact.phone || siteConfig.phone;
+  const email = contact.email || siteConfig.email;
+  const whatsappDigits = (contact.whatsapp || siteConfig.phoneRaw).replace(/\D/g, "");
+  const whatsappUrl = `https://wa.me/${whatsappDigits}`;
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -112,7 +120,7 @@ export default function Contact() {
             <div>
               <div className="hunar-card" style={{ padding: "36px", marginBottom: "30px" }}>
                 <h2 style={{ fontSize: "1.4rem", color: "var(--color-text-primary)", marginBottom: "24px" }}>
-                  Campus Details
+                {contact.instituteName || "Campus Details"}
                 </h2>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "22px", fontSize: "0.95rem" }}>
@@ -133,7 +141,7 @@ export default function Contact() {
                     <div>
                       <div style={{ fontWeight: "700", color: "var(--color-text-primary)", marginBottom: "4px" }}>Our Location</div>
                       <div style={{ color: "var(--color-text-secondary)", lineHeight: "1.5" }}>
-                        {siteConfig.location}
+                        {contact.address || siteConfig.location}
                       </div>
                       <div style={{ fontSize: "0.82rem", color: "var(--color-text-muted)", marginTop: "4px" }}>
                         Landmark: {siteConfig.landmark}
@@ -157,8 +165,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <div style={{ fontWeight: "700", color: "var(--color-text-primary)", marginBottom: "4px" }}>Phone Helpline</div>
-                      <a href={`tel:${siteConfig.phone}`} style={{ color: "var(--color-brand-text)", fontWeight: "700", fontSize: "1.05rem" }}>
-                        {siteConfig.phone}
+                      <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} style={{ color: "var(--color-brand-text)", fontWeight: "700", fontSize: "1.05rem" }}>
+                        {phone}
                       </a>
                       <div style={{ fontSize: "0.82rem", color: "var(--color-text-muted)", marginTop: "2px" }}>
                         Available Mon–Sat: 9:00 AM – 7:00 PM IST
@@ -182,8 +190,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <div style={{ fontWeight: "700", color: "var(--color-text-primary)", marginBottom: "4px" }}>Email Address</div>
-                      <a href={`mailto:${siteConfig.email}`} style={{ color: "var(--color-text-secondary)" }}>
-                        {siteConfig.email}
+                      <a href={`mailto:${email}`} style={{ color: "var(--color-text-secondary)" }}>
+                        {email}
                       </a>
                     </div>
                   </div>
@@ -204,15 +212,15 @@ export default function Contact() {
                     </div>
                     <div>
                       <div style={{ fontWeight: "700", color: "var(--color-text-primary)", marginBottom: "4px" }}>Office Hours</div>
-                      <div style={{ color: "var(--color-text-secondary)" }}>{siteConfig.officeHours.weekdays}</div>
-                      <div style={{ color: "var(--color-text-muted)", fontSize: "0.82rem" }}>{siteConfig.officeHours.sunday}</div>
+                      <div style={{ color: "var(--color-text-secondary)" }}>{contact.officeHours || siteConfig.officeHours.weekdays}</div>
+                      {!contact.officeHours && <div style={{ color: "var(--color-text-muted)", fontSize: "0.82rem" }}>{siteConfig.officeHours.sunday}</div>}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ marginTop: "30px", paddingTop: "24px", borderTop: "1px solid var(--color-border)" }}>
                   <a
-                    href={siteConfig.whatsappUrl}
+                    href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-whatsapp btn-full"
@@ -319,7 +327,7 @@ export default function Contact() {
                         onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                       >
                         <option value="">-- Select Course --</option>
-                        {coursesData.map((c) => (
+                        {courses.map((c) => (
                           <option key={c.id} value={c.title}>
                             {c.title}
                           </option>

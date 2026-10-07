@@ -9,20 +9,24 @@ import {
   ChevronUp,
   Phone
 } from "lucide-react";
-import { coursesData } from "../data/coursesData";
+import usePublicCatalog from "../hooks/usePublicCatalog";
 import { siteConfig } from "../data/siteConfig";
 import CourseCard from "../components/CourseCard";
 
 export default function CourseDetail({ onOpenDemo }) {
   const { slug } = useParams();
-  const course = coursesData.find((c) => c.slug === slug);
+  const { courses, loadingCourses } = usePublicCatalog();
+  const course = courses.find((c) => c.slug === slug);
   const [openModule, setOpenModule] = useState(0);
 
   if (!course) {
+    if (loadingCourses) {
+      return <div className="section container" role="status">Loading course details…</div>;
+    }
     return <Navigate to="/courses" replace />;
   }
 
-  const relatedCourses = coursesData
+  const relatedCourses = courses
     .filter((c) => c.id !== course.id && (c.category === course.category || c.featured))
     .slice(0, 3);
 

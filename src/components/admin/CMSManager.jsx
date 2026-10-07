@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useSiteContent } from "../../context/SiteContentContext";
 import {
   Globe,
   FileText,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 
 export default function CMSManager({ activeTab, authToken, showToast }) {
+  const { updateSection } = useSiteContent();
   const [loading, setLoading] = useState(false);
   const [cmsContent, setCmsContent] = useState({
     homepage: {
@@ -39,6 +41,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
     },
     about: {
       heading: "Empowering Youth with Practical, Market-Ready Skills",
+      description: "Hunar – The Skill House is an institutional skill development center powered by Byteblaze Technologies. Founded with a singular mission: bridge the divide between textbook theory and actual industry execution through individual workstations, live ad budgets, and daily mentor guidance.",
       mission: "To bridge the gap between academic theory and practical industry excellence, empowering students from Punjab to compete on the global technology stage.",
       vision: "To establish Hunar The Skill House as North India's benchmark destination for modern computer engineering, AI mastery, and digital entrepreneurship.",
       establishedYear: "2024",
@@ -132,6 +135,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
       if (!res.ok) throw new Error(result.message || "Failed to update content");
 
       setCmsContent((prev) => ({ ...prev, [section]: data }));
+      updateSection(section, data);
       showToast(`Published ${section.toUpperCase()} content to live website!`);
     } catch (err) {
       showToast(err.message, "error");
@@ -325,8 +329,9 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
                       placeholder="Value (e.g. 12+)"
                       value={s.value}
                       onChange={(e) => {
-                        const newStats = [...(hp.stats || [])];
-                        newStats[idx].value = e.target.value;
+                        const newStats = (hp.stats || []).map((stat, statIndex) =>
+                          statIndex === idx ? { ...stat, value: e.target.value } : stat
+                        );
                         setCmsContent({ ...cmsContent, homepage: { ...hp, stats: newStats } });
                       }}
                       style={{ width: "100%", padding: "6px", fontWeight: 700, borderRadius: "6px", border: "1px solid var(--color-border)", marginBottom: "4px", fontSize: "0.85rem" }}
@@ -336,8 +341,9 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
                       placeholder="Label"
                       value={s.label}
                       onChange={(e) => {
-                        const newStats = [...(hp.stats || [])];
-                        newStats[idx].label = e.target.value;
+                        const newStats = (hp.stats || []).map((stat, statIndex) =>
+                          statIndex === idx ? { ...stat, label: e.target.value } : stat
+                        );
                         setCmsContent({ ...cmsContent, homepage: { ...hp, stats: newStats } });
                       }}
                       style={{ width: "100%", padding: "6px", fontSize: "0.75rem", borderRadius: "6px", border: "1px solid var(--color-border)" }}
@@ -416,6 +422,17 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
         </div>
 
         <div style={{ padding: "24px", backgroundColor: "var(--color-surface)", borderRadius: "14px", border: "1px solid var(--color-border)", display: "flex", flexDirection: "column", gap: "16px", maxWidth: "800px" }}>
+          <div>
+            <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+              About Page Introduction
+            </label>
+            <textarea
+              rows={3}
+              value={ab.description || ""}
+              onChange={(e) => setCmsContent({ ...cmsContent, about: { ...ab, description: e.target.value } })}
+              style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
+            />
+          </div>
           <div>
             <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
               Section Heading

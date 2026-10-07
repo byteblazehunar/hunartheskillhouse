@@ -1778,6 +1778,20 @@ router.get("/batches", authenticate, requirePermission("batches.view"), async (r
   res.json(batches);
 });
 
+router.get("/public/batches", async (req, res) => {
+  try {
+    const batches = await getAllBatches();
+    res.json(
+      batches
+        .filter((batch) => batch.active !== false && batch.name && batch.timing)
+        .map(({ name, course, timing }) => ({ name, course, timing }))
+    );
+  } catch (error) {
+    console.error("[Public Batch Catalog Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to load available batch timings." });
+  }
+});
+
 router.post("/batches", authenticate, requireRole(["admin"]), async (req, res) => {
   try {
     const { name, course, timing, assignedTeacher } = req.body;
@@ -2203,7 +2217,7 @@ router.put("/leads/:id", authenticate, requirePermission(["inquiries.status_upda
   const { status, notes } = req.body;
   const updates = {};
   if (status !== undefined) {
-    if (!["New", "Contacted", "Interested", "Dropped"].includes(status)) {
+    if (!["New", "Contacted", "Interested", "Enrolled", "Dropped"].includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid inquiry status." });
     }
     updates.status = status;
