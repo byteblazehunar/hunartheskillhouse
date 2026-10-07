@@ -337,7 +337,7 @@ export async function deleteUser(id) {
       const user = await User.findOne(userQuery).lean();
       if (user) {
         targetAssignedId = user.assignedId;
-        if (user.role === "admin" && (user.assignedId === "HUN-A-0001" || user.email === "admin@hunarskillhouse.com")) {
+        if (user.role === "admin" && (user.assignedId === "HUN-A-0001" || user.email === "byteblaze.hunar@gmail.com")) {
           throw new Error("Primary administrator account cannot be deleted.");
         }
         await User.deleteOne({ _id: user._id });
@@ -358,7 +358,7 @@ export async function deleteUser(id) {
     const user = users.find((u) => String(u._id || u.id) === String(id) || u.assignedId === id);
     if (user) {
       targetAssignedId = targetAssignedId || user.assignedId;
-      if (user.role === "admin" && (user.assignedId === "HUN-A-0001" || user.email === "admin@hunarskillhouse.com")) {
+      if (user.role === "admin" && (user.assignedId === "HUN-A-0001" || user.email === "byteblaze.hunar@gmail.com")) {
         throw new Error("Primary administrator account cannot be deleted.");
       }
     }

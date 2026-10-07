@@ -95,7 +95,7 @@ export default function PrivacyPolicy() {
                 <br />
                 <strong>Registrar, Hunar The Skill House</strong><br />
                 First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana – 141101<br />
-                Email: info@hunar.courses | Phone: +91 94637-95116
+                Email: byteblaze.hunar@gmail.com | Phone: +91 94637-95116
               </p>
             </section>
           </div>

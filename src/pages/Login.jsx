@@ -17,6 +17,14 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
+async function readApiJson(response) {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    throw new Error("The sign-in service is unavailable. Please try again later or contact the institute.");
+  }
+  return response.json();
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,7 +70,7 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: forgotIdentifier.trim() })
       });
-      const data = await res.json();
+      const data = await readApiJson(res);
       if (!res.ok) {
         throw new Error(data.message || "Account not found.");
       }
@@ -99,7 +107,7 @@ export default function Login() {
         body: JSON.stringify({ loginId: cleanLoginId, password })
       });
 
-      const data = await res.json();
+      const data = await readApiJson(res);
 
       if (!res.ok) {
         // Specific safe error messages per Part 14
@@ -654,11 +662,11 @@ export default function Login() {
                   <span>+91 94637 95116</span>
                 </a>
                 <a
-                  href="mailto:admin@hunarskillhouse.com"
+                  href="mailto:byteblaze.hunar@gmail.com"
                   style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-brand)", textDecoration: "none", fontWeight: "600" }}
                 >
                   <Mail size={14} />
-                  <span>admin@hunarskillhouse.com</span>
+                  <span>byteblaze.hunar@gmail.com</span>
                 </a>
               </div>
             </div>

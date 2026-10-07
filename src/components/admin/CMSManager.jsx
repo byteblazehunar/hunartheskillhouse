@@ -60,7 +60,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
       instituteName: "Hunar The Skill House",
       phone: "+91 94637 95116",
       whatsapp: "+91 94637 95116",
-      email: "info@hunarskillhouse.com",
+      email: "byteblaze.hunar@gmail.com",
       address: "Opposite Bus Stand, Mullanpur Dakha, Ludhiana, Punjab 141101",
       officeHours: "Monday to Saturday: 9:00 AM – 6:30 PM",
       coordinates: "30.9168, 75.6885"
@@ -1083,7 +1083,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
             </label>
             <input
               type="email"
-              value={co.email || "info@hunarskillhouse.com"}
+              value={co.email || "byteblaze.hunar@gmail.com"}
               onChange={(e) => setCmsContent({ ...cmsContent, contact: { ...co, email: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
             />

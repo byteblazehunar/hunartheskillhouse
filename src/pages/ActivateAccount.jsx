@@ -262,7 +262,7 @@ export default function ActivateAccount() {
               <p style={{ margin: "4px 0 0 0", fontSize: "0.8rem" }}>
                 Contact the administrative office at{" "}
                 <strong style={{ color: "var(--color-brand)" }}>+91 94637 95116</strong> or{" "}
-                <strong style={{ color: "var(--color-brand)" }}>admin@hunarskillhouse.com</strong> with your name and enrolled course.
+                <strong style={{ color: "var(--color-brand)" }}>byteblaze.hunar@gmail.com</strong> with your name and enrolled course.
               </p>
             </div>
             <Link to="/login" className="btn btn-outline btn-full" style={{ minHeight: "42px" }}>

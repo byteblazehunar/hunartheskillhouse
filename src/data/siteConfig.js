@@ -7,7 +7,7 @@ export const siteConfig = {
   city: "Mullanpur Dakha, Ludhiana",
   phone: "+91 94637-95116",
   phoneRaw: "919463795116",
-  email: "info@hunar.courses",
+  email: "byteblaze.hunar@gmail.com",
   whatsappUrl: "https://wa.me/919463795116?text=Hi%20Hunar%20Team%2C%20I%20would%20like%20to%20know%20more%20about%20your%20courses%20and%20book%20a%20free%20demo.",
   officeHours: {
     weekdays: "Monday – Saturday: 9:00 AM – 7:00 PM IST",

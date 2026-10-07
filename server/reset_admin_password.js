@@ -21,7 +21,7 @@ function promptHidden(prompt) {
       input.pause();
     };
     const onData = (chunk) => {
-      for (const character of chunk) {
+      for (const character of chunk.toString("utf8")) {
         if (character === "\u0003") {
           cleanup();
           process.stdout.write("\n");

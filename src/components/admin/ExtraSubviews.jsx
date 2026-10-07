@@ -507,7 +507,7 @@ export default function ExtraSubviews({
 
   // 13. PROFILE
   if (activeTab === "profile") {
-    const user = adminUser || { name: "Gurlove Malhi", email: "admin@hunarskillhouse.com", role: "admin", assignedId: "HUN-A-0001" };
+    const user = adminUser || { name: "Gurlove Malhi", email: "byteblaze.hunar@gmail.com", role: "admin", assignedId: "HUN-A-0001" };
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <div>
