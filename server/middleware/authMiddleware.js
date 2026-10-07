@@ -11,7 +11,12 @@ export async function resolveUserPermissions(user) {
 
   // Fallback to role name or system default based on user.role
   if (!roleDoc) {
-    if (user.role === "admin" || user.assignedId === "HUN-A-0001" || user.email === "byteblaze.hunar@gmail.com") {
+    if (
+      user.role === "admin" ||
+      user.assignedId === "HUN-A-0001" ||
+      user.email === "admin@hunarskillhouse.com" ||
+      user.email === "byteblaze.hunar@gmail.com"
+    ) {
       roleDoc = await getRoleById("role-super-admin");
     } else if (user.role === "teacher") {
       roleDoc = await getRoleById("role-teacher");
