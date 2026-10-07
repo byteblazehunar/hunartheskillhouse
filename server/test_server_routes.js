@@ -1,46 +1,41 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import { test } from "node:test";
 import mongoose from "mongoose";
 
 const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
-assert.match(vercelConfig.rewrites[0].source, /\(\?!api\\?\//);
-await Promise.all([
-  access(new URL("../api/auth/login.js", import.meta.url)),
-  access(new URL("../api/auth/forgot-password.js", import.meta.url)),
-  access(new URL("../api/auth/me.js", import.meta.url)),
-  access(new URL("../api/auth/activate.js", import.meta.url)),
-  access(new URL("../api/auth/verify-invitation/[token].js", import.meta.url)),
-  access(new URL("../api/admin/overview.js", import.meta.url)),
-  access(new URL("../api/admin/users.js", import.meta.url)),
-  access(new URL("../api/admin/users/[id].js", import.meta.url)),
-  access(new URL("../api/admin/export/[type].js", import.meta.url)),
-  access(new URL("../api/roles/permissions/library.js", import.meta.url)),
-  access(new URL("../api/roles/[id].js", import.meta.url)),
-  access(new URL("../api/roles/[id]/duplicate.js", import.meta.url)),
-  access(new URL("../api/roles/[id]/reassign-and-delete.js", import.meta.url)),
-  access(new URL("../api/roles/[id]/status.js", import.meta.url)),
-  access(new URL("../api/portal/student.js", import.meta.url)),
-  access(new URL("../api/portal/staff.js", import.meta.url)),
-  access(new URL("../api/attendance/student/[studentId].js", import.meta.url)),
-  access(new URL("../api/assignments/[id]/submit.js", import.meta.url)),
-  access(new URL("../api/announcements/[id].js", import.meta.url)),
-  access(new URL("../api/batches/[id].js", import.meta.url)),
-  access(new URL("../api/content/[section].js", import.meta.url)),
-  access(new URL("../api/courses/[id].js", import.meta.url)),
-  access(new URL("../api/faqs/[id].js", import.meta.url)),
-  access(new URL("../api/fees/[id].js", import.meta.url)),
-  access(new URL("../api/leads/[id].js", import.meta.url)),
-  access(new URL("../api/media/[id].js", import.meta.url)),
-  access(new URL("../api/staff/[id].js", import.meta.url)),
-  access(new URL("../api/staff/[id]/invite.js", import.meta.url)),
-  access(new URL("../api/students/[id].js", import.meta.url)),
-  access(new URL("../api/students/[id]/invite.js", import.meta.url)),
-  access(new URL("../api/students/[id]/status.js", import.meta.url)),
-  access(new URL("../api/submissions/[id]/grade.js", import.meta.url)),
-  access(new URL("../api/timetable/[id].js", import.meta.url)),
-  access(new URL("../api/testimonials/[id].js", import.meta.url))
-]);
+assert.deepEqual(vercelConfig.rewrites[0], {
+  source: "/api/:path*",
+  destination: "/api/index?_hunar_path=:path*"
+});
+assert.match(vercelConfig.rewrites[1].source, /\(\?!api\\?\//);
+const apiDirectory = new URL("../api/", import.meta.url);
+await access(new URL("../api/index.js", import.meta.url));
+const apiFiles = await readdir(apiDirectory, { recursive: true });
+assert.deepEqual(apiFiles.filter((file) => file.endsWith(".js")), ["index.js"]);
+
+const { normalizeVercelApiRequestUrl } = await import("./normalizeVercelApiRequest.js");
+
+test("Vercel API rewrite restores nested Express paths and preserves query parameters", () => {
+  assert.equal(
+    normalizeVercelApiRequestUrl("/api/index?_hunar_path=auth%2Fme&view=full"),
+    "/api/auth/me?view=full"
+  );
+  assert.equal(
+    normalizeVercelApiRequestUrl("/api/index?_hunar_path=attendance&batch=Alpha&date=2026-10-07"),
+    "/api/attendance?batch=Alpha&date=2026-10-07"
+  );
+  assert.equal(
+    normalizeVercelApiRequestUrl("/api/auth/me?view=full"),
+    "/api/auth/me?view=full"
+  );
+});
+
+test("Vercel API rewrite rejects invalid route paths", () => {
+  assert.throws(() => normalizeVercelApiRequestUrl("/not-an-api-route"), /could not be determined/);
+  assert.throws(() => normalizeVercelApiRequestUrl("/api/index?_hunar_path=..%2Fadmin"), /invalid/);
+  assert.throws(() => normalizeVercelApiRequestUrl("/api/index?_hunar_path=auth%2Fme%3Fadmin%3Dtrue"), /invalid/);
+});
 
 process.env.JWT_SECRET ||= "integration-test-secret";
 process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
@@ -140,6 +135,11 @@ test("Express serves the API and client-side portal routes", async (t) => {
     assert.equal(response.status, 401, `${endpoint} should reach Express and require authentication`);
     assert.match(response.headers.get("content-type"), /application\/json/);
   }
+
+  const rewrittenNestedPath = normalizeVercelApiRequestUrl("/api/index?_hunar_path=auth%2Fme");
+  const rewrittenNestedResponse = await fetch(`${baseUrl}${rewrittenNestedPath}`);
+  assert.equal(rewrittenNestedResponse.status, 401);
+  assert.match(rewrittenNestedResponse.headers.get("content-type"), /application\/json/);
 
   const invalidResetResponse = await fetch(`${baseUrl}/api/auth/forgot-password`, {
     method: "POST",
