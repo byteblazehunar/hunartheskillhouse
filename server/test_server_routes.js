@@ -100,3 +100,30 @@ test("Express serves the API and client-side portal routes", async (t) => {
     }
   }
 });
+
+test("Vercel handler reports a safe database configuration diagnostic", async () => {
+  const { default: vercelHandler } = await import("./vercelHandler.js");
+  const originalMongoUri = process.env.MONGODB_URI;
+  process.env.MONGODB_URI = "";
+  const response = {
+    statusCode: null,
+    body: null,
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    }
+  };
+
+  try {
+    await vercelHandler({ method: "GET", url: "/api/health" }, response);
+    assert.equal(response.statusCode, 503);
+    assert.equal(response.body.error, "DATABASE_CONFIGURATION_MISSING");
+    assert.doesNotMatch(JSON.stringify(response.body), /mongodb(\+srv)?:\/\//i);
+  } finally {
+    process.env.MONGODB_URI = originalMongoUri;
+  }
+});

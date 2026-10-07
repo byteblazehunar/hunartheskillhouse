@@ -5,27 +5,46 @@ import { bootstrapSystem } from "./bootstrap.js";
 let bootstrapPromise;
 
 async function initialize() {
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (error) {
+    return {
+      code: process.env.MONGODB_URI?.trim()
+        ? "DATABASE_CONNECTION_FAILED"
+        : "DATABASE_CONFIGURATION_MISSING",
+      stage: "MongoDB connection",
+      error
+    };
+  }
 
   if (!bootstrapPromise) {
     bootstrapPromise = bootstrapSystem().catch((error) => {
       bootstrapPromise = undefined;
-      throw error;
+      return {
+        code: "APPLICATION_BOOTSTRAP_FAILED",
+        stage: "application bootstrap",
+        error
+      };
     });
   }
 
-  await bootstrapPromise;
+  return bootstrapPromise;
 }
 
 export default async function handler(req, res) {
-  try {
-    await initialize();
-    return app(req, res);
-  } catch (error) {
-    console.error("[Hunar API] Request initialization failed:", error);
+  const failure = await initialize();
+  if (failure) {
+    console.error(`[Hunar API] ${failure.stage} failed:`, failure.error);
     return res.status(503).json({
       success: false,
-      message: "The application backend is temporarily unavailable."
+      error: failure.code,
+      message: failure.code === "DATABASE_CONFIGURATION_MISSING"
+        ? "The database connection is not configured in this Vercel environment."
+        : failure.code === "DATABASE_CONNECTION_FAILED"
+          ? "The database could not be reached. Check the Production database URI, credentials, and Atlas network access."
+          : "The application could not initialize its database records."
     });
   }
+
+  return app(req, res);
 }
