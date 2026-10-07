@@ -13,6 +13,7 @@ import Footer from "./components/Footer";
 import InquiryModal from "./components/InquiryModal";
 import WhatsAppFloating from "./components/WhatsAppFloating";
 import CinematicIntro from "./components/CinematicIntro";
+import SeoManager from "./components/SeoManager";
 
 // Pages
 import Home from "./pages/Home";
@@ -79,6 +80,7 @@ function AppContent() {
 
   return (
     <>
+      <SeoManager />
       {!isPortal && <SmoothScroll isPaused={demoModalOpen} />}
       {!isPortal && <CinematicIntro />}
 

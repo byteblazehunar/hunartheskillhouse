@@ -73,6 +73,8 @@ Website enquiry, contact, and enrollment submissions are stored in the MongoDB `
 
 API authentication, password-reset, account-activation, and public inquiry endpoints have per-IP request limits; JSON request bodies are capped at 32 KB, and Helmet sets standard security headers. The current rate-limit store is in-memory per server process, so deployments that scale across multiple serverless instances should add a shared rate-limit store for aggregate enforcement. The existing fee workflow records payments entered by authorized staff; it does not charge cards or verify external gateway transactions. Unmatched frontend routes show a 404 page and unknown API routes return JSON 404 responses.
 
+The public website provides route-specific titles, descriptions, canonical URLs, social preview tags, and structured data. `npm run build` prerenders these tags into HTML for public pages, course details, and articles; the generated sitemap includes the current course and article slugs. `public/robots.txt` excludes portal paths from crawling, and `public/llms.txt` summarizes public institute information for AI-assisted discovery. Robots directives are not access control: LMS and operations data must be accessed through authenticated API routes with the required role permissions. Search placement is determined by search engines and cannot be guaranteed by metadata alone.
+
 ### 4. Running the Application
 Start the development server (the Vite plugin mounts the API on the same origin):
 ```bash
@@ -97,8 +99,9 @@ The MongoDB URI must be the Atlas connection string with the database name (for 
 ## Resetting the Admin Password
 If you ever need to reset the admin password from the command line:
 ```bash
-npm run reset-password your_new_password
+npm run reset-password
 ```
+Run this in an interactive terminal and enter the new password at the hidden prompts; do not put passwords in shell commands, scripts, or chat.
 
 ---
 

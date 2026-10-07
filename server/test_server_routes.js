@@ -27,11 +27,32 @@ test("Express serves the API and client-side portal routes", async (t) => {
   const privateLeadsResponse = await fetch(`${baseUrl}/api/leads`);
   assert.equal(privateLeadsResponse.status, 401);
 
+  for (const endpoint of ["/api/batches", "/api/timetable", "/api/announcements"]) {
+    const response = await fetch(`${baseUrl}${endpoint}`);
+    assert.equal(response.status, 401, `${endpoint} should require an authorized account`);
+  }
+
   const portalResponse = await fetch(`${baseUrl}/portal/admin`, {
     headers: { Accept: "text/html" }
   });
   assert.equal(portalResponse.status, 200);
-  assert.match(await portalResponse.text(), /id="root"/);
+  const portalHtml = await portalResponse.text();
+  assert.match(portalHtml, /id="root"/);
+  assert.match(portalHtml, /name="robots" content="noindex, nofollow"/);
+
+  const courseResponse = await fetch(`${baseUrl}/course/diploma-in-digital-marketing`, {
+    headers: { Accept: "text/html" }
+  });
+  assert.equal(courseResponse.status, 200);
+  const courseHtml = await courseResponse.text();
+  assert.match(courseHtml, /<title>Diploma in Digital Marketing Course in Ludhiana \| Hunar<\/title>/);
+  assert.match(courseHtml, /rel="canonical" href="https:\/\/hunar\.courses\/course\/diploma-in-digital-marketing"/);
+  assert.match(courseHtml, /"@type":"Course"/);
+
+  for (const asset of ["/robots.txt", "/sitemap.xml", "/llms.txt"]) {
+    const response = await fetch(`${baseUrl}${asset}`);
+    assert.equal(response.status, 200, `${asset} should be served from the production build`);
+  }
 
   const missingApiResponse = await fetch(`${baseUrl}/api/not-a-route`);
   assert.equal(missingApiResponse.status, 404);

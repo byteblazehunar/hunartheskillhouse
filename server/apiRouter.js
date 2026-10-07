@@ -1763,7 +1763,7 @@ router.delete("/courses/:id", authenticate, requireRole(["admin"]), async (req, 
   }
 });
 
-router.get("/batches", async (req, res) => {
+router.get("/batches", authenticate, requirePermission("batches.view"), async (req, res) => {
   const batches = await getAllBatches();
   res.json(batches);
 });
@@ -1807,7 +1807,7 @@ router.delete("/batches/:id", authenticate, requireRole(["admin"]), async (req, 
 // ══════════════════════════════════════════════
 // 6B. TIMETABLE
 // ══════════════════════════════════════════════
-router.get("/timetable", async (req, res) => {
+router.get("/timetable", authenticate, requirePermission("timetable.view"), async (req, res) => {
   const { batch } = req.query;
   const list = await getTimetable(batch);
   res.json(list);
@@ -1963,7 +1963,7 @@ router.post("/assignments/:id/submit", authenticate, requireRole(["student"]), a
 // ══════════════════════════════════════════════
 // 9. ANNOUNCEMENTS
 // ══════════════════════════════════════════════
-router.get("/announcements", async (req, res) => {
+router.get("/announcements", authenticate, requirePermission("announcements.view"), async (req, res) => {
   const audience = req.query.audience || "all";
   const announcements = await getAnnouncements(audience);
   res.json(announcements);

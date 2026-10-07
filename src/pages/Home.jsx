@@ -72,7 +72,7 @@ export default function Home({ onOpenDemo }) {
                   color: "var(--color-text-primary)"
                 }}
               >
-                Practical Skills for Real Careers in Tech & Digital Media.
+                Practical AI & Technology Courses in Mullanpur Dakha.
               </motion.h1>
 
               {/* Subtitle — requirement 1: delay 0.15s */}

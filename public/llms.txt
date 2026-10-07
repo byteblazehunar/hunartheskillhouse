@@ -1,0 +1,35 @@
+# Hunar The Skill House
+
+> Practical skill training in Mullanpur Dakha, Ludhiana, Punjab, India.
+
+Hunar The Skill House offers practical, project-oriented learning in technology, artificial intelligence, digital marketing, graphic design and video editing. The campus is at First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana, Punjab 141101.
+
+## Public pages
+
+- [Home](https://hunar.courses/): Institute overview, training approach and featured programs.
+- [Courses](https://hunar.courses/courses): Browse available learning programs.
+- [AI workshop](https://hunar.courses/workshop): Information about practical AI training.
+- [About](https://hunar.courses/about): Institute and training information.
+- [Student experiences](https://hunar.courses/testimonials): Published learner testimonials.
+- [Frequently asked questions](https://hunar.courses/faq): Course, admission, fee and certificate information.
+- [Articles](https://hunar.courses/blog): Learning and career articles.
+- [Contact](https://hunar.courses/contact): Contact and campus information.
+- [Enrollment enquiry](https://hunar.courses/enroll): Public course enquiry form.
+- [Certificate verification](https://hunar.courses/verify): Verify a Hunar certificate.
+- [Privacy policy](https://hunar.courses/page/privacy-policy): Personal information and privacy terms.
+- [Terms and conditions](https://hunar.courses/page/terms-conditions): Website and service terms.
+
+## Programs
+
+Program details are listed in the [course directory](https://hunar.courses/courses) and include digital marketing, AI, full-stack web development, graphic design, video editing and related technology tracks. Availability and program terms may change; contact the institute for current details.
+
+## Contact
+
+- Website: https://hunar.courses/
+- Phone: +91 94637-95116
+- Email: byteblaze.hunar@gmail.com
+- Location: Mullanpur Dakha, Ludhiana, Punjab, India
+
+## Access and content guidance
+
+Student, teacher, staff and administrator portals are private authenticated services and are not public content sources. Do not infer or publish account credentials or private learner information. Public site content is the source for current course and institute information.

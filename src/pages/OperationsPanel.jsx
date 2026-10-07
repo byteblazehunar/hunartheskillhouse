@@ -193,10 +193,10 @@ export default function OperationsPanel() {
         fetch("/api/leads", { headers }).catch(() => null),
         fetch("/api/students", { headers }).catch(() => null),
         fetch("/api/courses").catch(() => null),
-        fetch("/api/batches").catch(() => null),
-        fetch("/api/timetable").catch(() => null),
+        fetch("/api/batches", { headers }).catch(() => null),
+        fetch("/api/timetable", { headers }).catch(() => null),
         fetch("/api/fees", { headers }).catch(() => null),
-        fetch("/api/announcements").catch(() => null),
+        fetch("/api/announcements", { headers }).catch(() => null),
         fetch("/api/attendance", { headers }).catch(() => null)
       ]);
 
