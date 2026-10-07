@@ -197,7 +197,7 @@ export default function OperationsPanel() {
         fetch("/api/timetable", { headers }).catch(() => null),
         fetch("/api/fees", { headers }).catch(() => null),
         fetch("/api/announcements", { headers }).catch(() => null),
-        fetch("/api/attendance", { headers }).catch(() => null)
+        fetch(`/api/attendance?batch=${encodeURIComponent(selectedBatchForAttendance)}&date=${encodeURIComponent(attendanceDate)}`, { headers }).catch(() => null)
       ]);
 
       if (leadsRes && leadsRes.ok) setLeads(await leadsRes.json());

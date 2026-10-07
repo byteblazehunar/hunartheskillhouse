@@ -6,7 +6,39 @@ const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.
 assert.match(vercelConfig.rewrites[0].source, /\(\?!api\\?\//);
 await Promise.all([
   access(new URL("../api/auth/login.js", import.meta.url)),
-  access(new URL("../api/auth/forgot-password.js", import.meta.url))
+  access(new URL("../api/auth/forgot-password.js", import.meta.url)),
+  access(new URL("../api/auth/me.js", import.meta.url)),
+  access(new URL("../api/auth/activate.js", import.meta.url)),
+  access(new URL("../api/auth/verify-invitation/[token].js", import.meta.url)),
+  access(new URL("../api/admin/overview.js", import.meta.url)),
+  access(new URL("../api/admin/users.js", import.meta.url)),
+  access(new URL("../api/admin/users/[id].js", import.meta.url)),
+  access(new URL("../api/admin/export/[type].js", import.meta.url)),
+  access(new URL("../api/roles/permissions/library.js", import.meta.url)),
+  access(new URL("../api/roles/[id].js", import.meta.url)),
+  access(new URL("../api/roles/[id]/duplicate.js", import.meta.url)),
+  access(new URL("../api/roles/[id]/reassign-and-delete.js", import.meta.url)),
+  access(new URL("../api/roles/[id]/status.js", import.meta.url)),
+  access(new URL("../api/portal/student.js", import.meta.url)),
+  access(new URL("../api/portal/staff.js", import.meta.url)),
+  access(new URL("../api/attendance/student/[studentId].js", import.meta.url)),
+  access(new URL("../api/assignments/[id]/submit.js", import.meta.url)),
+  access(new URL("../api/announcements/[id].js", import.meta.url)),
+  access(new URL("../api/batches/[id].js", import.meta.url)),
+  access(new URL("../api/content/[section].js", import.meta.url)),
+  access(new URL("../api/courses/[id].js", import.meta.url)),
+  access(new URL("../api/faqs/[id].js", import.meta.url)),
+  access(new URL("../api/fees/[id].js", import.meta.url)),
+  access(new URL("../api/leads/[id].js", import.meta.url)),
+  access(new URL("../api/media/[id].js", import.meta.url)),
+  access(new URL("../api/staff/[id].js", import.meta.url)),
+  access(new URL("../api/staff/[id]/invite.js", import.meta.url)),
+  access(new URL("../api/students/[id].js", import.meta.url)),
+  access(new URL("../api/students/[id]/invite.js", import.meta.url)),
+  access(new URL("../api/students/[id]/status.js", import.meta.url)),
+  access(new URL("../api/submissions/[id]/grade.js", import.meta.url)),
+  access(new URL("../api/timetable/[id].js", import.meta.url)),
+  access(new URL("../api/testimonials/[id].js", import.meta.url))
 ]);
 
 process.env.JWT_SECRET ||= "integration-test-secret";
@@ -34,6 +66,12 @@ test("Express serves the API and client-side portal routes", async (t) => {
 
   const privateLeadsResponse = await fetch(`${baseUrl}/api/leads`);
   assert.equal(privateLeadsResponse.status, 401);
+
+  for (const endpoint of ["/api/auth/me", "/api/admin/overview", "/api/admin/users"]) {
+    const response = await fetch(`${baseUrl}${endpoint}`);
+    assert.equal(response.status, 401, `${endpoint} should reach Express and require authentication`);
+    assert.match(response.headers.get("content-type"), /application\/json/);
+  }
 
   const invalidResetResponse = await fetch(`${baseUrl}/api/auth/forgot-password`, {
     method: "POST",
