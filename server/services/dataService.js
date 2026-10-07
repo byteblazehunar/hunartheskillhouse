@@ -1172,10 +1172,10 @@ export async function deleteFeeRecord(idOrStudentId) {
 // 11. COURSE CRUD
 // ==========================================
 export async function createCourse(data) {
+  const { _id, ...courseData } = data;
   const slug = data.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const rec = {
-    ...data,
-    _id: data._id || "course-" + Date.now(),
+    ...courseData,
     slug,
     active: true,
     createdAt: new Date().toISOString()
@@ -1187,8 +1187,9 @@ export async function createCourse(data) {
       throw new Error(`MongoDB could not create the course: ${error.message}`);
     }
   }
-  await mutateJson("courses.json", (list) => [rec, ...list.filter((c) => (c.slug || c._id) !== (rec.slug || rec._id))]);
-  return rec;
+  const fallbackRecord = { ...rec, _id: _id || "course-" + Date.now() };
+  await mutateJson("courses.json", (list) => [fallbackRecord, ...list.filter((c) => (c.slug || c._id) !== (fallbackRecord.slug || fallbackRecord._id))]);
+  return fallbackRecord;
 }
 
 export async function updateCourse(id, data) {

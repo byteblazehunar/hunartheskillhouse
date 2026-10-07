@@ -141,7 +141,7 @@ export default function AdminPortal() {
 
   const [courseForm, setCourseForm] = useState({
     title: "",
-    category: "",
+    category: "Full Stack Development",
     duration: "",
     description: "",
     syllabus: ""
@@ -623,6 +623,14 @@ export default function AdminPortal() {
       if (!res.ok) throw new Error(data.message || "Error creating course");
       setCourses((prev) => [data.course, ...prev]);
       setModalType(null);
+      setCourseForm({
+        title: "",
+        category: "Full Stack Development",
+        duration: "",
+        description: "",
+        syllabus: "",
+        assignedTeacher: ""
+      });
       showToast("Course created successfully!");
     } catch (err) {
       showToast(err.message, "error");
@@ -874,6 +882,31 @@ export default function AdminPortal() {
       assignedTeacher: c.assignedTeacher || ""
     });
     setModalType("edit_course");
+  };
+
+  const openAddStudent = () => {
+    setEditingItem(null);
+    setStudentForm({ name: "", email: "", phone: "", course: "", batch: "" });
+    setModalType("add_student");
+  };
+
+  const openAddCourse = () => {
+    setEditingItem(null);
+    setCourseForm({
+      title: "",
+      category: "Full Stack Development",
+      duration: "",
+      description: "",
+      syllabus: "",
+      assignedTeacher: ""
+    });
+    setModalType("add_course");
+  };
+
+  const openAddBatch = () => {
+    setEditingItem(null);
+    setBatchForm({ name: "", course: "", timing: "", assignedTeacher: "" });
+    setModalType("add_batch");
   };
 
   const handleUpdateCourse = async (e) => {
@@ -1532,7 +1565,7 @@ export default function AdminPortal() {
                           type="button"
                           onClick={() => {
                             if (item.isAction) {
-                              if (item.id === "add_student") setModalType("add_student");
+                              if (item.id === "add_student") openAddStudent();
                               else if (item.id === "add_staff") setModalType("add_staff");
                               else if (item.id === "logout") handleLogout();
                             } else {
@@ -1680,7 +1713,7 @@ export default function AdminPortal() {
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {/* Quick Action: Add Student */}
             <button
-              onClick={() => setModalType("add_student")}
+              onClick={openAddStudent}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -1875,7 +1908,7 @@ export default function AdminPortal() {
                 </div>
                 <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   <button
-                    onClick={() => setModalType("add_student")}
+                    onClick={openAddStudent}
                     style={{
                       padding: "8px 14px",
                       borderRadius: "8px",
@@ -1905,7 +1938,7 @@ export default function AdminPortal() {
                     + Add Staff
                   </button>
                   <button
-                    onClick={() => setModalType("add_batch")}
+                    onClick={openAddBatch}
                     style={{
                       padding: "8px 14px",
                       borderRadius: "8px",
@@ -2110,7 +2143,7 @@ export default function AdminPortal() {
 
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button
-                    onClick={() => setModalType("add_student")}
+                    onClick={openAddStudent}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -2404,7 +2437,7 @@ export default function AdminPortal() {
                 </div>
 
                 <button
-                  onClick={() => setModalType("add_student")}
+                  onClick={openAddStudent}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -2946,7 +2979,7 @@ export default function AdminPortal() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setModalType("add_course")}
+                    onClick={openAddCourse}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -3051,7 +3084,7 @@ export default function AdminPortal() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setModalType("add_batch")}
+                    onClick={openAddBatch}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -4332,6 +4365,7 @@ export default function AdminPortal() {
               <div>
                 <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Program / Course *</label>
                 <select
+                  required
                   value={studentForm.course}
                   onChange={(e) => setStudentForm({ ...studentForm, course: e.target.value })}
                   style={{
@@ -4344,12 +4378,15 @@ export default function AdminPortal() {
                     fontSize: "0.85rem"
                   }}
                 >
+                  <option value="" disabled>Select a course</option>
+                  {modalType === "edit_student" && studentForm.course && !courses.some((c) => c.title === studentForm.course) && (
+                    <option value={studentForm.course}>{studentForm.course} (Current)</option>
+                  )}
                   {courses.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>
                   ))}
-                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 
@@ -4368,12 +4405,15 @@ export default function AdminPortal() {
                     fontSize: "0.85rem"
                   }}
                 >
+                  <option value="">No batch selected</option>
+                  {modalType === "edit_student" && studentForm.batch && !batches.some((b) => b.name === studentForm.batch) && (
+                    <option value={studentForm.batch}>{studentForm.batch} (Current)</option>
+                  )}
                   {batches.map((b) => (
                     <option key={b._id || b.name} value={b.name}>
                       {b.name} ({b.timing})
                     </option>
                   ))}
-                  <option value="" disabled>Select a batch</option>
                 </select>
               </div>
 
@@ -5072,8 +5112,9 @@ export default function AdminPortal() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
-                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Category</label>
+                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Category *</label>
                   <select
+                    required
                     value={courseForm.category}
                     onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
                     style={{
@@ -5132,9 +5173,10 @@ export default function AdminPortal() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Description</label>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Description *</label>
                 <textarea
                   rows={3}
+                  required
                   placeholder="Comprehensive industry training with live projects..."
                   value={courseForm.description}
                   onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
@@ -5286,6 +5328,7 @@ export default function AdminPortal() {
               <div>
                 <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Course *</label>
                 <select
+                  required
                   value={batchForm.course}
                   onChange={(e) => setBatchForm({ ...batchForm, course: e.target.value })}
                   style={{
@@ -5298,12 +5341,12 @@ export default function AdminPortal() {
                     fontSize: "0.85rem"
                   }}
                 >
+                  <option value="" disabled>Select a course</option>
                   {courses.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>
                   ))}
-                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 
@@ -5507,8 +5550,9 @@ export default function AdminPortal() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
-                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Course</label>
+                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Course *</label>
                   <select
+                    required
                     value={timetableForm.course}
                     onChange={(e) => setTimetableForm({ ...timetableForm, course: e.target.value })}
                     style={{
@@ -5521,17 +5565,18 @@ export default function AdminPortal() {
                       fontSize: "0.85rem"
                     }}
                   >
+                    <option value="" disabled>Select a course</option>
                     {courses.map((c) => (
                       <option key={c.slug || c._id} value={c.title}>
                         {c.title}
                       </option>
                     ))}
-                    <option value="" disabled>Select a course</option>
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Cohort / Batch</label>
+                  <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Cohort / Batch *</label>
                   <select
+                    required
                     value={timetableForm.batch}
                     onChange={(e) => setTimetableForm({ ...timetableForm, batch: e.target.value })}
                     style={{
@@ -5544,7 +5589,7 @@ export default function AdminPortal() {
                       fontSize: "0.85rem"
                     }}
                   >
-                    <option value="All Batches">All Batches</option>
+                    <option value="" disabled>Select a batch</option>
                     {batches.map((b) => (
                       <option key={b._id || b.name} value={b.name}>
                         {b.name}
@@ -5751,12 +5796,12 @@ export default function AdminPortal() {
                     fontSize: "0.85rem"
                   }}
                 >
+                  <option value="">Select a course</option>
                   {courses.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>
                   ))}
-                  <option value="" disabled>Select a course</option>
                 </select>
               </div>
 

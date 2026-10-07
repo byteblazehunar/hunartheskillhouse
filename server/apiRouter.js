@@ -1200,7 +1200,7 @@ router.post(
     // Create Student record
     const student = await createStudent({
       studentId,
-      userId: user._id || user.id,
+      user: user._id || user.id,
       name: name.trim(),
       email: email.trim(),
       phone: phone.trim(),
@@ -1729,11 +1729,20 @@ router.get("/courses", async (req, res) => {
 
 router.post("/courses", authenticate, requireRole(["admin"]), async (req, res) => {
   try {
-    const { title, category, description, duration, syllabus, assignedTeacher } = req.body;
-    if (!title || !description) {
+    const { title, category, description, duration, syllabus, assignedTeacher } = req.body || {};
+    const cleanTitle = typeof title === "string" ? title.trim() : "";
+    const cleanDescription = typeof description === "string" ? description.trim() : "";
+    if (!cleanTitle || !cleanDescription) {
       return res.status(400).json({ success: false, message: "Title and description are required." });
     }
-    const course = await createCourse({ title, category: category || "Design & Tech", description, duration, syllabus: syllabus || [], assignedTeacher: assignedTeacher || "" });
+    const course = await createCourse({
+      title: cleanTitle,
+      category: typeof category === "string" && category.trim() ? category.trim() : "Design & Tech",
+      description: cleanDescription,
+      duration: typeof duration === "string" ? duration.trim() : "",
+      syllabus: Array.isArray(syllabus) ? syllabus.filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean) : [],
+      assignedTeacher: typeof assignedTeacher === "string" ? assignedTeacher.trim() : ""
+    });
     await logAction(req.user.name, req.user.role, "CREATE_COURSE", "Course", course.title);
     res.status(201).json({ success: true, course });
   } catch (error) {
@@ -1745,6 +1754,7 @@ router.put("/courses/:id", authenticate, requireRole(["admin"]), async (req, res
   try {
     const { id } = req.params;
     const updated = await updateCourse(id, req.body);
+    if (!updated) return res.status(404).json({ success: false, message: "Course not found." });
     await logAction(req.user.name, req.user.role, "UPDATE_COURSE", "Course", id);
     res.json({ success: true, course: updated });
   } catch (error) {

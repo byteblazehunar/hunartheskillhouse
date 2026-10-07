@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { test } from "node:test";
+import mongoose from "mongoose";
 
 const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
 assert.match(vercelConfig.rewrites[0].source, /\(\?!api\\?\//);
@@ -44,6 +45,73 @@ await Promise.all([
 process.env.JWT_SECRET ||= "integration-test-secret";
 process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
 const { default: app } = await import("./server.js");
+const { Course, Student } = await import("./models/index.js");
+const { createCourse, createStudent } = await import("./services/dataService.js");
+
+test("course creation delegates MongoDB _id generation to Mongoose", async () => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalMongoUri = process.env.MONGODB_URI;
+  const originalCreate = Course.create;
+  let insertedCourse;
+
+  process.env.MONGODB_URI = "mongodb://course-test/hunar";
+  mongoose.connection.readyState = 1;
+  Course.create = async (record) => {
+    insertedCourse = record;
+    return {
+      toObject: () => ({ ...record, _id: new mongoose.Types.ObjectId() })
+    };
+  };
+
+  try {
+    const course = await createCourse({
+      _id: "course-invalid-id",
+      title: "Course Creation Regression Test",
+      category: "Testing",
+      description: "Verifies that Mongoose supplies a valid ObjectId."
+    });
+
+    assert.equal(Object.hasOwn(insertedCourse, "_id"), false);
+    assert.ok(course._id instanceof mongoose.Types.ObjectId);
+  } finally {
+    Course.create = originalCreate;
+    mongoose.connection.readyState = originalReadyState;
+    process.env.MONGODB_URI = originalMongoUri;
+  }
+});
+
+test("student registration persists its linked MongoDB user reference", async () => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalMongoUri = process.env.MONGODB_URI;
+  const originalFindOneAndUpdate = Student.findOneAndUpdate;
+  const userId = new mongoose.Types.ObjectId();
+  let insertedStudent;
+
+  process.env.MONGODB_URI = "mongodb://student-test/hunar";
+  mongoose.connection.readyState = 1;
+  Student.findOneAndUpdate = async (_query, update) => {
+    insertedStudent = update.$set;
+    return { toObject: () => ({ ...update.$set }) };
+  };
+
+  try {
+    await createStudent({
+      studentId: "HUN-S-TEST-0001",
+      user: userId,
+      name: "Registration Regression Test",
+      email: "student@example.test",
+      phone: "+910000000000",
+      course: "Test Course"
+    });
+
+    assert.equal(String(insertedStudent.user), String(userId));
+    assert.equal(Object.hasOwn(insertedStudent, "userId"), false);
+  } finally {
+    Student.findOneAndUpdate = originalFindOneAndUpdate;
+    mongoose.connection.readyState = originalReadyState;
+    process.env.MONGODB_URI = originalMongoUri;
+  }
+});
 
 test("Express serves the API and client-side portal routes", async (t) => {
   const server = app.listen(0, "127.0.0.1");
