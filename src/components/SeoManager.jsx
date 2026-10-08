@@ -23,7 +23,8 @@ export default function SeoManager() {
 
   useEffect(() => {
     const page = getPageMetadata(pathname);
-    const canonicalUrl = `${SITE_URL}${pathname === "/" ? "/" : pathname.replace(/\/+$/, "")}`;
+    const normalizedPath = pathname === "/" ? "/" : pathname.replace(/\/+$/, "");
+    const canonicalUrl = `${SITE_URL}${normalizedPath}`;
     const robots = page.noindex || isPrivateSeoPath(pathname)
       ? "noindex, nofollow"
       : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";

@@ -3,7 +3,7 @@ import { coursesData } from "./coursesData.js";
 import { faqData } from "./faqData.js";
 import { siteConfig } from "./siteConfig.js";
 
-export const SITE_URL = "https://hunar.courses";
+export const SITE_URL = "https://www.hunar.courses";
 export const DEFAULT_IMAGE = `${SITE_URL}/logo-light.png`;
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
@@ -200,13 +200,23 @@ export function getPageMetadata(pathname) {
 }
 
 export function getStructuredData(page) {
-  if (!page.schema || page.schema["@type"] === "EducationalOrganization") {
-    return page.schema || null;
-  }
+  if (!page.schema) return null;
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: siteConfig.name,
+    url: SITE_URL,
+    publisher: { "@id": ORGANIZATION_ID },
+    inLanguage: "en-IN"
+  };
+  const pageSchema = page.schema["@type"] !== "EducationalOrganization"
+    ? [page.schema]
+    : [];
   return {
     "@context": "https://schema.org",
-    "@graph": [organizationSchema(), page.schema].map((item) =>
+    "@graph": [organizationSchema(), websiteSchema, ...pageSchema].map((item) =>
       Object.fromEntries(Object.entries(item).filter(([key]) => key !== "@context"))
     )
   };
