@@ -12,11 +12,21 @@ function normalizeCourse(course, index) {
     title: course.title,
     category: course.category || publishedCourse?.category || "Programs",
     duration: course.duration || publishedCourse?.duration || "Flexible",
-    shortDesc: course.description || course.shortDesc || publishedCourse?.shortDesc || "Explore this practical, instructor-led program at Hunar.",
+    badge: course.badge || publishedCourse?.badge || "",
+    mode: course.mode || publishedCourse?.mode || "Offline Lab + Hands-on",
+    level: course.level || publishedCourse?.level || "",
+    shortDesc: course.shortDesc || course.description || publishedCourse?.shortDesc || "Explore this practical, instructor-led program at Hunar.",
     tagline: course.tagline || publishedCourse?.tagline || course.description || "Build practical, industry-ready skills at Hunar.",
     image: course.image || publishedCourse?.image || "/assets/hunar_modern_lab.jpg",
     highlights: Array.isArray(course.highlights) ? course.highlights : (publishedCourse?.highlights || course.syllabus || []),
     tools: Array.isArray(course.tools) ? course.tools : (publishedCourse?.tools || []),
+    syllabus: Array.isArray(course.syllabus) && course.syllabus.length ? course.syllabus : (publishedCourse?.syllabus || []),
+    curriculum: Array.isArray(course.curriculum) && course.curriculum.length ? course.curriculum : (publishedCourse?.curriculum || []),
+    projects: Array.isArray(course.projects) && course.projects.length ? course.projects : (publishedCourse?.projects || []),
+    careerRoles: Array.isArray(course.careerRoles) && course.careerRoles.length ? course.careerRoles : (publishedCourse?.careerRoles || []),
+    mentor: course.mentor?.name ? course.mentor : (publishedCourse?.mentor || course.mentor || null),
+    rating: course.rating ?? publishedCourse?.rating ?? 0,
+    reviewsCount: course.reviewsCount ?? publishedCourse?.reviewsCount ?? 0,
     featured: course.featured ?? publishedCourse?.featured ?? false
   };
 }

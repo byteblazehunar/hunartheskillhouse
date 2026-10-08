@@ -59,6 +59,7 @@ import CMSManager from "../components/admin/CMSManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
 import usePortalTab from "../hooks/usePortalTab";
+import { coursesData } from "../data/coursesData";
 
 const ADMIN_PORTAL_TABS = [
   "overview", "activity", "notifications", "students", "invitations", "enrollments",
@@ -69,6 +70,117 @@ const ADMIN_PORTAL_TABS = [
   "cms_gallery", "cms_navigation", "fees", "receipts", "leads", "reports", "calendar",
   "users", "roles", "audit", "security", "settings", "profile"
 ];
+
+function courseFormFromRecord(course = {}) {
+  return {
+    title: course.title || "",
+    category: course.category || "",
+    duration: course.duration || "",
+    description: course.description || course.shortDesc || "",
+    syllabus: Array.isArray(course.syllabus) ? course.syllabus.join("\n") : (course.syllabus || ""),
+    assignedTeacher: course.assignedTeacher || course.mentor?.name || "",
+    badge: course.badge || "",
+    mode: course.mode || "",
+    level: course.level || "",
+    shortDesc: course.shortDesc || course.description || "",
+    tagline: course.tagline || "",
+    image: course.image || "",
+    featured: Boolean(course.featured),
+    rating: String(course.rating || ""),
+    reviewsCount: String(course.reviewsCount || ""),
+    mentorName: course.mentor?.name || "",
+    mentorRole: course.mentor?.role || "",
+    mentorExp: course.mentor?.exp || "",
+    highlights: Array.isArray(course.highlights) ? course.highlights.join("\n") : "",
+    tools: Array.isArray(course.tools) ? course.tools.join("\n") : "",
+    curriculum: JSON.stringify(course.curriculum || [], null, 2),
+    projects: JSON.stringify(course.projects || [], null, 2),
+    careerRoles: Array.isArray(course.careerRoles) ? course.careerRoles.join("\n") : ""
+  };
+}
+
+function coursePayloadFromForm(form) {
+  const parseJsonArray = (value, label) => {
+    try {
+      const parsed = JSON.parse(value || "[]");
+      if (!Array.isArray(parsed)) throw new Error();
+      return parsed;
+    } catch {
+      throw new Error(`${label} must be a valid JSON array.`);
+    }
+  };
+  const splitLines = (value) => value.split("\n").map((item) => item.trim()).filter(Boolean);
+
+  return {
+    title: form.title.trim(),
+    category: form.category.trim(),
+    duration: form.duration.trim(),
+    description: form.description.trim(),
+    syllabus: splitLines(form.syllabus),
+    assignedTeacher: form.assignedTeacher.trim(),
+    badge: form.badge.trim(),
+    mode: form.mode.trim(),
+    level: form.level.trim(),
+    shortDesc: form.shortDesc.trim(),
+    tagline: form.tagline.trim(),
+    image: form.image.trim(),
+    featured: form.featured,
+    rating: Number(form.rating) || 0,
+    reviewsCount: Number(form.reviewsCount) || 0,
+    mentor: {
+      name: form.mentorName.trim(),
+      role: form.mentorRole.trim(),
+      exp: form.mentorExp.trim()
+    },
+    highlights: splitLines(form.highlights),
+    tools: splitLines(form.tools),
+    curriculum: parseJsonArray(form.curriculum, "Curriculum"),
+    projects: parseJsonArray(form.projects, "Projects"),
+    careerRoles: splitLines(form.careerRoles)
+  };
+}
+
+function mergeCourseCatalog(publishedCourses, savedCourses) {
+  const catalog = new Map(
+    publishedCourses.map((course) => [(course.slug || course.title).toLowerCase(), course])
+  );
+
+  savedCourses.forEach((savedCourse) => {
+    const key = (savedCourse.slug || savedCourse.title).toLowerCase();
+    const publishedCourse = catalog.get(key);
+    if (!publishedCourse) {
+      catalog.set(key, savedCourse);
+      return;
+    }
+
+    const savedMentor = savedCourse.mentor && typeof savedCourse.mentor === "object" && !Array.isArray(savedCourse.mentor)
+      ? savedCourse.mentor
+      : {};
+    const hasMentorDetails = Object.values(savedMentor).some(Boolean);
+    catalog.set(key, {
+      ...publishedCourse,
+      ...savedCourse,
+      category: savedCourse.category || publishedCourse.category,
+      duration: savedCourse.duration || publishedCourse.duration,
+      description: savedCourse.description || publishedCourse.description || publishedCourse.shortDesc,
+      shortDesc: savedCourse.shortDesc || publishedCourse.shortDesc || savedCourse.description,
+      tagline: savedCourse.tagline || publishedCourse.tagline,
+      badge: savedCourse.badge || publishedCourse.badge,
+      mode: savedCourse.mode || publishedCourse.mode,
+      level: savedCourse.level || publishedCourse.level,
+      image: savedCourse.image || publishedCourse.image,
+      mentor: hasMentorDetails ? { ...publishedCourse.mentor, ...savedMentor } : publishedCourse.mentor,
+      syllabus: savedCourse.syllabus?.length ? savedCourse.syllabus : (publishedCourse.syllabus || []),
+      highlights: savedCourse.highlights?.length ? savedCourse.highlights : (publishedCourse.highlights || []),
+      tools: savedCourse.tools?.length ? savedCourse.tools : (publishedCourse.tools || []),
+      curriculum: savedCourse.curriculum?.length ? savedCourse.curriculum : (publishedCourse.curriculum || []),
+      projects: savedCourse.projects?.length ? savedCourse.projects : (publishedCourse.projects || []),
+      careerRoles: savedCourse.careerRoles?.length ? savedCourse.careerRoles : (publishedCourse.careerRoles || [])
+    });
+  });
+
+  return Array.from(catalog.values());
+}
 
 export default function AdminPortal() {
   const navigate = useNavigate();
@@ -96,6 +208,9 @@ export default function AdminPortal() {
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
   const [academicDataErrors, setAcademicDataErrors] = useState({});
+  const adminCourseList = mergeCourseCatalog(coursesData, courses)
+    .filter((course) => course.title?.trim());
+  const courseOptions = adminCourseList;
   const [leads, setLeads] = useState([]);
   const [leadNotes, setLeadNotes] = useState({});
   const [announcements, setAnnouncements] = useState([]);
@@ -154,10 +269,28 @@ export default function AdminPortal() {
 
   const [courseForm, setCourseForm] = useState({
     title: "",
-    category: "Full Stack Development",
+    category: "",
     duration: "",
     description: "",
-    syllabus: ""
+    syllabus: "",
+    assignedTeacher: "",
+    badge: "",
+    mode: "",
+    level: "",
+    shortDesc: "",
+    tagline: "",
+    image: "",
+    featured: false,
+    rating: "",
+    reviewsCount: "",
+    mentorName: "",
+    mentorRole: "",
+    mentorExp: "",
+    highlights: "",
+    tools: "",
+    curriculum: "[]",
+    projects: "[]",
+    careerRoles: ""
   });
 
   const [batchForm, setBatchForm] = useState({
@@ -671,10 +804,10 @@ export default function AdminPortal() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const payload = {
-        ...courseForm,
-        syllabus: courseForm.syllabus.split(",").map((s) => s.trim())
-      };
+      const payload = coursePayloadFromForm(courseForm);
+      if (!payload.title || !payload.category || !payload.description) {
+        throw new Error("Course title, category, and description are required.");
+      }
       const res = await fetch("/api/courses", {
         method: "POST",
         headers: getAuthHeaders(),
@@ -684,14 +817,7 @@ export default function AdminPortal() {
       if (!res.ok) throw new Error(data.message || "Error creating course");
       setCourses((prev) => [data.course, ...prev]);
       setModalType(null);
-      setCourseForm({
-        title: "",
-        category: "Full Stack Development",
-        duration: "",
-        description: "",
-        syllabus: "",
-        assignedTeacher: ""
-      });
+      setCourseForm(courseFormFromRecord());
       showToast("Course created successfully!");
     } catch (err) {
       showToast(err.message, "error");
@@ -934,14 +1060,7 @@ export default function AdminPortal() {
 
   const openEditCourse = (c) => {
     setEditingItem(c);
-    setCourseForm({
-      title: c.title || "",
-      category: c.category || "Full Stack Development",
-      duration: c.duration || "6 Months",
-      description: c.description || "",
-      syllabus: Array.isArray(c.syllabus) ? c.syllabus.join(", ") : (c.syllabus || ""),
-      assignedTeacher: c.assignedTeacher || ""
-    });
+    setCourseForm(courseFormFromRecord(c));
     setModalType("edit_course");
   };
 
@@ -953,14 +1072,7 @@ export default function AdminPortal() {
 
   const openAddCourse = () => {
     setEditingItem(null);
-    setCourseForm({
-      title: "",
-      category: "Full Stack Development",
-      duration: "",
-      description: "",
-      syllabus: "",
-      assignedTeacher: ""
-    });
+    setCourseForm(courseFormFromRecord());
     setModalType("add_course");
   };
 
@@ -974,11 +1086,11 @@ export default function AdminPortal() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const id = editingItem._id || editingItem.slug || editingItem.id;
-      const payload = {
-        ...courseForm,
-        syllabus: typeof courseForm.syllabus === "string" ? courseForm.syllabus.split(",").map((s) => s.trim()) : courseForm.syllabus
-      };
+      const id = editingItem.slug || editingItem._id || editingItem.id;
+      const payload = coursePayloadFromForm(courseForm);
+      if (!payload.title || !payload.category || !payload.description) {
+        throw new Error("Course title, category, and description are required.");
+      }
       const res = await fetch(`/api/courses/${id}`, {
         method: "PUT",
         headers: getAuthHeaders(),
@@ -987,7 +1099,10 @@ export default function AdminPortal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to update course.");
       const updated = data.course || { ...editingItem, ...payload };
-      setCourses((prev) => prev.map((c) => (String(c._id || c.slug || c.id) === String(id) ? updated : c)));
+      setCourses((prev) => [
+        updated,
+        ...prev.filter((course) => course.slug !== updated.slug && String(course._id || course.id) !== String(id))
+      ]);
       setModalType(null);
       setEditingItem(null);
       showToast(`Course "${courseForm.title}" updated successfully!`);
@@ -1007,7 +1122,10 @@ export default function AdminPortal() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to delete course.");
-      setCourses((prev) => prev.filter((c) => String(c._id || c.slug || c.id) !== String(id)));
+      setCourses((prev) => prev.filter((course) =>
+        String(course.slug || "") !== String(id) &&
+        String(course._id || course.id || "") !== String(id)
+      ));
       showToast(`Course "${title}" removed successfully.`);
     } catch (err) {
       showToast(err.message, "error");
@@ -1328,7 +1446,7 @@ export default function AdminPortal() {
       perms: [
         "students.list_view",
         "students.profile_view",
-        "students.add",
+        "students.create",
         "students.edit",
         "students.attendance_view",
         "students.fee_status_view",
@@ -1337,8 +1455,8 @@ export default function AdminPortal() {
       roles: ["admin", "super_admin", "teacher", "staff"],
       items: [
         { id: "students", label: "All Students", icon: GraduationCap, count: students.length, perms: ["students.list_view", "students.profile_view"] },
-        { id: "add_student", label: "Add Student", icon: Plus, isAction: true, perms: ["students.add"] },
-        { id: "invitations", label: "Student Invitations", icon: Mail, count: students.filter((s) => s.enrollmentStatus === "pending_activation").length, perms: ["students.add", "students.edit"] },
+        { id: "add_student", label: "Add Student", icon: Plus, isAction: true, perms: ["students.create"] },
+        { id: "invitations", label: "Student Invitations", icon: Mail, count: students.filter((s) => s.enrollmentStatus === "pending_activation").length, perms: ["students.create", "students.edit"] },
         { id: "enrollments", label: "Enrollments", icon: UserCheck, perms: ["admissions.applications_view", "admissions.enrollment_record"] },
         { id: "courses", label: "Courses & Batches", icon: BookOpen, perms: ["courses.view", "batches.view"] },
         { id: "attendance", label: "Attendance", icon: CheckSquare, perms: ["attendance.students_view", "attendance.students_mark", "students.attendance_view"] },
@@ -1369,7 +1487,7 @@ export default function AdminPortal() {
       perms: ["courses.view", "batches.view", "timetable.institute_view", "academics.assignments_view"],
       roles: ["admin", "super_admin", "teacher"],
       items: [
-        { id: "courses", label: "Courses", icon: BookOpen, count: courses.length, perms: ["courses.view"] },
+        { id: "courses", label: "Courses", icon: BookOpen, count: adminCourseList.length, perms: ["courses.view"] },
         { id: "course_categories", label: "Course Categories", icon: Layers, perms: ["courses.view", "courses.edit"] },
         { id: "batches", label: "Batches", icon: Calendar, count: batches.length, perms: ["batches.view"] },
         { id: "timetable", label: "Class Timetable", icon: Clock, perms: ["timetable.institute_view"] },
@@ -2477,7 +2595,7 @@ export default function AdminPortal() {
                     }}
                   >
                     <option value="all">All Courses</option>
-                    {courses.map((c) => (
+                    {courseOptions.map((c) => (
                       <option key={c.slug || c._id} value={c.title}>
                         {c.title}
                       </option>
@@ -3122,21 +3240,22 @@ export default function AdminPortal() {
                   </button>
                 </div>
 
-                {academicDataErrors.courses ? (
+                {academicDataErrors.courses && (
                   <div role="alert" style={{ padding: "16px", borderRadius: "10px", border: "1px solid #FCA5A5", color: "#B91C1C" }}>
                     <p style={{ margin: "0 0 10px" }}>{academicDataErrors.courses}</p>
                     <button type="button" className="btn btn-outline btn-sm" onClick={() => loadAllData()}>Retry loading courses</button>
                   </div>
-                ) : courses.length === 0 ? (
+                )}
+                {adminCourseList.length === 0 ? (
                   <div role="status" style={{ padding: "18px", borderRadius: "10px", border: "1px dashed var(--color-border)", color: "var(--color-text-secondary)" }}>
                     <p style={{ margin: "0 0 10px" }}>No courses have been added yet.</p>
                     <button type="button" className="btn btn-outline btn-sm" onClick={openAddCourse}>Create your first course</button>
                   </div>
                 ) : (
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
-                    {courses.map((c) => (
+                    {adminCourseList.map((c) => (
                     <div
-                      key={c.slug || c._id}
+                      key={c.slug || c._id || c.id}
                       style={{
                         padding: "20px",
                         backgroundColor: "var(--color-surface)",
@@ -3146,19 +3265,56 @@ export default function AdminPortal() {
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
                         <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", color: "var(--color-brand)" }}>
-                          {c.category}
+                          {c.category || "Uncategorized"}
                         </span>
                         <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                          {c.duration}
+                          {c.duration || "Duration not set"}
                         </span>
                       </div>
                       <h4 style={{ fontSize: "1rem", fontWeight: 800, margin: "0 0 6px 0" }}>{c.title}</h4>
                       <p style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)", margin: "0 0 12px 0", lineHeight: 1.5 }}>
-                        {c.description}
+                        {c.shortDesc || c.description || c.tagline || "No course description provided."}
                       </p>
+                      <details style={{ marginBottom: "12px", fontSize: "0.78rem", color: "var(--color-text-secondary)" }}>
+                        <summary style={{ cursor: "pointer", fontWeight: 700, color: "var(--color-text-primary)" }}>
+                          View complete course information
+                        </summary>
+                        <div style={{ display: "grid", gap: "8px", marginTop: "12px", lineHeight: 1.55 }}>
+                          {c.tagline && <p style={{ margin: 0 }}><strong>Tagline:</strong> {c.tagline}</p>}
+                          {c.badge && <p style={{ margin: 0 }}><strong>Badge:</strong> {c.badge}</p>}
+                          {c.mode && <p style={{ margin: 0 }}><strong>Mode:</strong> {c.mode}</p>}
+                          {c.level && <p style={{ margin: 0 }}><strong>Level:</strong> {c.level}</p>}
+                          {c.description && <p style={{ margin: 0 }}><strong>Description:</strong> {c.description}</p>}
+                          {c.mentor && <p style={{ margin: 0 }}><strong>Mentor:</strong> {[c.mentor.name, c.mentor.role, c.mentor.exp].filter(Boolean).join(" · ") || "Not assigned"}</p>}
+                          {c.highlights?.length > 0 && (
+                            <div><strong>Highlights</strong><ul style={{ margin: "4px 0 0", paddingLeft: "20px" }}>{c.highlights.map((item, index) => <li key={index}>{item}</li>)}</ul></div>
+                          )}
+                          {c.tools?.length > 0 && <p style={{ margin: 0 }}><strong>Tools:</strong> {c.tools.join(", ")}</p>}
+                          {c.syllabus?.length > 0 && <p style={{ margin: 0 }}><strong>Syllabus:</strong> {c.syllabus.join(", ")}</p>}
+                          {c.curriculum?.length > 0 && (
+                            <div><strong>Curriculum</strong>
+                              {c.curriculum.map((module, index) => (
+                                <div key={index} style={{ marginTop: "6px" }}>
+                                  <strong>{[module.module, module.title].filter(Boolean).join(": ")}</strong>
+                                  {Array.isArray(module.topics) && <ul style={{ margin: "3px 0 0", paddingLeft: "20px" }}>{module.topics.map((topic, topicIndex) => <li key={topicIndex}>{topic}</li>)}</ul>}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {c.projects?.length > 0 && (
+                            <div><strong>Projects</strong><ul style={{ margin: "4px 0 0", paddingLeft: "20px" }}>
+                              {c.projects.map((project, index) => <li key={index}><strong>{project.title || project.name || "Project"}</strong>{(project.desc || project.description) && `: ${project.desc || project.description}`}</li>)}
+                            </ul></div>
+                          )}
+                          {c.careerRoles?.length > 0 && <p style={{ margin: 0 }}><strong>Career roles:</strong> {c.careerRoles.join(", ")}</p>}
+                          {c.rating > 0 && <p style={{ margin: 0 }}><strong>Rating:</strong> {c.rating}{c.reviewsCount ? ` (${c.reviewsCount} reviews)` : ""}</p>}
+                          {c.image && <p style={{ margin: 0, overflowWrap: "anywhere" }}><strong>Image:</strong> {c.image}</p>}
+                          {c.featured && <p style={{ margin: 0 }}><strong>Featured program</strong></p>}
+                        </div>
+                      </details>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--color-border)", paddingTop: "10px", marginTop: "10px" }}>
                         <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                          Lead Faculty: {c.assignedTeacher || "Unassigned"}
+                          Lead Faculty: {c.assignedTeacher || c.mentor?.name || "Unassigned"}
                         </div>
                         <div style={{ display: "flex", gap: "6px" }}>
                           <button
@@ -3181,26 +3337,30 @@ export default function AdminPortal() {
                             <Edit2 size={12} />
                             <span>Edit</span>
                           </button>
-                          <button
-                            onClick={() => handleDeleteCourse(c._id || c.slug || c.id, c.title)}
-                            title="Delete Course"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "4px",
-                              padding: "4px 8px",
-                              borderRadius: "6px",
-                              border: "1px solid rgba(239, 68, 68, 0.3)",
-                              backgroundColor: "rgba(239, 68, 68, 0.08)",
-                              color: "#EF4444",
-                              fontSize: "0.75rem",
-                              fontWeight: 600,
-                              cursor: "pointer"
-                            }}
-                          >
-                            <Trash2 size={12} />
-                            <span>Delete</span>
-                          </button>
+                          {courses.some((savedCourse) => savedCourse.slug === c.slug) && !coursesData.some((publishedCourse) => publishedCourse.slug === c.slug) ? (
+                            <button
+                              onClick={() => handleDeleteCourse(c.slug || c._id || c.id, c.title)}
+                              title="Delete Course"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px",
+                                padding: "4px 8px",
+                                borderRadius: "6px",
+                                border: "1px solid rgba(239, 68, 68, 0.3)",
+                                backgroundColor: "rgba(239, 68, 68, 0.08)",
+                                color: "#EF4444",
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                                cursor: "pointer"
+                              }}
+                            >
+                              <Trash2 size={12} />
+                              <span>Delete</span>
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: "0.7rem", color: "var(--color-text-muted)" }}>Published catalog</span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -4551,7 +4711,7 @@ export default function AdminPortal() {
                   {modalType === "edit_student" && studentForm.course && !courses.some((c) => c.title === studentForm.course) && (
                     <option value={studentForm.course}>{studentForm.course} (Current)</option>
                   )}
-                  {courses.map((c) => (
+                  {courseOptions.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>
@@ -5286,8 +5446,10 @@ export default function AdminPortal() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Category *</label>
-                  <select
+                  <input
+                    type="text"
                     required
+                    placeholder="e.g. Marketing & Growth"
                     value={courseForm.category}
                     onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
                     style={{
@@ -5299,12 +5461,7 @@ export default function AdminPortal() {
                       color: "var(--color-text-primary)",
                       fontSize: "0.85rem"
                     }}
-                  >
-                    <option value="Full Stack Development">Full Stack Development</option>
-                    <option value="Artificial Intelligence & ML">Artificial Intelligence & ML</option>
-                    <option value="Digital Marketing & Performance">Digital Marketing & Performance</option>
-                    <option value="UI/UX & Creative Media">UI/UX & Creative Media</option>
-                  </select>
+                  />
                 </div>
                 <div>
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Duration</label>
@@ -5368,10 +5525,10 @@ export default function AdminPortal() {
               </div>
 
               <div>
-                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Syllabus / Modules (comma-separated)</label>
-                <input
-                  type="text"
-                  placeholder="React, Node.js, Express, MongoDB, TypeScript"
+                <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Syllabus (one item per line)</label>
+                <textarea
+                  rows={3}
+                  placeholder={"React\nNode.js\nExpress"}
                   value={courseForm.syllabus}
                   onChange={(e) => setCourseForm({ ...courseForm, syllabus: e.target.value })}
                   style={{
@@ -5381,10 +5538,112 @@ export default function AdminPortal() {
                     border: "1px solid var(--color-border)",
                     backgroundColor: "var(--color-background)",
                     color: "var(--color-text-primary)",
-                    fontSize: "0.85rem"
+                    fontSize: "0.85rem",
+                    fontFamily: "inherit",
+                    resize: "vertical"
                   }}
                 />
               </div>
+
+              <details style={{ borderTop: "1px solid var(--color-border)", paddingTop: "12px" }}>
+                <summary style={{ cursor: "pointer", fontSize: "0.85rem", fontWeight: 700 }}>Complete website course details</summary>
+                <div style={{ display: "grid", gap: "12px", marginTop: "14px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    {[
+                      ["badge", "Course Badge", "e.g. Flagship Program"],
+                      ["mode", "Learning Mode", "e.g. Offline Lab + Hands-on"],
+                      ["level", "Student Level", "e.g. Beginner to Advanced"],
+                      ["image", "Image URL", "https://..."]
+                    ].map(([field, label, placeholder]) => (
+                      <div key={field}>
+                        <label style={{ fontSize: "0.75rem", fontWeight: 700, display: "block", marginBottom: "5px" }}>{label}</label>
+                        <input
+                          type="text"
+                          placeholder={placeholder}
+                          value={courseForm[field]}
+                          onChange={(e) => setCourseForm({ ...courseForm, [field]: e.target.value })}
+                          style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.82rem", fontWeight: 600 }}>
+                    <input
+                      type="checkbox"
+                      checked={courseForm.featured}
+                      onChange={(e) => setCourseForm({ ...courseForm, featured: e.target.checked })}
+                    />
+                    Show as a featured program
+                  </label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    {[
+                      ["rating", "Rating"],
+                      ["reviewsCount", "Number of Reviews"]
+                    ].map(([field, label]) => (
+                      <div key={field}>
+                        <label style={{ fontSize: "0.75rem", fontWeight: 700, display: "block", marginBottom: "5px" }}>{label}</label>
+                        <input
+                          type="number"
+                          min="0"
+                          step={field === "rating" ? "0.1" : "1"}
+                          value={courseForm[field]}
+                          onChange={(e) => setCourseForm({ ...courseForm, [field]: e.target.value })}
+                          style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {[
+                    ["shortDesc", "Short Description", 3],
+                    ["tagline", "Course Tagline", 2],
+                    ["highlights", "Highlights (one per line)", 4],
+                    ["tools", "Tools (one per line)", 3],
+                    ["careerRoles", "Career Roles (one per line)", 3]
+                  ].map(([field, label, rows]) => (
+                    <div key={field}>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 700, display: "block", marginBottom: "5px" }}>{label}</label>
+                      <textarea
+                        rows={rows}
+                        value={courseForm[field]}
+                        onChange={(e) => setCourseForm({ ...courseForm, [field]: e.target.value })}
+                        style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem", fontFamily: "inherit", resize: "vertical" }}
+                      />
+                    </div>
+                  ))}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    {[
+                      ["mentorName", "Mentor Name"],
+                      ["mentorRole", "Mentor Role"],
+                      ["mentorExp", "Mentor Experience"]
+                    ].map(([field, label]) => (
+                      <div key={field}>
+                        <label style={{ fontSize: "0.75rem", fontWeight: 700, display: "block", marginBottom: "5px" }}>{label}</label>
+                        <input
+                          type="text"
+                          value={courseForm[field]}
+                          onChange={(e) => setCourseForm({ ...courseForm, [field]: e.target.value })}
+                          style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {[
+                    ["curriculum", "Curriculum JSON (array of modules)", 9],
+                    ["projects", "Projects JSON (array of projects)", 6]
+                  ].map(([field, label, rows]) => (
+                    <div key={field}>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 700, display: "block", marginBottom: "5px" }}>{label}</label>
+                      <textarea
+                        rows={rows}
+                        value={courseForm[field]}
+                        onChange={(e) => setCourseForm({ ...courseForm, [field]: e.target.value })}
+                        spellCheck="false"
+                        style={{ width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.78rem", fontFamily: "monospace", resize: "vertical" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </details>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
                 <button
@@ -5515,7 +5774,7 @@ export default function AdminPortal() {
                   }}
                 >
                   <option value="" disabled>Select a course</option>
-                  {courses.map((c) => (
+                  {courseOptions.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>
@@ -5739,7 +5998,7 @@ export default function AdminPortal() {
                     }}
                   >
                     <option value="" disabled>Select a course</option>
-                    {courses.map((c) => (
+                    {courseOptions.map((c) => (
                       <option key={c.slug || c._id} value={c.title}>
                         {c.title}
                       </option>
@@ -5970,7 +6229,7 @@ export default function AdminPortal() {
                   }}
                 >
                   <option value="">Select a course</option>
-                  {courses.map((c) => (
+                  {courseOptions.map((c) => (
                     <option key={c.slug || c._id} value={c.title}>
                       {c.title}
                     </option>

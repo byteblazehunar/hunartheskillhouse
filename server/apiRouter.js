@@ -1722,6 +1722,33 @@ router.delete(
 // ══════════════════════════════════════════════
 // 6. COURSES & BATCHES
 // ══════════════════════════════════════════════
+function normalizeCourseInput(body = {}) {
+  const stringFields = [
+    "title", "slug", "category", "description", "duration", "assignedTeacher",
+    "badge", "mode", "level", "shortDesc", "tagline", "image"
+  ];
+  const course = Object.fromEntries(
+    stringFields
+      .filter((field) => typeof body[field] === "string")
+      .map((field) => [field, body[field].trim()])
+  );
+  for (const field of ["syllabus", "highlights", "tools", "careerRoles"]) {
+    if (Array.isArray(body[field])) {
+      course[field] = body[field].filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean);
+    }
+  }
+  for (const field of ["curriculum", "projects"]) {
+    if (Array.isArray(body[field])) course[field] = body[field];
+  }
+  if (body.mentor && typeof body.mentor === "object" && !Array.isArray(body.mentor)) {
+    course.mentor = body.mentor;
+  }
+  if (typeof body.featured === "boolean") course.featured = body.featured;
+  if (Number.isFinite(Number(body.rating))) course.rating = Number(body.rating);
+  if (Number.isFinite(Number(body.reviewsCount))) course.reviewsCount = Number(body.reviewsCount);
+  return course;
+}
+
 router.get("/courses", async (req, res) => {
   const courses = await getAllCourses();
   res.json(courses);
@@ -1729,19 +1756,18 @@ router.get("/courses", async (req, res) => {
 
 router.post("/courses", authenticate, requireRole(["admin"]), async (req, res) => {
   try {
-    const { title, category, description, duration, syllabus, assignedTeacher } = req.body || {};
+    const courseInput = normalizeCourseInput(req.body);
+    const { title, category, description } = courseInput;
     const cleanTitle = typeof title === "string" ? title.trim() : "";
     const cleanDescription = typeof description === "string" ? description.trim() : "";
     if (!cleanTitle || !cleanDescription) {
       return res.status(400).json({ success: false, message: "Title and description are required." });
     }
     const course = await createCourse({
+      ...courseInput,
       title: cleanTitle,
       category: typeof category === "string" && category.trim() ? category.trim() : "Design & Tech",
-      description: cleanDescription,
-      duration: typeof duration === "string" ? duration.trim() : "",
-      syllabus: Array.isArray(syllabus) ? syllabus.filter((item) => typeof item === "string").map((item) => item.trim()).filter(Boolean) : [],
-      assignedTeacher: typeof assignedTeacher === "string" ? assignedTeacher.trim() : ""
+      description: cleanDescription
     });
     await logAction(req.user.name, req.user.role, "CREATE_COURSE", "Course", course.title);
     res.status(201).json({ success: true, course });
@@ -1753,7 +1779,8 @@ router.post("/courses", authenticate, requireRole(["admin"]), async (req, res) =
 router.put("/courses/:id", authenticate, requireRole(["admin"]), async (req, res) => {
   try {
     const { id } = req.params;
-    const updated = await updateCourse(id, req.body);
+    const update = normalizeCourseInput(req.body);
+    const updated = await updateCourse(id, update);
     if (!updated) return res.status(404).json({ success: false, message: "Course not found." });
     await logAction(req.user.name, req.user.role, "UPDATE_COURSE", "Course", id);
     res.json({ success: true, course: updated });

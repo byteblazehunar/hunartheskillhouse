@@ -91,7 +91,22 @@ const CourseSchema = new mongoose.Schema(
     duration: { type: String, default: "" },
     active: { type: Boolean, default: true },
     syllabus: [{ type: String }],
-    assignedTeacher: { type: String, default: "" }
+    assignedTeacher: { type: String, default: "" },
+    badge: { type: String, default: "" },
+    mode: { type: String, default: "" },
+    level: { type: String, default: "" },
+    shortDesc: { type: String, default: "" },
+    tagline: { type: String, default: "" },
+    image: { type: String, default: "" },
+    featured: { type: Boolean, default: false },
+    rating: { type: Number, default: 0 },
+    reviewsCount: { type: Number, default: 0 },
+    mentor: { type: mongoose.Schema.Types.Mixed, default: {} },
+    highlights: [{ type: String }],
+    tools: [{ type: String }],
+    curriculum: [{ type: mongoose.Schema.Types.Mixed }],
+    projects: [{ type: mongoose.Schema.Types.Mixed }],
+    careerRoles: [{ type: String }]
   },
   { timestamps: true }
 );

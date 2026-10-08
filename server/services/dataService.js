@@ -742,10 +742,12 @@ export async function createBatch(data) {
   };
   if (isDbConnected()) {
     try {
+      const mongoRecord = { ...record };
+      delete mongoRecord._id;
       const created = await Batch.findOneAndUpdate(
         { name: record.name },
-        { $set: record },
-        { upsert: true, new: true }
+        { $set: mongoRecord },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
       );
       if (!created) throw new Error("MongoDB did not return the created batch.");
       return created.toObject();
@@ -1198,7 +1200,7 @@ export async function updateCourse(id, data) {
     try {
       const isObjectId = typeof id === "string" && id.match(/^[0-9a-fA-F]{24}$/);
       const q = isObjectId ? { $or: [{ _id: id }, { slug: id }] } : { slug: id };
-      result = await Course.findOneAndUpdate(q, { $set: data }, { new: true }).lean();
+      result = await Course.findOneAndUpdate(q, { $set: data }, { new: true, upsert: true, setDefaultsOnInsert: true }).lean();
     } catch (error) {
       throw new Error(`MongoDB could not update the course: ${error.message}`);
     }
@@ -1215,6 +1217,12 @@ export async function updateCourse(id, data) {
       }
       return c;
     });
+    if (!found) {
+      const slug = typeof id === "string" ? id : data.slug;
+      const created = { ...data, slug, active: true, _id: `course-${Date.now()}`, createdAt: new Date().toISOString() };
+      result = created;
+      return [created, ...list];
+    }
     return updated;
   });
   return result;

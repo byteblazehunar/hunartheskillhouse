@@ -44,8 +44,8 @@ test("Vercel API rewrite rejects invalid route paths", () => {
 process.env.JWT_SECRET ||= "integration-test-secret";
 process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
 const { default: app } = await import("./server.js");
-const { Course, Student } = await import("./models/index.js");
-const { createCourse, createStudent } = await import("./services/dataService.js");
+const { Batch, Course, Student } = await import("./models/index.js");
+const { createBatch, createCourse, createStudent, updateCourse } = await import("./services/dataService.js");
 
 test("course creation delegates MongoDB _id generation to Mongoose", async () => {
   const originalReadyState = mongoose.connection.readyState;
@@ -74,6 +74,72 @@ test("course creation delegates MongoDB _id generation to Mongoose", async () =>
     assert.ok(course._id instanceof mongoose.Types.ObjectId);
   } finally {
     Course.create = originalCreate;
+    mongoose.connection.readyState = originalReadyState;
+    process.env.MONGODB_URI = originalMongoUri;
+  }
+});
+
+test("batch creation delegates MongoDB _id generation to Mongoose", async () => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalMongoUri = process.env.MONGODB_URI;
+  const originalFindOneAndUpdate = Batch.findOneAndUpdate;
+  const batchId = new mongoose.Types.ObjectId();
+  let insertedBatch;
+
+  process.env.MONGODB_URI = "mongodb://batch-test/hunar";
+  mongoose.connection.readyState = 1;
+  Batch.findOneAndUpdate = async (_query, update) => {
+    insertedBatch = update.$set;
+    return { toObject: () => ({ ...update.$set, _id: batchId }) };
+  };
+
+  try {
+    const batch = await createBatch({
+      name: "Batch Creation Regression Test",
+      course: "Test Course",
+      timing: "10:00 AM - 1:00 PM"
+    });
+
+    assert.equal(Object.hasOwn(insertedBatch, "_id"), false);
+    assert.ok(batch._id instanceof mongoose.Types.ObjectId);
+  } finally {
+    Batch.findOneAndUpdate = originalFindOneAndUpdate;
+    mongoose.connection.readyState = originalReadyState;
+    process.env.MONGODB_URI = originalMongoUri;
+  }
+});
+
+test("course edits upsert all public catalog details by slug", async () => {
+  const originalReadyState = mongoose.connection.readyState;
+  const originalMongoUri = process.env.MONGODB_URI;
+  const originalFindOneAndUpdate = Course.findOneAndUpdate;
+  const courseId = new mongoose.Types.ObjectId();
+  let query;
+  let update;
+
+  process.env.MONGODB_URI = "mongodb://course-update-test/hunar";
+  mongoose.connection.readyState = 1;
+  Course.findOneAndUpdate = (nextQuery, nextUpdate) => {
+    query = nextQuery;
+    update = nextUpdate;
+    return { lean: async () => ({ ...nextUpdate.$set, _id: courseId }) };
+  };
+
+  try {
+    const details = {
+      shortDesc: "Complete course overview",
+      highlights: ["Practical labs"],
+      curriculum: [{ module: "Module 1", title: "Foundations", topics: ["Core skills"] }],
+      projects: [{ title: "Final project", desc: "Build a complete solution." }],
+      mentor: { name: "Test Instructor" }
+    };
+    const course = await updateCourse("diploma-in-digital-marketing", details);
+
+    assert.deepEqual(query, { slug: "diploma-in-digital-marketing" });
+    assert.deepEqual(update.$set, details);
+    assert.equal(course._id, courseId);
+  } finally {
+    Course.findOneAndUpdate = originalFindOneAndUpdate;
     mongoose.connection.readyState = originalReadyState;
     process.env.MONGODB_URI = originalMongoUri;
   }
