@@ -58,13 +58,24 @@ import { useTheme } from "../context/ThemeContext";
 import CMSManager from "../components/admin/CMSManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
+import usePortalTab from "../hooks/usePortalTab";
+
+const ADMIN_PORTAL_TABS = [
+  "overview", "activity", "notifications", "students", "invitations", "enrollments",
+  "courses", "attendance", "assignments", "assessments", "progress", "staff",
+  "staff_invitations", "departments", "teaching_assignments", "timetable",
+  "course_categories", "batches", "cms_homepage", "cms_about", "cms_founder",
+  "cms_faculty", "cms_testimonials", "announcements", "cms_faqs", "cms_contact",
+  "cms_gallery", "cms_navigation", "fees", "receipts", "leads", "reports", "calendar",
+  "users", "roles", "audit", "security", "settings", "profile"
+];
 
 export default function AdminPortal() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
   // Navigation State
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = usePortalTab(ADMIN_PORTAL_TABS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [expandedGroups, setExpandedGroups] = useState({
@@ -84,6 +95,7 @@ export default function AdminPortal() {
   const [staff, setStaff] = useState([]);
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
+  const [academicDataErrors, setAcademicDataErrors] = useState({});
   const [leads, setLeads] = useState([]);
   const [leadNotes, setLeadNotes] = useState({});
   const [announcements, setAnnouncements] = useState([]);
@@ -254,12 +266,50 @@ export default function AdminPortal() {
         throw new Error("Unable to load the admin dashboard from the backend.");
       }
 
+      const readAcademicCollection = async (response, resourceName) => {
+        if (!response) {
+          return { records: [], error: `${resourceName} could not be reached. Check the server connection and try again.` };
+        }
+        if (!response.ok) {
+          let detail = "";
+          try {
+            const body = await response.json();
+            detail = body.message || body.error || "";
+          } catch {
+            // Keep the HTTP status as the actionable error when the body is not JSON.
+          }
+          return {
+            records: [],
+            error: `${resourceName} could not be loaded (${response.status})${detail ? `: ${detail}` : "."}`
+          };
+        }
+
+        try {
+          const records = await response.json();
+          if (!Array.isArray(records)) {
+            return { records: [], error: `${resourceName} returned an unexpected response. Try refreshing.` };
+          }
+          return { records, error: "" };
+        } catch {
+          return { records: [], error: `${resourceName} returned unreadable data. Try refreshing.` };
+        }
+      };
+
+      const [courseResult, batchResult] = await Promise.all([
+        readAcademicCollection(coursesRes, "Courses"),
+        readAcademicCollection(batchesRes, "Batches")
+      ]);
+      setCourses(courseResult.records);
+      setBatches(batchResult.records);
+      setAcademicDataErrors({
+        courses: courseResult.error,
+        batches: batchResult.error
+      });
+
       if (overviewRes && overviewRes.ok) setOverviewMetrics(await overviewRes.json());
       if (usersRes && usersRes.ok) setUsers(await usersRes.json());
       if (studentsRes && studentsRes.ok) setStudents(await studentsRes.json());
       if (staffRes && staffRes.ok) setStaff(await staffRes.json());
-      if (coursesRes && coursesRes.ok) setCourses(await coursesRes.json());
-      if (batchesRes && batchesRes.ok) setBatches(await batchesRes.json());
       if (leadsRes && leadsRes.ok) setLeads(await leadsRes.json());
       if (annRes && annRes.ok) setAnnouncements(await annRes.json());
       if (timeRes && timeRes.ok) setTimetable(await timeRes.json());
@@ -320,6 +370,10 @@ export default function AdminPortal() {
                 navigate("/portal/student", { replace: true });
                 return;
               }
+              if (meData.user.role === "teacher" || meData.user.roleId === "role-teacher") {
+                navigate("/portal/staff", { replace: true });
+                return;
+              }
               if (meData.user.role !== "admin" && !meData.user.isSuperAdmin && meData.user.role !== "super_admin") {
                 navigate("/portal/operations", { replace: true });
                 return;
@@ -341,9 +395,15 @@ export default function AdminPortal() {
   }, []);
 
   // Granular Duty / Permission Check
+  const hasAdministratorAccess = Boolean(
+    adminUser?.isSuperAdmin ||
+    ["admin", "super_admin"].includes(String(adminUser?.role || "").toLowerCase()) ||
+    adminUser?.roleId === "role-super-admin"
+  );
+
   const hasPermission = (required) => {
     if (!adminUser) return true;
-    if (adminUser.isSuperAdmin || adminUser.role === "admin" || adminUser.role === "super_admin") return true;
+    if (hasAdministratorAccess) return true;
     const perms = adminUser.permissions || [];
     if (perms.includes("*")) return true;
     if (!required) return true;
@@ -1503,7 +1563,7 @@ export default function AdminPortal() {
         <div style={{ flex: 1, overflowY: "auto", padding: "12px 10px" }}>
           {SIDEBAR_GROUPS.map((group) => {
             // Check group-level permissions (duty permissions first, role fallback)
-            if (group.perms && !hasPermission(group.perms)) return null;
+            if (group.perms && !hasPermission(group.perms) && !(hasAdministratorAccess && group.id === "Academic Management")) return null;
             if (!group.perms && group.roles && !group.roles.includes(currentRole)) return null;
 
             const isExpanded = expandedGroups[group.id] !== false;
@@ -1511,6 +1571,7 @@ export default function AdminPortal() {
 
             // Filter items within group by duty permission
             const visibleItems = group.items.filter((item) => {
+              if (hasAdministratorAccess && group.id === "Academic Management" && ["courses", "batches"].includes(item.id)) return true;
               if (item.perms && !hasPermission(item.perms)) return false;
               if (!item.perms && item.roles && !item.roles.includes(currentRole)) return false;
               return true;
@@ -1831,8 +1892,8 @@ export default function AdminPortal() {
                   },
                   {
                     label: "Active Courses",
-                    value: courses.length,
-                    sub: `${batches.length} Live Batches`,
+                    value: academicDataErrors.courses ? "—" : courses.length,
+                    sub: academicDataErrors.batches ? "Batch data unavailable" : `${batches.length} Live Batches`,
                     icon: BookOpen,
                     color: "#10B981"
                   },
@@ -3061,8 +3122,19 @@ export default function AdminPortal() {
                   </button>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
-                  {courses.map((c) => (
+                {academicDataErrors.courses ? (
+                  <div role="alert" style={{ padding: "16px", borderRadius: "10px", border: "1px solid #FCA5A5", color: "#B91C1C" }}>
+                    <p style={{ margin: "0 0 10px" }}>{academicDataErrors.courses}</p>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => loadAllData()}>Retry loading courses</button>
+                  </div>
+                ) : courses.length === 0 ? (
+                  <div role="status" style={{ padding: "18px", borderRadius: "10px", border: "1px dashed var(--color-border)", color: "var(--color-text-secondary)" }}>
+                    <p style={{ margin: "0 0 10px" }}>No courses have been added yet.</p>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={openAddCourse}>Create your first course</button>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
+                    {courses.map((c) => (
                     <div
                       key={c.slug || c._id}
                       style={{
@@ -3132,8 +3204,9 @@ export default function AdminPortal() {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Batches Section */}
@@ -3166,8 +3239,19 @@ export default function AdminPortal() {
                   </button>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-                  {batches.map((b) => (
+                {academicDataErrors.batches ? (
+                  <div role="alert" style={{ padding: "16px", borderRadius: "10px", border: "1px solid #FCA5A5", color: "#B91C1C" }}>
+                    <p style={{ margin: "0 0 10px" }}>{academicDataErrors.batches}</p>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => loadAllData()}>Retry loading batches</button>
+                  </div>
+                ) : batches.length === 0 ? (
+                  <div role="status" style={{ padding: "18px", borderRadius: "10px", border: "1px dashed var(--color-border)", color: "var(--color-text-secondary)" }}>
+                    <p style={{ margin: "0 0 10px" }}>No batches have been created yet.</p>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={openAddBatch}>Create your first batch</button>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+                    {batches.map((b) => (
                     <div
                       key={b._id || b.name}
                       style={{
@@ -3235,8 +3319,9 @@ export default function AdminPortal() {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -4324,6 +4409,9 @@ export default function AdminPortal() {
               auditLogs={auditLogs}
               adminUser={adminUser}
               showToast={showToast}
+              onNavigate={setActiveTab}
+              onRefresh={() => loadAllData()}
+              academicDataErrors={academicDataErrors}
             />
           )}
         </main>

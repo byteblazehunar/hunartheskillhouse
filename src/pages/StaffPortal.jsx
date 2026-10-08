@@ -16,6 +16,9 @@ import {
   X
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import usePortalTab from "../hooks/usePortalTab";
+
+const STAFF_PORTAL_TABS = ["overview", "attendance", "students", "assignments", "announcements", "profile"];
 
 export default function StaffPortal() {
   const navigate = useNavigate();
@@ -24,10 +27,10 @@ export default function StaffPortal() {
   const [loadError, setLoadError] = useState("");
   const [portalData, setPortalData] = useState(null);
   const [students, setStudents] = useState([]);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = usePortalTab(STAFF_PORTAL_TABS);
 
   // Attendance marking state
-  const [selectedBatch, setSelectedBatch] = useState("Batch Alpha 2026");
+  const [selectedBatch, setSelectedBatch] = useState("");
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [attendanceMessage, setAttendanceMessage] = useState("");
@@ -36,7 +39,7 @@ export default function StaffPortal() {
   const [showNewAssignModal, setShowNewAssignModal] = useState(false);
   const [newAssignTitle, setNewAssignTitle] = useState("");
   const [newAssignDesc, setNewAssignDesc] = useState("");
-  const [newAssignBatch, setNewAssignBatch] = useState("Batch Alpha 2026");
+  const [newAssignBatch, setNewAssignBatch] = useState("");
   const [newAssignDeadline, setNewAssignDeadline] = useState("");
   const [assignSuccess, setAssignSuccess] = useState("");
 
@@ -60,9 +63,19 @@ export default function StaffPortal() {
       fetch("/api/students", { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
     ])
       .then(([pData, sData]) => {
-        if (!pData.success) throw new Error(pData.message);
+        if (!pData.success) throw new Error(pData.message || "Unable to load the staff portal.");
+        if (!Array.isArray(sData)) {
+          throw new Error(sData.message || "Unable to load the student roster.");
+        }
         setPortalData(pData);
-        setStudents(Array.isArray(sData) ? sData : []);
+        setStudents(sData);
+        const firstBatch = pData.assignedBatches?.[0]?.name || "";
+        setSelectedBatch((current) => pData.assignedBatches?.some((batch) => batch.name === current)
+          ? current
+          : firstBatch);
+        setNewAssignBatch((current) => pData.assignedBatches?.some((batch) => batch.name === current)
+          ? current
+          : firstBatch);
         setLoading(false);
       })
       .catch((err) => {
@@ -340,7 +353,7 @@ export default function StaffPortal() {
         </div>
 
         {/* Tab Navigation */}
-        <div style={{
+        <div role="tablist" aria-label="Staff portal pages" style={{
           display: "flex",
           gap: "8px",
           borderBottom: "1px solid var(--color-border)",
@@ -362,6 +375,9 @@ export default function StaffPortal() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                type="button"
+                role="tab"
+                aria-selected={active}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -611,7 +627,7 @@ export default function StaffPortal() {
                 </p>
               </div>
 
-              <button onClick={() => setShowNewAssignModal(true)} className="btn btn-primary btn-sm" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <button onClick={() => setShowNewAssignModal(true)} disabled={assignedBatches.length === 0} className="btn btn-primary btn-sm" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                 <Plus size={16} />
                 <span>Create Assignment</span>
               </button>
@@ -683,6 +699,8 @@ export default function StaffPortal() {
                       <label className="form-label">Batch</label>
                       <select
                         className="form-select"
+                        required
+                        disabled={assignedBatches.length === 0}
                         value={newAssignBatch}
                         onChange={(e) => setNewAssignBatch(e.target.value)}
                       >
@@ -690,6 +708,11 @@ export default function StaffPortal() {
                           <option key={b._id || b.id} value={b.name}>{b.name}</option>
                         ))}
                       </select>
+                      {assignedBatches.length === 0 && (
+                        <p role="alert" style={{ color: "var(--color-danger)", fontSize: "0.82rem" }}>
+                          No batches are assigned to your account. Contact an administrator before creating an assignment.
+                        </p>
+                      )}
                     </div>
                     <div className="form-group">
                       <label className="form-label">Instructions / Details</label>

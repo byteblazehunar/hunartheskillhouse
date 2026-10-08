@@ -97,6 +97,10 @@ function renderCourseContent(course, pathname) {
 function renderStaticContent(pathname, page) {
   if (pathname === "/") return renderHomeContent();
 
+  if (pathname === "/404") {
+    return `<main class="seo-prerender" style="max-width:760px;margin:0 auto;padding:72px 24px;line-height:1.7;text-align:center"><p>Error 404</p><h1>This page could not be found</h1><p>The address may be incorrect, or the page may have moved. Use one of these links to continue exploring Hunar The Skill House.</p><nav aria-label="Helpful pages" style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap"><a href="/">Home</a><a href="/courses">Browse courses</a><a href="/contact">Contact Hunar</a></nav></main>`;
+  }
+
   if (pathname === "/courses") {
     return `<main class="seo-prerender" style="max-width:1120px;margin:0 auto;padding:48px 24px;line-height:1.7"><h1>Practical Skill Courses in Ludhiana</h1><p>${escapeHtml(page.description)} Browse course subjects, formats and durations below. Contact Hunar to confirm current availability and admission details.</p><ul>${coursesData.map(renderCourseCard).join("")}</ul><p>Questions about choosing a program? Read our <a href="/faq">frequently asked questions</a> or <a href="/contact">contact the admissions team</a>.</p></main>`;
   }
@@ -215,6 +219,10 @@ const privatePaths = [...privateSeoPaths, "/activate/account"];
 for (const pathname of [...publicPaths, ...privatePaths]) {
   await writeRoute(pathname);
 }
+
+const notFoundHtml = renderPage("/404")
+  .replace(/<link rel="canonical" href="[^"]*"\s*\/>/i, "");
+await writeFile(path.join(outputDirectory, "404.html"), notFoundHtml);
 
 const sitemapEntries = publicPaths
   .map((pathname) => `  <url><loc>${SITE_URL}${pathname === "/" ? "/" : pathname}</loc></url>`)

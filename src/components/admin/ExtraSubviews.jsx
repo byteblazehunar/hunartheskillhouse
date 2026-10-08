@@ -34,7 +34,10 @@ export default function ExtraSubviews({
   announcements = [],
   auditLogs = [],
   adminUser = null,
-  showToast = () => {}
+  showToast = () => {},
+  onNavigate = () => {},
+  onRefresh = () => {},
+  academicDataErrors = {}
 }) {
   // 1. ACTIVITY OVERVIEW
   if (activeTab === "activity") {
@@ -143,6 +146,51 @@ export default function ExtraSubviews({
             );
           })}
         </div>
+      </div>
+    );
+  }
+
+  if (activeTab === "batches") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+          <div>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: "0 0 4px 0" }}>Training Batches</h3>
+            <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
+              Batch schedules, courses, assigned instructors and current learner counts.
+            </p>
+          </div>
+          <button type="button" className="btn btn-outline btn-sm" onClick={() => onNavigate("courses")}>
+            Manage Courses &amp; Batches
+          </button>
+        </div>
+        {academicDataErrors.batches ? (
+          <div role="alert" style={{ padding: "16px", borderRadius: "10px", border: "1px solid #FCA5A5", color: "#B91C1C" }}>
+            <p style={{ margin: "0 0 10px" }}>{academicDataErrors.batches}</p>
+            <button type="button" className="btn btn-outline btn-sm" onClick={onRefresh}>Retry loading batches</button>
+          </div>
+        ) : batches.length > 0 ? (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+            {batches.map((batch) => {
+              const count = students.filter((student) => student.batch === batch.name).length;
+              return (
+                <article key={batch._id || batch.id || batch.name} style={{ padding: "20px", backgroundColor: "var(--color-surface)", borderRadius: "14px", border: "1px solid var(--color-border)" }}>
+                  <h4 style={{ fontSize: "1rem", fontWeight: 800, margin: "0 0 8px" }}>{batch.name}</h4>
+                  <p style={{ fontSize: "0.82rem", color: "var(--color-text-secondary)", margin: "0 0 12px" }}>
+                    {batch.course || "Course not assigned"} · {batch.timing || "Schedule not set"}
+                  </p>
+                  <p style={{ fontSize: "0.82rem", margin: 0 }}>
+                    Instructor: {batch.assignedTeacher || batch.teacher || "Not assigned"} · {count} {count === 1 ? "student" : "students"}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <p role="status" style={{ color: "var(--color-text-secondary)" }}>
+            No training batches are currently available. Use “Manage Courses &amp; Batches” to add one.
+          </p>
+        )}
       </div>
     );
   }

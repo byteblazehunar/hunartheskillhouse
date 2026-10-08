@@ -15,6 +15,9 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import usePortalTab from "../hooks/usePortalTab";
+
+const STUDENT_PORTAL_TABS = ["overview", "attendance", "assignments", "announcements", "profile"];
 
 export default function StudentPortal() {
   const navigate = useNavigate();
@@ -22,7 +25,7 @@ export default function StudentPortal() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [portalData, setPortalData] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = usePortalTab(STUDENT_PORTAL_TABS);
 
   // Assignment submission state
   const [submittingAssignmentId, setSubmittingAssignmentId] = useState(null);
@@ -88,15 +91,6 @@ export default function StudentPortal() {
       return;
     }
 
-    if (loadError || !portalData) {
-      return (
-        <div className="container" style={{ minHeight: "60vh", display: "grid", placeContent: "center", gap: "16px" }}>
-          <p role="alert" style={{ color: "var(--color-danger)" }}>{loadError || "Student data is unavailable."}</p>
-          <button className="btn btn-outline" onClick={() => window.location.reload()}>Retry</button>
-        </div>
-      );
-    }
-
     try {
       const res = await fetch(`/api/assignments/${assignmentId}/submit`, {
         method: "POST",
@@ -147,6 +141,15 @@ export default function StudentPortal() {
         <p style={{ color: "var(--color-text-secondary)", fontSize: "0.95rem" }}>
           Authenticating Student Workspace...
         </p>
+      </div>
+    );
+  }
+
+  if (loadError || !portalData) {
+    return (
+      <div className="container" style={{ minHeight: "60vh", display: "grid", placeContent: "center", gap: "16px" }}>
+        <p role="alert" style={{ color: "var(--color-danger)" }}>{loadError || "Student data is unavailable."}</p>
+        <button className="btn btn-outline" onClick={() => window.location.reload()}>Retry</button>
       </div>
     );
   }
@@ -276,7 +279,7 @@ export default function StudentPortal() {
         </div>
 
         {/* Tab Navigation */}
-        <div style={{
+        <div role="tablist" aria-label="Student portal pages" style={{
           display: "flex",
           gap: "8px",
           borderBottom: "1px solid var(--color-border)",
@@ -297,6 +300,9 @@ export default function StudentPortal() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                type="button"
+                role="tab"
+                aria-selected={active}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",

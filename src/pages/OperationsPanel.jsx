@@ -47,6 +47,12 @@ import {
   ClipboardList
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import usePortalTab from "../hooks/usePortalTab";
+
+const OPERATIONS_TABS = [
+  "overview", "inquiries", "admissions", "students", "fees",
+  "timetable", "attendance", "tasks", "announcements"
+];
 
 export default function OperationsPanel() {
   const navigate = useNavigate();
@@ -58,7 +64,7 @@ export default function OperationsPanel() {
   const [loading, setLoading] = useState(true);
 
   // Active View Tab
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = usePortalTab(OPERATIONS_TABS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
@@ -618,7 +624,7 @@ export default function OperationsPanel() {
         </div>
 
         {/* Nav Modules List */}
-        <nav style={{ flex: 1, overflowY: "auto", padding: "8px 12px", display: "flex", flexDirection: "column", gap: "4px" }}>
+        <nav role="tablist" aria-label="Operations portal pages" style={{ flex: 1, overflowY: "auto", padding: "8px 12px", display: "flex", flexDirection: "column", gap: "4px" }}>
           {visibleModules.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -626,6 +632,9 @@ export default function OperationsPanel() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
                 style={{
                   width: "100%",
                   display: "flex",
@@ -1220,6 +1229,75 @@ export default function OperationsPanel() {
                 </table>
               </div>
             </div>
+          )}
+
+          {activeTab === "admissions" && (
+            <section style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+                <div>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 800, margin: 0 }}>Admissions &amp; Intake</h3>
+                  <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: "4px 0 0" }}>
+                    Review prospective learners and students awaiting account activation.
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button type="button" className="btn btn-outline btn-sm" onClick={() => setActiveTab("inquiries")}>
+                    Open Inquiries
+                  </button>
+                  <button type="button" className="btn btn-primary btn-sm" onClick={() => setActiveTab("students")}>
+                    Open Student Roster
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px" }}>
+                <div className="hunar-card" style={{ padding: "20px" }}>
+                  <div style={{ color: "var(--color-text-secondary)", fontSize: "0.8rem" }}>Pending student activations</div>
+                  <strong style={{ display: "block", fontSize: "1.6rem", marginTop: "6px" }}>
+                    {students.filter((student) => student.enrollmentStatus === "pending_activation").length}
+                  </strong>
+                </div>
+                <div className="hunar-card" style={{ padding: "20px" }}>
+                  <div style={{ color: "var(--color-text-secondary)", fontSize: "0.8rem" }}>New inquiries</div>
+                  <strong style={{ display: "block", fontSize: "1.6rem", marginTop: "6px" }}>
+                    {leads.filter((lead) => lead.status === "New").length}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="hunar-card" style={{ padding: "22px", overflowX: "auto" }}>
+                <h4 style={{ fontSize: "0.95rem", fontWeight: 800, margin: "0 0 14px" }}>Learners awaiting activation</h4>
+                {students.some((student) => student.enrollmentStatus === "pending_activation") ? (
+                  <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.82rem" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)", color: "var(--color-text-secondary)" }}>
+                        <th style={{ padding: "10px" }}>Student</th>
+                        <th style={{ padding: "10px" }}>Course</th>
+                        <th style={{ padding: "10px" }}>Batch</th>
+                        <th style={{ padding: "10px" }}>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.filter((student) => student.enrollmentStatus === "pending_activation").map((student) => (
+                        <tr key={student.studentId || student._id} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                          <td style={{ padding: "10px" }}>
+                            <strong>{student.name}</strong>
+                            <div style={{ color: "var(--color-text-secondary)" }}>{student.studentId}</div>
+                          </td>
+                          <td style={{ padding: "10px" }}>{student.course || "Not assigned"}</td>
+                          <td style={{ padding: "10px" }}>{student.batch || "Not assigned"}</td>
+                          <td style={{ padding: "10px" }}>Pending activation</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p role="status" style={{ color: "var(--color-text-secondary)", margin: 0 }}>
+                    No student accounts are waiting for activation.
+                  </p>
+                )}
+              </div>
+            </section>
           )}
 
           {/* ══════════════════════════════════════════════ */}

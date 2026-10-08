@@ -8,7 +8,11 @@ assert.deepEqual(vercelConfig.rewrites[0], {
   source: "/api/:path*",
   destination: "/api/index?_hunar_path=:path*"
 });
-assert.match(vercelConfig.rewrites[1].source, /\(\?!api\\?\//);
+assert.deepEqual(vercelConfig.rewrites[1], {
+  source: "/activate/:token",
+  destination: "/index.html"
+});
+assert.equal(vercelConfig.rewrites.length, 2, "unknown paths should reach Vercel's custom 404 document");
 const apiDirectory = new URL("../api/", import.meta.url);
 await access(new URL("../api/index.js", import.meta.url));
 const apiFiles = await readdir(apiDirectory, { recursive: true });
@@ -162,13 +166,28 @@ test("Express serves the API and client-side portal routes", async (t) => {
   assert.match(portalHtml, /id="root"/);
   assert.match(portalHtml, /name="robots" content="noindex, nofollow"/);
 
+  const notFoundResponse = await fetch(`${baseUrl}/not-a-real-page`, {
+    headers: { Accept: "text/html" }
+  });
+  assert.equal(notFoundResponse.status, 404);
+  const notFoundHtml = await notFoundResponse.text();
+  assert.match(notFoundHtml, /This page could not be found/);
+  assert.match(notFoundHtml, /href="\/courses"/);
+  assert.doesNotMatch(notFoundHtml, /rel="canonical"/);
+
+  const activationResponse = await fetch(`${baseUrl}/activate/test-token`, {
+    headers: { Accept: "text/html" }
+  });
+  assert.equal(activationResponse.status, 200);
+  assert.match(await activationResponse.text(), /id="root"/);
+
   const courseResponse = await fetch(`${baseUrl}/course/diploma-in-digital-marketing`, {
     headers: { Accept: "text/html" }
   });
   assert.equal(courseResponse.status, 200);
   const courseHtml = await courseResponse.text();
   assert.match(courseHtml, /<title>Diploma in Digital Marketing Course in Ludhiana \| Hunar<\/title>/);
-  assert.match(courseHtml, /rel="canonical" href="https:\/\/hunar\.courses\/course\/diploma-in-digital-marketing"/);
+  assert.match(courseHtml, /rel="canonical" href="https:\/\/www\.hunar\.courses\/course\/diploma-in-digital-marketing"/);
   assert.match(courseHtml, /"@type":"Course"/);
 
   for (const asset of ["/robots.txt", "/sitemap.xml", "/llms.txt"]) {

@@ -51,13 +51,25 @@ app.use((req, res, next) => {
   if ((req.method !== "GET" && req.method !== "HEAD") || !req.accepts("html")) {
     return next();
   }
+  if (req.path.startsWith("/activate/")) {
+    if (!existsSync(clientEntryPath)) {
+      return res.status(503).type("text").send("Frontend build not found. Run npm run build before starting the server.");
+    }
+    return res.sendFile(clientEntryPath);
+  }
   if (!existsSync(clientEntryPath)) {
     return res.status(503).type("text").send("Frontend build not found. Run npm run build before starting the server.");
   }
-  res.sendFile(clientEntryPath);
+  next();
 });
 app.use((req, res) => {
   if (req.accepts("html")) {
+    const notFoundPagePath = path.join(clientDistPath, "404.html");
+    if (existsSync(notFoundPagePath)) {
+      return res.status(404).sendFile(notFoundPagePath, (error) => {
+        if (error && !res.headersSent) res.status(404).type("text").send("Page not found.");
+      });
+    }
     return res.status(404).sendFile(clientEntryPath, (error) => {
       if (error && !res.headersSent) res.status(404).type("text").send("Page not found.");
     });

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, SearchX } from "lucide-react";
+import { ArrowLeft, BookOpen, SearchX } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -9,12 +9,21 @@ export default function NotFound() {
         <p className="eyebrow">Error 404</p>
         <h1 style={{ marginBottom: "12px" }}>We couldn’t find that page</h1>
         <p style={{ color: "var(--color-text-secondary)", lineHeight: 1.7, marginBottom: "24px" }}>
-          The link may be incorrect or the page may have moved.
+          The address may be incorrect, or the page may have moved. Try one of these helpful pages instead.
         </p>
-        <Link to="/" className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-          <ArrowLeft size={16} />
-          Back to Hunar home
-        </Link>
+        <nav aria-label="Helpful pages" style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          <Link to="/" className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <ArrowLeft size={16} />
+            Hunar home
+          </Link>
+          <Link to="/courses" className="btn btn-outline" style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <BookOpen size={16} />
+            Browse courses
+          </Link>
+          <Link to="/contact" className="btn btn-outline">
+            Contact Hunar
+          </Link>
+        </nav>
       </div>
     </section>
   );
