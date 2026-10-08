@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
 import { test } from "node:test";
 import mongoose from "mongoose";
+import { resolveTeacherBatches } from "./utils/teachingScope.js";
+import { requireRole } from "./middleware/authMiddleware.js";
 
 const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
 assert.deepEqual(vercelConfig.rewrites[0], {
@@ -46,6 +48,37 @@ process.env.MONGODB_URI = "mongodb://127.0.0.1:27017/hunar-test";
 const { default: app } = await import("./server.js");
 const { Batch, Course, Student } = await import("./models/index.js");
 const { createBatch, createCourse, createStudent, updateCourse } = await import("./services/dataService.js");
+
+test("teacher portal scope includes only explicitly assigned or teacher-led batches", () => {
+  const batches = [
+    { name: "Digital Marketing AM", assignedTeacher: "Aman Kaur" },
+    { name: "Web Development PM", assignedTeacher: "Other Teacher" },
+    { name: "AI Workshop", assignedTeacher: "" }
+  ];
+  const staff = {
+    staffId: "HUN-T-001",
+    name: "Aman Kaur",
+    assignedBatches: ["AI Workshop"]
+  };
+
+  assert.deepEqual(
+    resolveTeacherBatches(batches, staff, { assignedId: "HUN-T-001" }).map((batch) => batch.name),
+    ["Digital Marketing AM", "AI Workshop"]
+  );
+});
+
+test("teacher role middleware accepts users assigned the system teacher role", () => {
+  let nextCalled = false;
+  const middleware = requireRole(["admin", "teacher"]);
+
+  middleware(
+    { user: { role: "staff", roleId: "role-teacher" } },
+    { status: () => ({ json: () => assert.fail("teacher role should be accepted") }) },
+    () => { nextCalled = true; }
+  );
+
+  assert.equal(nextCalled, true);
+});
 
 test("course creation delegates MongoDB _id generation to Mongoose", async () => {
   const originalReadyState = mongoose.connection.readyState;

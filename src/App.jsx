@@ -121,10 +121,10 @@ function AppContent() {
                 <Route path="/portal/staff" element={<StaffPortal />} />
                 <Route path="/portal/admin" element={<AdminPortal />} />
                 <Route path="/portal/operations" element={<OperationsPanel />} />
-                <Route path="/operations" element={<OperationsPanel />} />
+                <Route path="/operations" element={<Navigate to={`/portal/operations${location.search}${location.hash}`} replace />} />
                 <Route path="/activate/:token" element={<ActivateAccount />} />
-                <Route path="/admin" element={<AdminPortal />} />
-                <Route path="/admin/*" element={<AdminPortal />} />
+                <Route path="/admin" element={<Navigate to={`/portal/admin${location.search}${location.hash}`} replace />} />
+                <Route path="/admin/*" element={<Navigate to={`/portal/admin${location.search}${location.hash}`} replace />} />
                 <Route path="/page/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/page/terms-conditions" element={<TermsConditions />} />
                 <Route path="*" element={<NotFound />} />

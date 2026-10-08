@@ -181,7 +181,8 @@ export function requireRole(allowedRoles = []) {
       return next();
     }
 
-    if (allowedRoles.includes(req.user.role)) {
+    const isTeacherRole = req.user.roleId === "role-teacher" && allowedRoles.includes("teacher");
+    if (allowedRoles.includes(req.user.role) || isTeacherRole) {
       return next();
     }
 

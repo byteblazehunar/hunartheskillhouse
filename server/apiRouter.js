@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { rateLimit } from "express-rate-limit";
+import { resolveTeacherBatches } from "./utils/teachingScope.js";
 import {
   findUserByEmailOrId,
   findUserById,
@@ -95,6 +96,35 @@ const __dirname = path.dirname(__filename);
 const DATA_DIR = path.join(__dirname, "data");
 
 const router = express.Router();
+
+function normalizeAssignment(value) {
+  if (typeof value === "string") return value.trim().toLowerCase();
+  if (value && typeof value === "object") {
+    return String(value.name || value.batch || value._id || value.id || "").trim().toLowerCase();
+  }
+  return "";
+}
+
+function hasAdministratorRole(user) {
+  return Boolean(user?.isSuperAdmin || ["admin", "super_admin"].includes(String(user?.role || "").toLowerCase()));
+}
+
+function hasTeacherRole(user) {
+  return String(user?.role || "").toLowerCase() === "teacher" || user?.roleId === "role-teacher";
+}
+
+async function getTeachingScope(user) {
+  const batches = await getAllBatches();
+  if (hasAdministratorRole(user)) return { isAdmin: true, batches };
+
+  const staff = await getStaffByStaffId(user?.assignedId);
+  return { isAdmin: false, batches: resolveTeacherBatches(batches, staff, user) };
+}
+
+function isInTeachingScope(scope, batchName) {
+  const requestedBatch = normalizeAssignment(batchName);
+  return scope.isAdmin || scope.batches.some((batch) => normalizeAssignment(batch.name) === requestedBatch);
+}
 const rateLimitResponse = {
   success: false,
   error: "RATE_LIMITED",
@@ -1136,6 +1166,12 @@ router.get(
     const { course, batch, status, search } = req.query;
     let students = await getAllStudents({ course, batch, status });
 
+    if (hasTeacherRole(req.user) && !hasAdministratorRole(req.user)) {
+      const scope = await getTeachingScope(req.user);
+      const allowedBatches = new Set(scope.batches.map((item) => normalizeAssignment(item.name)));
+      students = students.filter((student) => allowedBatches.has(normalizeAssignment(student.batch)));
+    }
+
     if (search) {
       const q = search.toLowerCase();
       students = students.filter(
@@ -1909,6 +1945,12 @@ router.get("/attendance", authenticate, async (req, res) => {
     if (!batch || !date) {
       return res.status(400).json({ success: false, message: "Batch and date are required." });
     }
+    if (hasTeacherRole(req.user) && !hasAdministratorRole(req.user)) {
+      const scope = await getTeachingScope(req.user);
+      if (!isInTeachingScope(scope, batch)) {
+        return res.status(403).json({ success: false, message: "You can only view attendance for your assigned batches." });
+      }
+    }
     const records = await getAttendanceByBatchAndDate(batch, date);
     res.json(records);
   } catch (error) {
@@ -1921,6 +1963,18 @@ router.post("/attendance", authenticate, requireRole(["admin", "teacher"]), asyn
     const { batch, date, records } = req.body;
     if (!batch || !date || !Array.isArray(records)) {
       return res.status(400).json({ success: false, message: "Batch, date, and attendance records are required." });
+    }
+
+    if (hasTeacherRole(req.user) && !hasAdministratorRole(req.user)) {
+      const scope = await getTeachingScope(req.user);
+      if (!isInTeachingScope(scope, batch)) {
+        return res.status(403).json({ success: false, message: "You can only mark attendance for your assigned batches." });
+      }
+      const batchStudents = await getAllStudents({ batch });
+      const allowedStudentIds = new Set(batchStudents.map((student) => String(student.studentId)));
+      if (records.some((record) => !allowedStudentIds.has(String(record.studentId)))) {
+        return res.status(403).json({ success: false, message: "Attendance includes a student outside this batch." });
+      }
     }
 
     const payload = records.map((r) => ({
@@ -1966,7 +2020,19 @@ router.get("/attendance/student/:studentId", authenticate, enforceStudentAccess,
 // ══════════════════════════════════════════════
 router.get("/assignments", authenticate, async (req, res) => {
   const { batch } = req.query;
-  const assignments = await getAllAssignments(batch);
+  let assignments = await getAllAssignments(batch);
+  if (hasTeacherRole(req.user) && !hasAdministratorRole(req.user)) {
+    const scope = await getTeachingScope(req.user);
+    if (batch && !isInTeachingScope(scope, batch)) {
+      return res.status(403).json({ success: false, message: "You can only view assignments for your assigned batches." });
+    }
+    if (!batch) {
+      const allowedBatches = new Set(scope.batches.map((item) => normalizeAssignment(item.name)));
+      assignments = assignments.filter((assignment) =>
+        assignment.batch === "All Batches" || allowedBatches.has(normalizeAssignment(assignment.batch))
+      );
+    }
+  }
   res.json(assignments);
 });
 
@@ -1975,6 +2041,12 @@ router.post("/assignments", authenticate, requireRole(["admin", "teacher"]), asy
     const { title, description, course, batch, deadline, maxMarks } = req.body;
     if (!title || !deadline) {
       return res.status(400).json({ success: false, message: "Title and deadline are required." });
+    }
+    if (hasTeacherRole(req.user) && !hasAdministratorRole(req.user)) {
+      const scope = await getTeachingScope(req.user);
+      if (!batch || !isInTeachingScope(scope, batch)) {
+        return res.status(403).json({ success: false, message: "Choose one of your assigned batches for this assignment." });
+      }
     }
     const item = await createAssignment({
       title,
@@ -1996,6 +2068,16 @@ router.post("/assignments/:id/submit", authenticate, requireRole(["student"]), a
   try {
     const { id } = req.params;
     const { content, fileUrl } = req.body;
+    const student = await getStudentByStudentId(req.user.assignedId);
+    const assignment = (await getAllAssignments()).find(
+      (item) => String(item._id || item.id) === String(id)
+    );
+    if (!student || !assignment) {
+      return res.status(404).json({ success: false, message: "Student or assignment record not found." });
+    }
+    if (assignment.batch !== "All Batches" && assignment.batch !== student.batch) {
+      return res.status(403).json({ success: false, message: "This assignment is not assigned to your batch." });
+    }
 
     const sub = await createSubmission({
       assignmentId: id,
@@ -2031,7 +2113,7 @@ router.post("/announcements", authenticate, requireRole(["admin", "teacher"]), a
       message,
       audience: audience || "all",
       authorName: req.user.name,
-      authorRole: req.user.role === "admin" ? "Founder & Director" : "Lead Instructor"
+      authorRole: hasAdministratorRole(req.user) ? "Founder & Director" : "Lead Instructor"
     });
     await logAction(req.user.name, req.user.role, "POST_ANNOUNCEMENT", "Announcement", ann.title);
     res.status(201).json({ success: true, announcement: ann });
@@ -2083,6 +2165,7 @@ router.get("/portal/student", authenticate, requireRole(["student"]), async (req
     }
 
     const attendanceRecords = await getStudentAttendance(req.user.assignedId);
+    const studentBatch = (await getAllBatches()).find((batch) => batch.name === student.batch);
     const totalClasses = attendanceRecords.length;
     const presentClasses = attendanceRecords.filter((a) => a.status === "present").length;
     const attendancePercentage = totalClasses > 0 ? Math.round((presentClasses / totalClasses) * 100) : 100;
@@ -2100,6 +2183,8 @@ router.get("/portal/student", authenticate, requireRole(["student"]), async (req
         phone: student.phone,
         course: student.course,
         batch: student.batch,
+        batchTiming: studentBatch?.timing || "",
+        batchCourse: studentBatch?.course || student.course,
         enrollmentDate: student.enrollmentDate,
         assignedTeacher: student.assignedTeacher,
         status: student.enrollmentStatus
@@ -2131,9 +2216,15 @@ router.get("/portal/student", authenticate, requireRole(["student"]), async (req
 router.get("/portal/staff", authenticate, requireRole(["admin", "teacher"]), async (req, res) => {
   try {
     const staff = await getStaffByStaffId(req.user.assignedId);
-    const batches = await getAllBatches();
-    const students = await getAllStudents();
-    const assignments = await getAllAssignments();
+    const scope = await getTeachingScope(req.user);
+    const batches = scope.batches;
+    const batchNames = new Set(batches.map((batch) => normalizeAssignment(batch.name)));
+    const students = scope.isAdmin
+      ? await getAllStudents()
+      : (await getAllStudents()).filter((student) => batchNames.has(normalizeAssignment(student.batch)));
+    const assignments = (await getAllAssignments()).filter((assignment) =>
+      assignment.batch === "All Batches" || batchNames.has(normalizeAssignment(assignment.batch))
+    );
     const announcements = await getAnnouncements("staff");
 
     res.json({
@@ -2146,6 +2237,7 @@ router.get("/portal/staff", authenticate, requireRole(["admin", "teacher"]), asy
         email: req.user.email
       },
       assignedBatches: batches,
+      students,
       studentsCount: students.length,
       assignments,
       announcements

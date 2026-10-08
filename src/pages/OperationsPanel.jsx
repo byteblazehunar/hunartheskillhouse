@@ -53,6 +53,12 @@ const OPERATIONS_TABS = [
   "overview", "inquiries", "admissions", "students", "fees",
   "timetable", "attendance", "tasks", "announcements"
 ];
+const FALLBACK_COURSES = [
+  "Full Stack Web Development",
+  "Graphic Design & Visual Branding",
+  "Digital Marketing & AI Growth",
+  "Data Analytics & AI Tools"
+];
 
 export default function OperationsPanel() {
   const navigate = useNavigate();
@@ -78,6 +84,9 @@ export default function OperationsPanel() {
   const [announcements, setAnnouncements] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const courseOptions = courses.length
+    ? courses.map((course) => course.title).filter(Boolean)
+    : FALLBACK_COURSES;
 
   // Filters & Search
   const [leadSearch, setLeadSearch] = useState("");
@@ -85,7 +94,7 @@ export default function OperationsPanel() {
   const [studentSearch, setStudentSearch] = useState("");
   const [studentCourseFilter, setStudentCourseFilter] = useState("all");
   const [feeSearch, setFeeSearch] = useState("");
-  const [selectedBatchForAttendance, setSelectedBatchForAttendance] = useState("Batch Alpha 2026");
+  const [selectedBatchForAttendance, setSelectedBatchForAttendance] = useState("");
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split("T")[0]);
 
   // Modal States
@@ -108,7 +117,7 @@ export default function OperationsPanel() {
     email: "",
     phone: "",
     course: "Full Stack Web Development",
-    batch: "Batch Alpha 2026"
+    batch: ""
   });
 
   const [feeForm, setFeeForm] = useState({
@@ -166,54 +175,80 @@ export default function OperationsPanel() {
       if (!meRes) {
         throw new Error("Unable to connect to the backend API.");
       }
-      if (meRes && meRes.ok) {
+      if (meRes.ok) {
         const meData = await meRes.json();
-        if (meData.user?.role === "student") {
-          localStorage.setItem("hunar_user", JSON.stringify(meData.user));
+        if (!meData.user) throw new Error("The server did not return a verified user profile.");
+        localStorage.setItem("hunar_user", JSON.stringify(meData.user));
+        if (meData.user.role === "student") {
           navigate("/portal/student", { replace: true });
           return;
         }
+        if (meData.user.role === "teacher" || meData.user.roleId === "role-teacher") {
+          navigate("/portal/staff", { replace: true });
+          return;
+        }
+        if (meData.user.role === "admin" || meData.user.isSuperAdmin || meData.user.role === "super_admin") {
+          navigate("/portal/admin", { replace: true });
+          return;
+        }
         setUser(meData.user);
-        localStorage.setItem("hunar_user", JSON.stringify(meData.user));
-      } else if (meRes && (meRes.status === 401 || meRes.status === 403)) {
+      } else if (meRes.status === 401 || meRes.status === 403) {
         localStorage.removeItem("hunar_token");
         localStorage.removeItem("hunar_user");
         navigate("/login", { replace: true });
         return;
       } else {
-        const cached = localStorage.getItem("hunar_user");
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (parsed.role === "student") {
-              navigate("/portal/student", { replace: true });
-              return;
-            }
-            setUser(parsed);
-          } catch {}
-        }
+        throw new Error("Unable to verify your account. Please retry.");
       }
 
       // 2. Fetch parallel operational datasets
-      const [leadsRes, studentsRes, coursesRes, batchesRes, timeRes, feesRes, annRes, attRes] = await Promise.all([
+      const [leadsRes, studentsRes, coursesRes, batchesRes, timeRes, feesRes, annRes] = await Promise.all([
         fetch("/api/leads", { headers }).catch(() => null),
         fetch("/api/students", { headers }).catch(() => null),
         fetch("/api/courses").catch(() => null),
         fetch("/api/batches", { headers }).catch(() => null),
         fetch("/api/timetable", { headers }).catch(() => null),
         fetch("/api/fees", { headers }).catch(() => null),
-        fetch("/api/announcements", { headers }).catch(() => null),
-        fetch(`/api/attendance?batch=${encodeURIComponent(selectedBatchForAttendance)}&date=${encodeURIComponent(attendanceDate)}`, { headers }).catch(() => null)
+        fetch("/api/announcements", { headers }).catch(() => null)
       ]);
 
       if (leadsRes && leadsRes.ok) setLeads(await leadsRes.json());
       if (studentsRes && studentsRes.ok) setStudents(await studentsRes.json());
-      if (coursesRes && coursesRes.ok) setCourses(await coursesRes.json());
-      if (batchesRes && batchesRes.ok) setBatches(await batchesRes.json());
+      if (coursesRes && coursesRes.ok) {
+        const availableCourses = await coursesRes.json();
+        if (!Array.isArray(availableCourses)) throw new Error("Course catalog returned invalid data.");
+        setCourses(availableCourses);
+        const courseTitles = availableCourses.map((course) => course.title).filter(Boolean);
+        setLeadForm((current) => ({
+          ...current,
+          course: courseTitles.includes(current.course) ? current.course : courseTitles[0] || current.course
+        }));
+        setStudentForm((current) => ({
+          ...current,
+          course: courseTitles.includes(current.course) ? current.course : courseTitles[0] || current.course
+        }));
+        setFeeForm((current) => ({
+          ...current,
+          course: courseTitles.includes(current.course) ? current.course : courseTitles[0] || current.course
+        }));
+      }
+      if (batchesRes && batchesRes.ok) {
+        const availableBatches = await batchesRes.json();
+        setBatches(availableBatches);
+        const firstBatch = availableBatches[0]?.name || "";
+        setSelectedBatchForAttendance((current) =>
+          availableBatches.some((batch) => batch.name === current) ? current : firstBatch
+        );
+        setStudentForm((current) => ({
+          ...current,
+          batch: availableBatches.some((batch) => batch.name === current.batch)
+            ? current.batch
+            : firstBatch
+        }));
+      }
       if (timeRes && timeRes.ok) setTimetable(await timeRes.json());
       if (feesRes && feesRes.ok) setFees(await feesRes.json());
       if (annRes && annRes.ok) setAnnouncements(await annRes.json());
-      if (attRes && attRes.ok) setAttendanceRecords(await attRes.json());
     } catch (err) {
       console.error("Error loading operations data:", err);
       showToast(err.message || "Unable to load operations data from the backend.", "error");
@@ -221,6 +256,34 @@ export default function OperationsPanel() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!selectedBatchForAttendance) {
+      return undefined;
+    }
+    let active = true;
+    const token = localStorage.getItem("hunar_token");
+    fetch(`/api/attendance?batch=${encodeURIComponent(selectedBatchForAttendance)}&date=${encodeURIComponent(attendanceDate)}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: "Bearer " + token } : {})
+      }
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Unable to load attendance.");
+        if (active) setAttendanceRecords(data);
+      })
+      .catch((error) => {
+        if (!active) return;
+        setAttendanceRecords([]);
+        setToastMessage({ text: error.message || "Unable to load attendance.", type: "error" });
+        window.setTimeout(() => setToastMessage(null), 4000);
+      });
+    return () => {
+      active = false;
+    };
+  }, [selectedBatchForAttendance, attendanceDate]);
 
   useEffect(() => {
     const token = localStorage.getItem("hunar_token");
@@ -240,7 +303,7 @@ export default function OperationsPanel() {
     }
     setAuthToken(token);
     loadData(token);
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("hunar_token");
@@ -270,7 +333,7 @@ export default function OperationsPanel() {
 
       setLeads((prev) => [data.lead, ...prev]);
       setModalType(null);
-      setLeadForm({ name: "", email: "", phone: "", course: "Full Stack Web Development", notes: "" });
+      setLeadForm({ name: "", email: "", phone: "", course: courses[0]?.title || FALLBACK_COURSES[0], notes: "" });
       showToast(data.message, data.emailSent ? "success" : "error");
     } catch (err) {
       showToast(err.message, "error");
@@ -308,7 +371,13 @@ export default function OperationsPanel() {
 
       setStudents((prev) => [data.student, ...prev]);
       setModalType(null);
-      setStudentForm({ name: "", email: "", phone: "", course: "Full Stack Web Development", batch: "Batch Alpha 2026" });
+      setStudentForm({
+        name: "",
+        email: "",
+        phone: "",
+        course: courses[0]?.title || FALLBACK_COURSES[0],
+        batch: batches[0]?.name || ""
+      });
       if (data.invitation) {
         setInvitationModal({
           studentId: data.student.studentId,
@@ -319,7 +388,12 @@ export default function OperationsPanel() {
           expiresAt: data.invitation.expiresAt
         });
       }
-      showToast(data.message, data.invitation.emailSent ? "success" : "error");
+      showToast(
+        data.invitation?.emailSent === false
+          ? "Student registered, but the activation email could not be sent."
+          : data.message || "Student registered successfully.",
+        data.invitation?.emailSent === false ? "error" : "success"
+      );
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -352,7 +426,9 @@ export default function OperationsPanel() {
   const handleSaveAttendance = async () => {
     setSubmitting(true);
     try {
+      if (!selectedBatchForAttendance) throw new Error("Select an available batch before recording attendance.");
       const batchStudents = students.filter((s) => s.batch === selectedBatchForAttendance);
+      if (batchStudents.length === 0) throw new Error("There are no students in the selected batch.");
       const records = batchStudents.map((s) => {
         const existing = attendanceRecords.find((a) => a.studentId === s.studentId);
         return {
@@ -371,7 +447,8 @@ export default function OperationsPanel() {
           records
         })
       });
-      if (!res.ok) throw new Error("Failed to record attendance");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to record attendance");
       showToast(`Attendance saved for ${selectedBatchForAttendance}`);
     } catch (err) {
       showToast(err.message, "error");
@@ -1673,8 +1750,10 @@ export default function OperationsPanel() {
                     fontSize: "0.82rem"
                   }}
                 >
-                  <option value="Batch Alpha 2026">Batch Alpha 2026</option>
-                  <option value="Batch Beta 2026">Batch Beta 2026</option>
+                  <option value="">Select a batch</option>
+                  {batches.map((batch) => (
+                    <option key={batch.id || batch._id || batch.name} value={batch.name}>{batch.name}</option>
+                  ))}
                 </select>
                 <input
                   type="date"
@@ -1710,11 +1789,18 @@ export default function OperationsPanel() {
                           <td style={{ padding: "12px 16px", fontWeight: 600 }}>{s.name}</td>
                           <td style={{ padding: "12px 16px" }}>
                             <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: "4px", backgroundColor: "rgba(16, 185, 129, 0.12)", color: "#10B981", fontWeight: 700 }}>
-                              Present
+                              {attendanceRecords.find((record) => record.studentId === s.studentId)?.status || "Not marked"}
                             </span>
                           </td>
                         </tr>
                       ))}
+                    {(!selectedBatchForAttendance || !students.some((s) => s.batch === selectedBatchForAttendance)) && (
+                      <tr>
+                        <td colSpan={3} style={{ padding: "18px", textAlign: "center", color: "var(--color-text-secondary)" }}>
+                          {selectedBatchForAttendance ? "No students are enrolled in this batch yet." : "No batches are available."}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1925,10 +2011,7 @@ export default function OperationsPanel() {
                   onChange={(e) => setLeadForm({ ...leadForm, course: e.target.value })}
                   style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem", marginTop: "4px" }}
                 >
-                  <option value="Full Stack Web Development">Full Stack Web Development</option>
-                  <option value="Graphic Design & Visual Branding">Graphic Design & Visual Branding</option>
-                  <option value="Digital Marketing & AI Growth">Digital Marketing & AI Growth</option>
-                  <option value="Data Analytics & AI Tools">Data Analytics & AI Tools</option>
+                  {courseOptions.map((course) => <option key={course} value={course}>{course}</option>)}
                 </select>
               </div>
               <div>
@@ -2017,21 +2100,23 @@ export default function OperationsPanel() {
                   onChange={(e) => setStudentForm({ ...studentForm, course: e.target.value })}
                   style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem", marginTop: "4px" }}
                 >
-                  <option value="Full Stack Web Development">Full Stack Web Development</option>
-                  <option value="Graphic Design & Visual Branding">Graphic Design & Visual Branding</option>
-                  <option value="Digital Marketing & AI Growth">Digital Marketing & AI Growth</option>
-                  <option value="Data Analytics & AI Tools">Data Analytics & AI Tools</option>
+                  {courseOptions.map((course) => <option key={course} value={course}>{course}</option>)}
                 </select>
               </div>
               <div>
                 <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--color-text-secondary)" }}>Cohort Batch</label>
                 <select
+                  required
                   value={studentForm.batch}
                   onChange={(e) => setStudentForm({ ...studentForm, batch: e.target.value })}
                   style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.82rem", marginTop: "4px" }}
                 >
-                  <option value="Batch Alpha 2026">Batch Alpha 2026 (Morning 10 AM - 1 PM)</option>
-                  <option value="Batch Beta 2026">Batch Beta 2026 (Evening 3 PM - 6 PM)</option>
+                  <option value="">Select a batch</option>
+                  {batches.map((batch) => (
+                    <option key={batch.id || batch._id || batch.name} value={batch.name}>
+                      {batch.name}{batch.timing ? ` (${batch.timing})` : ""}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>

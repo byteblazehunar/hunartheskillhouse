@@ -345,13 +345,41 @@ export default function ExtraSubviews({
             </thead>
             <tbody>
               {staff.map((st, idx) => (
+                (() => {
+                  const teacherKeys = new Set(
+                    [st.name, st.staffId]
+                      .filter(Boolean)
+                      .map((value) => value.trim().toLowerCase())
+                  );
+                  const explicitBatches = Array.isArray(st.assignedBatches) ? st.assignedBatches : [];
+                  const assignedBatchNames = new Set(
+                    [
+                      ...explicitBatches.map((batch) => typeof batch === "string" ? batch : batch?.name).filter(Boolean),
+                      ...batches
+                        .filter((batch) => teacherKeys.has(String(batch.assignedTeacher || "").trim().toLowerCase()))
+                        .map((batch) => batch.name)
+                    ]
+                  );
+                  const assignedCourses = Array.isArray(st.assignedCourses)
+                    ? st.assignedCourses
+                    : typeof st.assignedCourses === "string"
+                      ? st.assignedCourses.split(",").map((course) => course.trim()).filter(Boolean)
+                      : [];
+                  const instructorBatches = batches.filter((batch) => assignedBatchNames.has(batch.name));
+                  const instructorCourses = assignedCourses.length
+                    ? assignedCourses
+                    : [...new Set(instructorBatches.map((batch) => batch.course).filter(Boolean))];
+
+                  return (
                 <tr key={idx} style={{ borderBottom: "1px solid var(--color-border)" }}>
                   <td style={{ padding: "14px 18px", fontFamily: "monospace", fontWeight: 700, color: "var(--color-brand)" }}>{st.staffId}</td>
                   <td style={{ padding: "14px 18px", fontWeight: 700 }}>{st.name}</td>
-                  <td style={{ padding: "14px 18px", color: "var(--color-text-secondary)" }}>{st.department}</td>
-                  <td style={{ padding: "14px 18px", fontWeight: 600 }}>{st.assignedCourses || "Full Stack Web Development, AI"}</td>
-                  <td style={{ padding: "14px 18px" }}>Batch Alpha 2026, Beta 2026</td>
+                  <td style={{ padding: "14px 18px", color: "var(--color-text-secondary)" }}>{st.department || "Not assigned"}</td>
+                  <td style={{ padding: "14px 18px", fontWeight: 600 }}>{instructorCourses.length ? instructorCourses.join(", ") : "No courses assigned"}</td>
+                  <td style={{ padding: "14px 18px" }}>{instructorBatches.length ? instructorBatches.map((batch) => batch.name).join(", ") : "No batches assigned"}</td>
                 </tr>
+                  );
+                })()
               ))}
             </tbody>
           </table>

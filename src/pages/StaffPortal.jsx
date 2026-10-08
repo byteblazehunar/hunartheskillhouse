@@ -42,6 +42,7 @@ export default function StaffPortal() {
   const [newAssignBatch, setNewAssignBatch] = useState("");
   const [newAssignDeadline, setNewAssignDeadline] = useState("");
   const [assignSuccess, setAssignSuccess] = useState("");
+  const [assignError, setAssignError] = useState("");
 
   // Announcement state
   const [annTitle, setAnnTitle] = useState("");
@@ -62,13 +63,18 @@ export default function StaffPortal() {
       fetch("/api/portal/staff", { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
       fetch("/api/students", { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
     ])
-      .then(([pData, sData]) => {
-        if (!pData.success) throw new Error(pData.message || "Unable to load the staff portal.");
-        if (!Array.isArray(sData)) {
-          throw new Error(sData.message || "Unable to load the student roster.");
+      .then(([pData]) => {
+        if (pData.error === "TOKEN_EXPIRED_OR_INVALID" || pData.error === "AUTHENTICATION_REQUIRED") {
+          localStorage.removeItem("hunar_token");
+          localStorage.removeItem("hunar_user");
+          navigate("/login", { replace: true });
+          return;
+        }
+        if (!pData.success || !Array.isArray(pData.students)) {
+          throw new Error(pData.message || "Unable to load staff and student data.");
         }
         setPortalData(pData);
-        setStudents(sData);
+        setStudents(pData.students);
         const firstBatch = pData.assignedBatches?.[0]?.name || "";
         setSelectedBatch((current) => pData.assignedBatches?.some((batch) => batch.name === current)
           ? current
@@ -94,8 +100,16 @@ export default function StaffPortal() {
   const handleSaveAttendance = async () => {
     setAttendanceMessage("");
     const token = localStorage.getItem("hunar_token");
+    if (!selectedBatch) {
+      setAttendanceMessage("No teaching batch is assigned to your account.");
+      return;
+    }
 
     const batchStudents = students.filter((s) => s.batch === selectedBatch);
+    if (batchStudents.length === 0) {
+      setAttendanceMessage("There are no students in the selected batch.");
+      return;
+    }
     const records = batchStudents.map((s) => ({
       studentId: s.studentId,
       studentName: s.name,
@@ -127,6 +141,7 @@ export default function StaffPortal() {
   const handleCreateAssignment = async (e) => {
     e.preventDefault();
     setAssignSuccess("");
+    setAssignError("");
     const token = localStorage.getItem("hunar_token");
 
     try {
@@ -158,7 +173,7 @@ export default function StaffPortal() {
       const refData = await ref.json();
       if (refData.success) setPortalData(refData);
     } catch (err) {
-      alert("Error creating assignment: " + err.message);
+      setAssignError(err.message || "Unable to create the assignment.");
     }
   };
 
@@ -184,7 +199,7 @@ export default function StaffPortal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      setAnnSuccess("Announcement published to students!");
+      setAnnSuccess("Announcement published successfully.");
       setAnnTitle("");
       setAnnMsg("");
     } catch (err) {
@@ -427,7 +442,11 @@ export default function StaffPortal() {
                 Assigned Teaching Batches
               </h3>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-                {assignedBatches.map((b) => (
+                {assignedBatches.length === 0 ? (
+                  <p role="status" style={{ color: "var(--color-text-secondary)" }}>
+                    No batches are assigned to you yet. Ask an administrator to assign your teaching batches.
+                  </p>
+                ) : assignedBatches.map((b) => (
                   <div key={b._id || b.id} style={{
                     padding: "18px",
                     borderRadius: "var(--radius-md)",
@@ -608,6 +627,13 @@ export default function StaffPortal() {
                       </td>
                     </tr>
                   ))}
+                  {students.length === 0 && (
+                    <tr>
+                      <td colSpan="6" style={{ padding: "24px", textAlign: "center", color: "var(--color-text-secondary)" }}>
+                        No students are enrolled in your assigned batches.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -646,9 +672,26 @@ export default function StaffPortal() {
                 {assignSuccess}
               </div>
             )}
+            {assignError && (
+              <div role="alert" style={{
+                background: "rgba(220, 38, 38, 0.1)",
+                border: "1px solid var(--color-danger)",
+                color: "var(--color-danger)",
+                padding: "12px",
+                borderRadius: "var(--radius-md)",
+                marginBottom: "20px",
+                fontSize: "0.85rem"
+              }}>
+                {assignError}
+              </div>
+            )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {assignments.map((a) => (
+              {assignments.length === 0 ? (
+                <p role="status" style={{ color: "var(--color-text-secondary)" }}>
+                  No assignments are currently available for your assigned batches.
+                </p>
+              ) : assignments.map((a) => (
                 <div key={a._id || a.id} style={{
                   padding: "20px",
                   borderRadius: "var(--radius-md)",
@@ -752,7 +795,7 @@ export default function StaffPortal() {
 
         {/* Tab 5: Announcements */}
         {activeTab === "announcements" && (
-          <div className="hunar-card" style={{ padding: "32px", maxWidth: "650px" }}>
+          <div className="hunar-card" style={{ padding: "32px", maxWidth: "820px" }}>
             <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
               Publish Announcement
             </h3>
@@ -815,6 +858,30 @@ export default function StaffPortal() {
                 Publish Announcement
               </button>
             </form>
+
+            <div style={{ marginTop: "32px", borderTop: "1px solid var(--color-border)", paddingTop: "24px" }}>
+              <h4 style={{ margin: "0 0 16px" }}>Recent Staff Notices</h4>
+              {portalData.announcements?.length ? (
+                <div style={{ display: "grid", gap: "12px" }}>
+                  {portalData.announcements.map((announcement, index) => (
+                    <article
+                      key={announcement.id || announcement._id || `${announcement.title}-${index}`}
+                      style={{ padding: "16px", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)" }}
+                    >
+                      <strong>{announcement.title}</strong>
+                      <p style={{ margin: "8px 0", color: "var(--color-text-secondary)", whiteSpace: "pre-wrap" }}>
+                        {announcement.message}
+                      </p>
+                      <small style={{ color: "var(--color-text-muted)" }}>
+                        {announcement.authorName || "Hunar staff"}{announcement.authorRole ? ` · ${announcement.authorRole}` : ""}
+                      </small>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p role="status" style={{ color: "var(--color-text-secondary)" }}>No staff notices have been posted yet.</p>
+              )}
+            </div>
           </div>
         )}
 

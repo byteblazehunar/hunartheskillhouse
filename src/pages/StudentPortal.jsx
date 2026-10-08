@@ -155,6 +155,12 @@ export default function StudentPortal() {
   }
 
   const { profile, attendance, assignments, announcements } = portalData;
+  const enrollmentStatus = profile.status || "active";
+  const isStudentActive = enrollmentStatus === "active";
+  const enrollmentStatusLabel = enrollmentStatus
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh", paddingBottom: "60px" }}>
@@ -368,7 +374,7 @@ export default function StudentPortal() {
                   {profile.batch}
                 </div>
                 <div style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", marginTop: "4px" }}>
-                  Morning Batch (10 AM - 1 PM)
+                  {profile.batchTiming || "Class schedule to be confirmed"}
                 </div>
               </div>
 
@@ -382,14 +388,14 @@ export default function StudentPortal() {
                   gap: "6px",
                   padding: "4px 10px",
                   borderRadius: "9999px",
-                  backgroundColor: "rgba(34, 197, 94, 0.12)",
-                  color: "var(--color-success)",
+                  backgroundColor: isStudentActive ? "rgba(34, 197, 94, 0.12)" : "rgba(239, 219, 25, 0.12)",
+                  color: isStudentActive ? "var(--color-success)" : "var(--color-brand-text)",
                   fontSize: "0.85rem",
                   fontWeight: "700",
                   marginTop: "6px"
                 }}>
-                  <CheckCircle2 size={14} />
-                  <span>Enrolled & Active</span>
+                  {isStudentActive ? <CheckCircle2 size={14} /> : <Clock size={14} />}
+                  <span>{enrollmentStatusLabel}</span>
                 </div>
                 <div style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", marginTop: "8px" }}>
                   Mullanpur Campus Lab
@@ -573,7 +579,11 @@ export default function StudentPortal() {
             )}
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              {assignments.map((assign) => (
+              {assignments.length === 0 ? (
+                <p role="status" style={{ color: "var(--color-text-secondary)" }}>
+                  No assignments have been posted for your batch yet.
+                </p>
+              ) : assignments.map((assign) => (
                 <div
                   key={assign._id || assign.id}
                   style={{
@@ -685,7 +695,11 @@ export default function StudentPortal() {
               Official Institute Notices
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {announcements.map((ann, idx) => (
+              {announcements.length === 0 ? (
+                <p role="status" style={{ color: "var(--color-text-secondary)" }}>
+                  There are no current institute notices.
+                </p>
+              ) : announcements.map((ann, idx) => (
                 <div
                   key={idx}
                   style={{
