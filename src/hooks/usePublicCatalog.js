@@ -21,6 +21,24 @@ function normalizeCourse(course, index) {
   };
 }
 
+function mergePublishedCourses(liveCourses) {
+  const coursesBySlug = new Map(
+    coursesData.map((course, index) => [course.slug, normalizeCourse(course, index)])
+  );
+
+  liveCourses.forEach((course, index) => {
+    const normalizedCourse = normalizeCourse(course, coursesData.length + index);
+    if (!normalizedCourse.title) return;
+
+    coursesBySlug.set(normalizedCourse.slug, {
+      ...coursesBySlug.get(normalizedCourse.slug),
+      ...normalizedCourse
+    });
+  });
+
+  return Array.from(coursesBySlug.values());
+}
+
 export default function usePublicCatalog() {
   const [courses, setCourses] = useState(coursesData);
   const [batches, setBatches] = useState([]);
@@ -36,7 +54,7 @@ export default function usePublicCatalog() {
       })
       .then((data) => {
         if (active && Array.isArray(data)) {
-          setCourses(data.map(normalizeCourse).filter((course) => course.title));
+          setCourses(mergePublishedCourses(data));
         }
       })
       .catch((error) => {

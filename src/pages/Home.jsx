@@ -37,7 +37,7 @@ export default function Home({ onOpenDemo }) {
 
   const filteredCourses =
     activeCategory === "All"
-      ? courses.slice(0, 6)
+      ? courses
       : courses.filter((c) => c.category === activeCategory);
 
   const featuredCourse = courses.find((c) => c.slug === "diploma-in-digital-marketing") || courses[0];
