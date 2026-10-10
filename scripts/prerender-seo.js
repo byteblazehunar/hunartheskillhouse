@@ -180,10 +180,12 @@ function renderPage(pathname) {
     ["property", "og:type", page.type || "website"],
     ["property", "og:url", canonicalUrl],
     ["property", "og:image", image],
+    ["property", "og:image:alt", page.title],
     ["name", "twitter:card", "summary_large_image"],
     ["name", "twitter:title", page.title],
     ["name", "twitter:description", page.description],
-    ["name", "twitter:image", image]
+    ["name", "twitter:image", image],
+    ["name", "twitter:image:alt", page.title]
   ]) {
     html = upsertMeta(html, attribute, name, content);
   }
@@ -225,7 +227,26 @@ const notFoundHtml = renderPage("/404")
 await writeFile(path.join(outputDirectory, "404.html"), notFoundHtml);
 
 const sitemapEntries = publicPaths
-  .map((pathname) => `  <url><loc>${SITE_URL}${pathname === "/" ? "/" : pathname}</loc></url>`)
+  .map((pathname) => {
+    const isHome = pathname === "/";
+    const isCourse = pathname.startsWith("/course/");
+    const isBlog = pathname.startsWith("/blog/");
+    const isHighPriority = isHome || pathname === "/courses" || pathname === "/workshop";
+
+    const priority = isHome ? "1.0"
+      : isHighPriority ? "0.9"
+      : isCourse ? "0.8"
+      : isBlog ? "0.7"
+      : "0.6";
+
+    const changefreq = isHome || pathname === "/courses" ? "weekly"
+      : isCourse || isBlog ? "monthly"
+      : "monthly";
+
+    const lastmod = new Date().toISOString().slice(0, 10);
+
+    return `  <url>\n    <loc>${SITE_URL}${isHome ? "/" : pathname}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  })
   .join("\n");
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries}\n</urlset>\n`;
 await writeFile(path.join(outputDirectory, "sitemap.xml"), sitemap);

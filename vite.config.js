@@ -18,9 +18,23 @@ function hunarBackendPlugin() {
       const apiApp = express();
       if (process.env.VERCEL === '1') apiApp.set('trust proxy', 1);
       apiApp.use(helmet({
-        contentSecurityPolicy: false,
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.googletagmanager.com'],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'", 'https://hunar.courses', 'https://www.hunar.courses'],
+            frameAncestors: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"]
+          }
+        },
         crossOriginEmbedderPolicy: false,
         hsts: process.env.NODE_ENV === 'production'
+          ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+          : false
       }));
       apiApp.use(express.json({ limit: '32kb' }));
       apiApp.use(express.urlencoded({ extended: true, limit: '32kb' }));

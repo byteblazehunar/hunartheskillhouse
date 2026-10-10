@@ -265,40 +265,7 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Admin Quick Switcher Banner */}
-        {role === "staff" && (
-          <div
-            style={{
-              background: "rgba(239, 219, 25, 0.08)",
-              border: "1px solid var(--color-brand-border)",
-              borderRadius: "var(--radius-md)",
-              padding: "10px 14px",
-              marginBottom: "18px",
-              fontSize: "0.82rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "8px",
-              textAlign: "left"
-            }}
-          >
-            <div>
-              <strong style={{ color: "var(--color-text-primary)", display: "block", fontSize: "0.84rem" }}>
-                Director / Admin Access
-              </strong>
-              <span style={{ color: "var(--color-text-secondary)", fontSize: "0.76rem" }}>
-                System control & audit center
-              </span>
-            </div>
-            <Link
-              to="/admin"
-              className="btn btn-primary btn-sm"
-              style={{ padding: "5px 10px", fontSize: "0.76rem", whiteSpace: "nowrap" }}
-            >
-              Admin →
-            </Link>
-          </div>
-        )}
+        {/* Admin Quick Switcher Banner — removed for security: admin route should not be advertised publicly */}
 
         {/* Error Alert Box */}
         {error && (

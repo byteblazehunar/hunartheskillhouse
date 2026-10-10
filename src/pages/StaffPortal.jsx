@@ -265,7 +265,7 @@ export default function StaffPortal() {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Link to="/" aria-label="Hunar Home">
-              <img src={logoSrc} alt="HUNAR" style={{ height: "36px", width: "auto" }} />
+              <img src={logoSrc} alt="Hunar The Skill House" style={{ height: "36px", width: "auto" }} />
             </Link>
             <div style={{
               display: "inline-flex",
@@ -468,9 +468,9 @@ export default function StaffPortal() {
           <div className="hunar-card" style={{ padding: "32px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px", marginBottom: "24px" }}>
               <div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
                   Record Batch Attendance
-                </h3>
+                </h2>
                 <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)" }}>
                   Select batch and class date to mark student attendance.
                 </p>
@@ -586,9 +586,9 @@ export default function StaffPortal() {
         {/* Tab 3: My Students */}
         {activeTab === "students" && (
           <div className="hunar-card" style={{ padding: "32px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
               Enrolled Student Roster
-            </h3>
+            </h2>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
                 <thead>
@@ -645,9 +645,9 @@ export default function StaffPortal() {
           <div className="hunar-card" style={{ padding: "32px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
               <div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
                   Workstation Assignments & Practicals
-                </h3>
+                </h2>
                 <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)" }}>
                   Create and manage hands-on assignments for your batches.
                 </p>
@@ -725,7 +725,7 @@ export default function StaffPortal() {
                 padding: "20px"
               }}>
                 <div className="hunar-card" style={{ maxWidth: "500px", width: "100%", padding: "30px" }}>
-                  <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "16px" }}>New Assignment</h3>
+                  <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "16px" }}>New Assignment</h2>
                   <form onSubmit={handleCreateAssignment}>
                     <div className="form-group">
                       <label className="form-label">Assignment Title</label>
@@ -796,9 +796,9 @@ export default function StaffPortal() {
         {/* Tab 5: Announcements */}
         {activeTab === "announcements" && (
           <div className="hunar-card" style={{ padding: "32px", maxWidth: "820px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
               Publish Announcement
-            </h3>
+            </h2>
             <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)", marginBottom: "20px" }}>
               Post notices to students enrolled in your workstation batches.
             </p>
@@ -888,9 +888,9 @@ export default function StaffPortal() {
         {/* Tab 6: Profile */}
         {activeTab === "profile" && (
           <div className="hunar-card" style={{ padding: "32px", maxWidth: "680px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
               Verified Faculty Profile
-            </h3>
+            </h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", fontSize: "0.9rem" }}>
               <div>
                 <span style={{ color: "var(--color-text-muted)", fontSize: "0.8rem", display: "block" }}>Full Name</span>

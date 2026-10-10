@@ -39,10 +39,12 @@ export default function SeoManager() {
     setMeta("property", "og:type", page.type || "website");
     setMeta("property", "og:url", canonicalUrl);
     setMeta("property", "og:image", image);
+    setMeta("property", "og:image:alt", page.title);
     setMeta("name", "twitter:card", "summary_large_image");
     setMeta("name", "twitter:title", page.title);
     setMeta("name", "twitter:description", page.description);
     setMeta("name", "twitter:image", image);
+    setMeta("name", "twitter:image:alt", page.title);
 
     let canonical = document.head.querySelector('link[rel="canonical"]');
     if (!canonical) {

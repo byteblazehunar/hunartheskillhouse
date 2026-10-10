@@ -205,8 +205,7 @@ export default function Footer() {
                 { to: "/blog", label: "Articles" },
                 { to: "/contact", label: "Contact" },
                 { to: "/enroll", label: "Enroll" },
-                { to: "/verify", label: "Verify Certificate" },
-                { to: "/admin", label: "Admin Portal" }
+                { to: "/verify", label: "Verify Certificate" }
               ].map((item) => (
                 <li key={item.to}>
                   <Link

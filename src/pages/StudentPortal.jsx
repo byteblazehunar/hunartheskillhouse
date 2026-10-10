@@ -182,7 +182,7 @@ export default function StudentPortal() {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Link to="/" aria-label="Hunar Home">
-              <img src={logoSrc} alt="HUNAR" style={{ height: "36px", width: "auto" }} />
+              <img src={logoSrc} alt="Hunar The Skill House" style={{ height: "36px", width: "auto" }} />
             </Link>
             <div style={{
               display: "inline-flex",
@@ -465,9 +465,9 @@ export default function StudentPortal() {
           <div className="hunar-card" style={{ padding: "32px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
               <div>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
+                <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "4px" }}>
                   Class Attendance Record
-                </h3>
+                </h2>
                 <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)" }}>
                   Verified lab attendance recorded by instructors at Hunar The Skill House.
                 </p>
@@ -543,9 +543,9 @@ export default function StudentPortal() {
         {/* Tab Content 3: Assignments */}
         {activeTab === "assignments" && (
           <div className="hunar-card" style={{ padding: "32px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
               Practical Assignments & Projects
-            </h3>
+            </h2>
             <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)", marginBottom: "24px" }}>
               Submit your project repository URLs or live campaign links below for mentor review.
             </p>
@@ -691,9 +691,9 @@ export default function StudentPortal() {
         {/* Tab Content 4: Announcements */}
         {activeTab === "announcements" && (
           <div className="hunar-card" style={{ padding: "32px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "20px" }}>
               Official Institute Notices
-            </h3>
+            </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {announcements.length === 0 ? (
                 <p role="status" style={{ color: "var(--color-text-secondary)" }}>
@@ -730,9 +730,9 @@ export default function StudentPortal() {
         {/* Tab Content 5: Profile */}
         {activeTab === "profile" && (
           <div className="hunar-card" style={{ padding: "32px", maxWidth: "680px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "6px" }}>
               Verified Academic Profile
-            </h3>
+            </h2>
             <p style={{ fontSize: "0.88rem", color: "var(--color-text-secondary)", marginBottom: "24px" }}>
               Institutional record registered with Hunar The Skill House, Mullanpur Dakha.
             </p>

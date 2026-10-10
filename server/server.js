@@ -25,9 +25,23 @@ const clientEntryPath = path.join(clientDistPath, "index.html");
 
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://hunar.courses", "https://www.hunar.courses"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"]
+      }
+    },
     crossOriginEmbedderPolicy: false,
     hsts: process.env.NODE_ENV === "production"
+      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+      : false
   })
 );
 

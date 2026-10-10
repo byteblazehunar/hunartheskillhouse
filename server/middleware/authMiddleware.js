@@ -10,12 +10,13 @@ export async function resolveUserPermissions(user) {
   }
 
   // Fallback to role name or system default based on user.role
+  // Super admin email fallback is read from env — never hardcoded in source
+  const superAdminEmail = process.env.INITIAL_ADMIN_EMAIL || "";
   if (!roleDoc) {
     if (
       user.role === "admin" ||
       user.assignedId === "HUN-A-0001" ||
-      user.email === "admin@hunarskillhouse.com" ||
-      user.email === "byteblaze.hunar@gmail.com"
+      (superAdminEmail && user.email === superAdminEmail)
     ) {
       roleDoc = await getRoleById("role-super-admin");
     } else if (user.role === "teacher") {
@@ -36,6 +37,7 @@ export async function resolveUserPermissions(user) {
   const isSuperAdmin =
     user.role === "admin" ||
     user.assignedId === "HUN-A-0001" ||
+    (superAdminEmail && user.email === superAdminEmail) ||
     (roleDoc && (roleDoc.isSystem || roleDoc.roleId === "role-super-admin" || (roleDoc.permissions && roleDoc.permissions.includes("*"))));
 
   const permissions = isSuperAdmin
@@ -118,7 +120,13 @@ export async function authenticate(req, res, next) {
 
     next();
   } catch (err) {
-    console.error("[Auth Middleware Error]:", err);
+    // Log category only — never log token, password, or full stack trace to stdout in production
+    const isProduction = process.env.NODE_ENV === "production";
+    if (!isProduction) {
+      console.error("[Auth Middleware Error]:", err);
+    } else {
+      console.error("[Auth Middleware Error]: Authentication processing failed.", err?.message || "");
+    }
     return res.status(500).json({
       success: false,
       error: "AUTH_PROCESSING_ERROR",

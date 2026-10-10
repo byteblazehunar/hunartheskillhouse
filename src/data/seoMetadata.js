@@ -10,53 +10,53 @@ const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const pageMetadata = {
   "/": {
     title: "Skill Courses in Mullanpur Dakha | Hunar The Skill House",
-    description: "Explore practical AI, web, digital marketing and design courses at Hunar in Mullanpur Dakha, Ludhiana. Learn through guided training and projects.",
-    keywords: "skill development institute Mullanpur, computer courses Mullanpur Dakha, AI course Ludhiana, web development course Ludhiana"
+    description: "Hunar The Skill House offers practical AI, digital marketing, web development and design courses in Mullanpur Dakha, Ludhiana. ISO 9001:2015 certified. ₹10,000 live ad budget per student. 100% workstation-based training.",
+    keywords: "skill development institute Mullanpur, computer courses Mullanpur Dakha, AI course Ludhiana, web development course Ludhiana, digital marketing course Ludhiana, Hunar The Skill House"
   },
   "/courses": {
     title: "AI, Technology & Digital Skills Courses in Ludhiana | Hunar",
-    description: "Compare practical courses in AI, full-stack web development, digital marketing, graphic design and video editing at Hunar in Mullanpur Dakha.",
-    keywords: "courses in Ludhiana, computer institute Mullanpur, AI training Ludhiana, digital marketing course, web development course"
+    description: "Hunar offers 12 job-ready courses in Mullanpur Dakha: AI, full-stack web development, digital marketing, graphic design and video editing. Each course includes individual workstation access and 1-on-1 mentor guidance.",
+    keywords: "courses in Ludhiana, computer institute Mullanpur, AI training Ludhiana, digital marketing course, web development course, graphic design course Ludhiana"
   },
   "/workshop": {
-    title: "Practical AI Workshop in Mullanpur Dakha | Hunar",
-    description: "Explore Hunar's hands-on AI workshop in Mullanpur Dakha, Ludhiana, covering practical AI tools, prompts and project-based learning.",
-    keywords: "AI workshop Mullanpur, AI course Ludhiana, practical artificial intelligence training"
+    title: "30 Days AI Workshop in Mullanpur Dakha | Hunar",
+    description: "Hunar's 30 Days AI Workshop covers 29 hands-on modules: prompt engineering, HeyGen avatars, Make.com automations, Claude coding and AI agents. No coding required. ISO-certified certificate included.",
+    keywords: "AI workshop Mullanpur, 30 days AI workshop Ludhiana, practical artificial intelligence training, AI tools course Punjab"
   },
   "/about": {
     title: "About Hunar The Skill House | Mullanpur Dakha, Ludhiana",
-    description: "Learn about Hunar The Skill House, its practical training approach, mentors and campus in Mullanpur Dakha, Ludhiana, Punjab.",
-    keywords: "Hunar The Skill House, skill institute Mullanpur, practical training Ludhiana"
+    description: "Hunar The Skill House is a DPIIT-recognized, ISO 9001:2015 certified skill training institute in Mullanpur Dakha, Ludhiana. Founded by Gurlove Malhi, powered by Byteblaze Technologies. Individual workstations, live ad budgets, mentor-led learning.",
+    keywords: "Hunar The Skill House about, skill institute Mullanpur Dakha, Gurlove Malhi founder, DPIIT recognized institute Ludhiana"
   },
   "/testimonials": {
-    title: "Student Experiences | Hunar The Skill House, Ludhiana",
-    description: "Read learner experiences about practical courses and training at Hunar The Skill House in Mullanpur Dakha, Ludhiana.",
-    keywords: "Hunar student reviews, skill courses Ludhiana, Hunar Mullanpur testimonials"
+    title: "Student Reviews & Experiences | Hunar The Skill House",
+    description: "Read verified student reviews from Hunar The Skill House, Mullanpur Dakha. Students share their experiences in digital marketing, AI, web development and design training. 4.9/5 average rating.",
+    keywords: "Hunar student reviews, Hunar testimonials Ludhiana, skill courses Mullanpur review, Hunar The Skill House rating"
   },
   "/faq": {
-    title: "Course & Admission FAQs | Hunar The Skill House",
-    description: "Find answers about courses, admissions, fees, certificates and placement support at Hunar The Skill House in Mullanpur Dakha.",
-    keywords: "Hunar admissions FAQ, course fees Ludhiana, skill course questions Mullanpur"
+    title: "Courses, Fees & Admission FAQs | Hunar The Skill House",
+    description: "Common questions about Hunar The Skill House: What courses are available? How much do they cost? Is placement support provided? What is the certificate? Find answers here.",
+    keywords: "Hunar admissions FAQ, course fees Ludhiana, Hunar placement support, skill course certificate Mullanpur, Hunar contact"
   },
   "/blog": {
-    title: "Learning & Career Articles | Hunar The Skill House",
-    description: "Read practical articles on AI, web development and digital marketing from Hunar The Skill House in Mullanpur Dakha, Ludhiana.",
-    keywords: "AI learning articles, web development career, digital marketing insights"
+    title: "AI, Web Dev & Digital Marketing Articles | Hunar The Skill House",
+    description: "Practical career and learning articles from Hunar The Skill House faculty in Mullanpur Dakha. Topics include AI tools for beginners, job-ready web development, and digital marketing with AI.",
+    keywords: "AI learning articles Ludhiana, web development career guide, digital marketing AI tips, Hunar blog"
   },
   "/contact": {
     title: "Contact Hunar The Skill House | Mullanpur Dakha, Ludhiana",
-    description: "Contact Hunar The Skill House about courses, admissions and demo classes. Visit our campus on Ferozpur Road in Mullanpur Dakha, Ludhiana.",
-    keywords: "contact Hunar Mullanpur, skill institute address Ludhiana, course enquiry"
+    description: "Contact Hunar The Skill House: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana. Call +91 94637-95116. Book a free demo class or campus visit Monday–Saturday 9 AM–7 PM.",
+    keywords: "contact Hunar Mullanpur, Hunar phone number, skill institute address Ludhiana, book demo class Hunar"
   },
   "/verify": {
     title: "Verify a Hunar Certificate | Hunar The Skill House",
-    description: "Check a Hunar The Skill House certificate using its verification code on the official certificate verification page.",
-    keywords: "verify Hunar certificate, certificate verification Hunar"
+    description: "Verify the authenticity of a Hunar The Skill House certificate online. Enter the certificate verification code to confirm the holder's name, course, and completion date.",
+    keywords: "verify Hunar certificate, Hunar certificate verification, ISO certified course certificate Ludhiana"
   },
   "/enroll": {
     title: "Course Enquiry & Enrollment | Hunar The Skill House",
-    description: "Ask about enrolling in a practical skill course at Hunar The Skill House in Mullanpur Dakha, Ludhiana.",
-    keywords: "enroll skill course Ludhiana, Hunar admission, course enquiry Mullanpur"
+    description: "Enquire about enrolling in a practical skill course at Hunar The Skill House, Mullanpur Dakha. Fill the form or call +91 94637-95116 for course details, batch schedules and fees.",
+    keywords: "enroll skill course Ludhiana, Hunar admission enquiry, course fees Mullanpur, Hunar batch schedule"
   },
   "/login": {
     title: "Sign In | Hunar The Skill House",
@@ -65,13 +65,13 @@ export const pageMetadata = {
   },
   "/page/privacy-policy": {
     title: "Privacy Policy | Hunar The Skill House",
-    description: "Read how Hunar The Skill House handles website enquiries and personal information.",
-    keywords: "Hunar privacy policy"
+    description: "Read how Hunar The Skill House collects, uses and protects your personal information submitted through our website forms and student portal.",
+    keywords: "Hunar privacy policy, data protection Hunar"
   },
   "/page/terms-conditions": {
     title: "Terms & Conditions | Hunar The Skill House",
-    description: "Read the website and service terms for Hunar The Skill House.",
-    keywords: "Hunar terms and conditions"
+    description: "Read the terms and conditions governing use of the Hunar The Skill House website, courses, certificates and student services.",
+    keywords: "Hunar terms and conditions, Hunar website terms"
   }
 };
 
@@ -98,13 +98,16 @@ export function isPrivateSeoPath(pathname) {
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
+    "@type": ["EducationalOrganization", "LocalBusiness"],
     "@id": ORGANIZATION_ID,
     name: siteConfig.name,
     url: SITE_URL,
     logo: DEFAULT_IMAGE,
+    image: DEFAULT_IMAGE,
     email: siteConfig.email,
     telephone: siteConfig.phone,
+    priceRange: "₹₹",
+    openingHours: ["Mo-Sa 09:00-19:00"],
     address: {
       "@type": "PostalAddress",
       streetAddress: siteConfig.location,
@@ -112,6 +115,11 @@ export function organizationSchema() {
       addressRegion: "Punjab",
       postalCode: "141101",
       addressCountry: "IN"
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 30.8248,
+      longitude: 75.7315
     },
     sameAs: Object.values(siteConfig.socials)
   };
@@ -123,9 +131,9 @@ export function getPageMetadata(pathname) {
     const course = coursesData.find((item) => item.slug === slug);
     if (course) {
       return {
-        title: `${course.title} Course in Ludhiana | Hunar`,
-        description: `Learn ${course.title} through practical projects at Hunar in Mullanpur Dakha, Ludhiana.`,
-        keywords: `${course.title}, ${course.category} course Ludhiana, ${course.category} training Mullanpur`,
+        title: `${course.title} Course in Ludhiana | Hunar The Skill House`,
+        description: `${course.title} course at Hunar The Skill House, Mullanpur Dakha, Ludhiana. ${course.shortDesc} Duration: ${course.duration}. Mode: ${course.mode}. ISO 9001:2015 certified. Book a free demo class.`,
+        keywords: `${course.title} course Ludhiana, ${course.category} course Mullanpur Dakha, ${course.title} training Punjab, ${course.category} training Ludhiana, Hunar ${course.title}`,
         schema: {
           "@context": "https://schema.org",
           "@type": "Course",
@@ -144,9 +152,10 @@ export function getPageMetadata(pathname) {
     if (post) {
       return {
         title: `${post.title} | Hunar The Skill House`,
-        description: post.excerpt,
-        keywords: `${post.category}, ${post.title}, Hunar The Skill House`,
+        description: `${post.excerpt} Published by ${post.author} (${post.authorRole}) at Hunar The Skill House, Mullanpur Dakha. ${post.readTime}.`,
+        keywords: `${post.category}, ${post.title}, Hunar The Skill House blog, ${post.author}`,
         type: "article",
+        image: new URL(post.image, SITE_URL).href,
         schema: {
           "@context": "https://schema.org",
           "@type": "Article",
@@ -154,6 +163,7 @@ export function getPageMetadata(pathname) {
           description: post.excerpt,
           image: new URL(post.image, SITE_URL).href,
           author: { "@type": "Person", name: post.author },
+          datePublished: post.date,
           publisher: { "@id": ORGANIZATION_ID },
           mainEntityOfPage: `${SITE_URL}${pathname}`
         }
