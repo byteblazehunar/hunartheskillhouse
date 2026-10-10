@@ -434,6 +434,10 @@ export default function AdminPortal() {
       ]);
       setCourses(courseResult.records);
       setBatches(batchResult.records);
+      // Auto-select the first batch for the attendance tab so the select is never blank
+      if (batchResult.records.length > 0) {
+        setSelectedBatchForAttendance((current) => current || batchResult.records[0].name || "");
+      }
       setAcademicDataErrors({
         courses: courseResult.error,
         batches: batchResult.error
@@ -790,6 +794,8 @@ export default function AdminPortal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error creating batch");
       setBatches((prev) => [data.batch, ...prev]);
+      // Auto-select the newly created batch in the attendance tab
+      setSelectedBatchForAttendance(data.batch?.name || batchForm.name);
       setModalType(null);
       showToast("Batch created successfully!");
     } catch (err) {
@@ -1078,8 +1084,25 @@ export default function AdminPortal() {
 
   const openAddBatch = () => {
     setEditingItem(null);
-    setBatchForm({ name: "", course: "", timing: "", assignedTeacher: "" });
+    // Pre-select the first available course so the select is never blank
+    const defaultCourse = courseOptions[0]?.title || courses[0]?.title || "";
+    setBatchForm({ name: "", course: defaultCourse, timing: "", assignedTeacher: "" });
     setModalType("add_batch");
+  };
+
+  const openAddTimetable = () => {
+    setEditingItem(null);
+    // Pre-fill course and batch with first available options so dropdowns are never blank
+    setTimetableForm({
+      course: courseOptions[0]?.title || courses[0]?.title || "",
+      batch: batches[0]?.name || "",
+      day: "",
+      time: "",
+      subject: "",
+      teacher: "",
+      room: ""
+    });
+    setModalType("add_timetable");
   };
 
   const handleUpdateCourse = async (e) => {
@@ -1136,7 +1159,8 @@ export default function AdminPortal() {
     setEditingItem(b);
     setBatchForm({
       name: b.name || "",
-      course: b.course || (courses[0]?.title || ""),
+      // Keep the batch's own course — don't silently fall back to courses[0]
+      course: b.course || "",
       timing: b.timing || "",
       assignedTeacher: b.assignedTeacher || ""
     });
@@ -1186,8 +1210,8 @@ export default function AdminPortal() {
   const openEditTimetable = (slot) => {
     setEditingItem(slot);
     setTimetableForm({
-      course: slot.course || (courses[0]?.title || ""),
-      batch: slot.batch || (batches[0]?.name || ""),
+      course: slot.course || "",
+      batch: slot.batch || "",
       day: slot.day || "",
       time: slot.time || "",
       subject: slot.subject || "",
@@ -3666,7 +3690,7 @@ export default function AdminPortal() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setModalType("add_timetable")}
+                  onClick={openAddTimetable}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -5804,9 +5828,7 @@ export default function AdminPortal() {
 
               <div>
                 <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Assigned Instructor</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Paramjit Singh"
+                <select
                   value={batchForm.assignedTeacher}
                   onChange={(e) => setBatchForm({ ...batchForm, assignedTeacher: e.target.value })}
                   style={{
@@ -5818,7 +5840,14 @@ export default function AdminPortal() {
                     color: "var(--color-text-primary)",
                     fontSize: "0.85rem"
                   }}
-                />
+                >
+                  <option value="">— Unassigned —</option>
+                  {staff.filter((s) => s.employmentStatus === "active" || s.role === "teacher").map((s) => (
+                    <option key={s.staffId || s._id} value={s.name}>
+                      {s.name}{s.designation ? ` (${s.designation})` : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
