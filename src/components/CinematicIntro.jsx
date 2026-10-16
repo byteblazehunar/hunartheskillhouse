@@ -1,54 +1,51 @@
 import React, { useState, useEffect } from "react";
 
 export default function CinematicIntro() {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false); // Start hidden — homepage shows immediately
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     // Respect user's motion preference
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShow(false);
       return;
     }
 
-    // Check if we've already shown the intro this session to prevent annoyance
+    // Check if we've already shown the intro this session
     const hasSeenIntro = sessionStorage.getItem("hasSeenHunarIntro_v4");
     if (hasSeenIntro) {
-      setShow(false);
       return;
     }
 
-    // Sequence timing
-    document.body.style.overflow = "hidden"; // Lock scroll
+    // Delay intro so homepage + logo are visible first (800ms head start)
+    const tStart = setTimeout(() => {
+      setShow(true);
+      document.body.style.overflow = "hidden";
 
-    const t1 = setTimeout(() => setPhase(1), 400);   // Sequence starts
-    const t2 = setTimeout(() => setPhase(2), 1200);  // Text reveals
-    const t3 = setTimeout(() => setPhase(3), 2400);  // Text scales and fades
-    const t4 = setTimeout(() => setPhase(4), 3200);  // Background fades out
-    const t5 = setTimeout(() => {
-      setShow(false);
-      document.body.style.overflow = ""; // Unlock scroll
-      sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
-    }, 3800);
+      const t1 = setTimeout(() => setPhase(1), 400);
+      const t2 = setTimeout(() => setPhase(2), 1200);
+      const t3 = setTimeout(() => setPhase(3), 2400);
+      const t4 = setTimeout(() => setPhase(4), 3200);
+      const t5 = setTimeout(() => {
+        setShow(false);
+        document.body.style.overflow = "";
+        sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
+      }, 3800);
 
-    const handleSkip = () => {
-      setShow(false);
-      document.body.style.overflow = "";
-      sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
-    };
+      const handleSkip = () => {
+        setShow(false);
+        document.body.style.overflow = "";
+        sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
+        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+        clearTimeout(t4); clearTimeout(t5);
+      };
 
-    window.addEventListener("click", handleSkip);
-    window.addEventListener("keydown", handleSkip);
+      window.addEventListener("click", handleSkip);
+      window.addEventListener("keydown", handleSkip);
+    }, 800); // homepage visible for 800ms before intro overlays
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
+      clearTimeout(tStart);
       document.body.style.overflow = "";
-      window.removeEventListener("click", handleSkip);
-      window.removeEventListener("keydown", handleSkip);
     };
   }, []);
 

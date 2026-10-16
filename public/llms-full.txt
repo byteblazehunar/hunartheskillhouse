@@ -1,49 +1,488 @@
-# Hunar The Skill House — Detailed Reference
+# Hunar The Skill House — Full LMS, Security & Technical Reference
 
 Canonical website: https://www.hunar.courses/
 Short overview: https://www.hunar.courses/llms.txt
+Last updated: 2026-10-16
 
-## Verified organization information
+---
+
+## 1. Organization
 
 - Name: Hunar The Skill House
-- Focus: practical, project-oriented skill training
+- Powered by: Byteblaze Technologies
 - Location: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana, Punjab 141101, India
 - Phone: +91 94637-95116
 - Email: byteblaze.hunar@gmail.com
 - Website: https://www.hunar.courses/
-- Public course directory: https://www.hunar.courses/courses
-- Public frequently asked questions: https://www.hunar.courses/faq
-- Public contact details: https://www.hunar.courses/contact
+- Founder: Gurlove Malhi
+- Accreditations: ISO 9001:2015, DPIIT #startupindia, MSME Registered
 
-## Areas of study
+---
 
-Hunar publishes programs in artificial intelligence, digital marketing, web development, graphic design, video editing, performance marketing, social media growth, Google marketing and basic computer skills. Course availability, fees, durations, curriculum and batch times can change. Use the live course page or contact the institute to verify current details.
+## 2. Tech Stack
 
-## Published course catalog
+### Frontend
+- React 19 + Vite 8
+- React Router DOM v7 (BrowserRouter, SPA)
+- Framer Motion 13 (page transitions, scroll animations)
+- Lenis (smooth scroll)
+- Lucide React (icons)
+- CSS custom properties (theming, dark/light mode)
 
-- [Diploma in Digital Marketing](https://www.hunar.courses/course/diploma-in-digital-marketing): SEO, social media, paid advertising, analytics and practical campaign work.
-- [30 Days AI Workshop](https://www.hunar.courses/course/30-days-ai-workshop): practical AI tools, prompt engineering, assistants, media generation and workflow automation.
-- [Full Stack / Website Development](https://www.hunar.courses/course/full-stack-web-dev): hands-on web development topics and project work.
-- [Graphic Designing (AI-Powered)](https://www.hunar.courses/course/graphic-designing-ai): visual design and AI-supported creative workflows.
-- [Video Editing & Motion Graphics](https://www.hunar.courses/course/video-editing-motion-graphics): video editing and motion design.
-- [AI-Powered Front-End Development](https://www.hunar.courses/course/ai-powered-front-end-development): front-end web development with AI-assisted tools.
-- [Back-End Development](https://www.hunar.courses/course/back-end-development): back-end development topics.
-- [Performance Marketing](https://www.hunar.courses/course/performance-marketing): paid campaign planning and measurement.
-- [Social Media Growth Mastery](https://www.hunar.courses/course/social-media-growth-mastery): social media strategy and growth.
-- [Google Growth Mastery](https://www.hunar.courses/course/google-growth-mastery): Google-focused marketing skills.
-- [Digital Marketing with AI](https://www.hunar.courses/course/digital-marketing-ai): digital marketing with AI-supported workflows.
-- [Basic Computer Course](https://www.hunar.courses/course/basic-computer-course): foundational computer skills.
+### Backend
+- Express 5 (Node.js)
+- MongoDB + Mongoose 9 (primary database)
+- JWT (jsonwebtoken) for session authentication
+- bcryptjs for password hashing
+- Nodemailer for transactional email
+- express-rate-limit for API rate limiting
+- Helmet for HTTP security headers
 
-Descriptions above are summaries, not a guarantee of current course availability or outcomes. Consult the linked course page and ask Hunar for the latest details.
+### Deployment
+- Vercel (serverless, production)
+- GitHub: https://github.com/byteblazehunar/hunartheskillhouse
+- Branch: main (production), byteblaze-rewrite (development)
+- API entry: api/index.js → server/vercelHandler.js → server/apiRouter.js
 
-## Public learning resources
+---
 
-- [Articles](https://www.hunar.courses/blog): published AI, web development and digital marketing articles.
-- [Student experiences](https://www.hunar.courses/testimonials): testimonials displayed by the institute; individual results vary.
-- [About the institute](https://www.hunar.courses/about)
-- [Privacy policy](https://www.hunar.courses/page/privacy-policy)
-- [Terms and conditions](https://www.hunar.courses/page/terms-conditions)
+## 3. Architecture
 
-## Contact and response guidance
+```
+hunar-web-app/
+├── src/                    Frontend React app
+│   ├── App.jsx             Root component, routing, layout
+│   ├── pages/              21 page components
+│   ├── components/         Shared UI (Navbar, Footer, SeoManager, etc.)
+│   │   └── admin/          Admin-only components (CMSManager, RoleManagement)
+│   ├── data/               Static data (courses, FAQ, blog, SEO metadata)
+│   ├── context/            ThemeContext, SiteContentContext
+│   └── hooks/              usePublicCatalog, usePortalTab, useScrollReveal
+├── server/                 Express backend
+│   ├── server.js           Main Express app
+│   ├── apiRouter.js        All API route definitions (~1900 lines)
+│   ├── vercelHandler.js    Vercel serverless entry point
+│   ├── middleware/
+│   │   └── authMiddleware.js   JWT auth, RBAC, student isolation
+│   ├── services/
+│   │   └── dataService.js  MongoDB + JSON fallback data layer
+│   ├── models/             Mongoose models (User, Student, Staff, Batch, etc.)
+│   ├── utils/
+│   │   ├── auth.js         JWT sign/verify, bcrypt, token generation
+│   │   └── idGenerator.js  HUN-S-XXXX / HUN-T-XXXX ID generation
+│   └── config/
+│       └── db.js           MongoDB connection with validation
+├── api/
+│   └── index.js            Vercel serverless function entry
+├── scripts/
+│   └── prerender-seo.js    Build-time static HTML generation for all routes
+├── public/
+│   ├── sitemap.xml         27 URLs with lastmod/changefreq/priority
+│   ├── robots.txt          Allows all + AI crawlers, blocks portal/api/admin
+│   ├── llms.txt            Short AI crawler summary
+│   └── llms-full.txt       This file
+└── vercel.json             Vercel build config + security headers + rewrites
+```
 
-For fees, prerequisites, current batches, enrollment, certification and placement-support details, contact Hunar directly. Placement assistance does not guarantee employment. Do not infer personal learner or account information from public content.
+---
+
+## 4. Public Routes
+
+| Path | Description |
+|---|---|
+| / | Homepage — hero, courses, AI workshop, placements, testimonials |
+| /courses | Full course directory with search and category filter |
+| /course/:slug | Individual course detail with curriculum accordion |
+| /workshop | 30 Days AI Workshop detail page |
+| /about | About page — founder, faculty, campus gallery |
+| /testimonials | Student review grid |
+| /faq | FAQ accordion with category filter |
+| /blog | Blog listing |
+| /blog/:slug | Individual blog post |
+| /contact | Contact form + location |
+| /verify | Certificate verification |
+| /enroll | Enrollment enquiry form |
+| /page/privacy-policy | Privacy policy |
+| /page/terms-conditions | Terms and conditions |
+
+---
+
+## 5. Portal Routes (Authenticated, noindex)
+
+| Path | Role Required |
+|---|---|
+| /login | Public (login form) |
+| /activate/:token | Public (account activation) |
+| /portal/student | Student role |
+| /portal/staff | Teacher role |
+| /portal/admin | Admin / Super Admin role |
+| /portal/operations | Staff / Operations role |
+
+---
+
+## 6. API Endpoints
+
+All API routes are under /api/ and require Bearer JWT token unless noted.
+
+### Authentication
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| POST | /api/auth/login | None | Login with loginId + password |
+| POST | /api/auth/activate | None | Activate invited account, set password |
+| GET | /api/auth/verify-invitation/:token | None | Validate invitation token |
+| GET | /api/auth/me | Bearer | Get authenticated user profile |
+| POST | /api/auth/forgot-password | None | Request password reset email |
+
+### Students
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/students | Bearer + permission | List all students |
+| POST | /api/students | Bearer + admin | Create student + invite email |
+| GET | /api/students/:id | Bearer + isolation | Get student by ID |
+| PUT | /api/students/:id | Bearer + admin | Update student |
+| DELETE | /api/students/:id | Bearer + admin | Delete student |
+| GET | /api/attendance/student | Bearer + student | Get own attendance |
+
+### Staff
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/staff | Bearer + permission | List all staff |
+| POST | /api/staff | Bearer + admin | Create staff + invite email |
+| GET | /api/staff/:id | Bearer | Get staff by ID |
+| PUT | /api/staff/:id | Bearer + admin | Update staff |
+| DELETE | /api/staff/:id | Bearer + admin | Delete staff |
+
+### Batches
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/batches | Bearer + batches.view | List all active batches |
+| GET | /api/public/batches | None | Public batch timings |
+| POST | /api/batches | Bearer + admin | Create batch |
+| PUT | /api/batches/:id | Bearer + admin | Update batch |
+| DELETE | /api/batches/:id | Bearer + admin | Delete batch |
+
+### Courses
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/courses | None | Public course catalog |
+| POST | /api/courses | Bearer + admin | Create course |
+| PUT | /api/courses/:id | Bearer + admin | Update course |
+| DELETE | /api/courses/:id | Bearer + admin | Delete course |
+
+### Assignments
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/assignments | Bearer + teacher/admin | List assignments |
+| POST | /api/assignments | Bearer + teacher | Create assignment |
+| POST | /api/assignments/:id/submit | Bearer + student | Submit assignment |
+
+### Attendance
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| POST | /api/attendance | Bearer + teacher | Record attendance for batch |
+| GET | /api/attendance/student | Bearer + student | Student's own attendance |
+
+### Fees
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/fees | Bearer + fees.view | List fee records |
+| POST | /api/fees | Bearer + fees.create | Create fee record |
+| DELETE | /api/fees/:id | Bearer + admin | Delete fee record |
+
+### Announcements
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/announcements | Bearer | List announcements |
+| POST | /api/announcements | Bearer + teacher/admin | Create announcement |
+| PUT | /api/announcements/:id | Bearer + admin | Update announcement |
+| DELETE | /api/announcements/:id | Bearer + admin | Delete announcement |
+
+### Roles & Permissions
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/roles | Bearer + roles.view | List all roles |
+| POST | /api/roles | Bearer + roles.create | Create custom role |
+| PUT | /api/roles/:id | Bearer + roles.edit | Update role |
+| DELETE | /api/roles/:id | Bearer + admin | Delete role |
+| GET | /api/roles/permissions/library | Bearer | Get permission library |
+
+### Portal Data
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/portal/student | Bearer + student | Student dashboard data |
+| GET | /api/portal/staff | Bearer + teacher | Staff dashboard data |
+
+### Admin
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/admin/overview | Bearer + admin | Dashboard metrics |
+| GET | /api/admin/users | Bearer + admin | All system users |
+| PUT | /api/admin/users/:id | Bearer + admin | Update user account |
+| DELETE | /api/admin/users/:id | Bearer + admin | Delete user account |
+| GET | /api/admin/export | Bearer + admin | Export data |
+| GET | /api/audit-logs | Bearer + admin | Activity audit logs |
+
+### Public / Content
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| GET | /api/health | None | Service health check |
+| GET | /api/content | None | CMS-managed homepage/about content |
+| GET | /api/faqs | None | FAQ list |
+| GET | /api/leads | Bearer + leads.view | Lead/enquiry list |
+| POST | /api/leads | None | Submit enquiry form |
+| GET | /api/timetable | Bearer + timetable.view | Timetable slots |
+| POST | /api/timetable | Bearer + teacher/admin | Add timetable slot |
+| GET | /api/testimonials | None | Public testimonials |
+
+---
+
+## 7. Authentication & Security
+
+### JWT Flow
+1. Client POSTs to /api/auth/login with loginId + password
+2. Server verifies password hash with bcryptjs
+3. Server signs JWT with HS256 (secret from JWT_SECRET env var)
+4. Client stores token in localStorage as hunar_token
+5. All subsequent requests include Authorization: Bearer <token>
+6. authMiddleware verifies token, looks up user, resolves permissions
+
+### Login IDs
+- Students: HUN-S-YYYY-XXXX (e.g. HUN-S-2026-0001)
+- Teachers: HUN-T-XXXX (e.g. HUN-T-0001)
+- Admin: HUN-A-XXXX (e.g. HUN-A-0001)
+- Email address also accepted
+
+### Password Policy
+- Minimum 8 characters
+- Must contain uppercase, lowercase, and number
+- Maximum 128 characters
+- Hashed with bcryptjs (cost factor 10+)
+
+### Rate Limiting
+| Endpoint | Limit |
+|---|---|
+| /api/auth/login | 10 requests / 15 min |
+| /api/auth/activate | 10 requests / hour |
+| /api/auth/forgot-password | 5 requests / hour |
+| /api/leads (enquiry forms) | 10 requests / 15 min |
+| All other API | 240 requests / 15 min |
+
+### Role-Based Access Control (RBAC)
+Roles are stored in MongoDB with a permissions array. Built-in roles:
+- role-super-admin: wildcard (*) — full access
+- role-teacher: teaching and student-view permissions
+- role-office-administrator: leads, fees, attendance view
+- role-student: own data only
+
+Custom roles can be created by admin with granular permissions from the permission library.
+
+### Security Headers (Vercel edge)
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: SAMEORIGIN
+- X-XSS-Protection: 1; mode=block
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+### Security Headers (Helmet / Express, API responses)
+- Content-Security-Policy (enabled, configured per environment)
+- HSTS (production only, includeSubDomains + preload)
+- CORS: locked to https://hunar.courses and https://www.hunar.courses
+
+### Known Security Fixes Applied
+- Admin email no longer hardcoded in authMiddleware — reads from INITIAL_ADMIN_EMAIL env var
+- Production console.error no longer dumps stack traces
+- Public "Admin Portal" link removed from footer
+- "Admin →" quick-access button removed from login page
+- CSP enabled (was disabled)
+
+---
+
+## 8. SEO & AEO
+
+### Meta Strategy
+- Each route has a unique title, description (AEO-optimized), keywords
+- Dual-layer: static in index.html (for crawlers on first load) + dynamic via SeoManager.jsx
+- JSON-LD structured data: EducationalOrganization + LocalBusiness, Course, Article, FAQPage, ItemList
+- Canonical tags on every page
+- og:image:alt and twitter:image:alt on all pages
+- noindex/nofollow on all portal/admin/login routes
+
+### Geo / Local SEO (index.html)
+- meta name="geo.region" content="IN-PB"
+- meta name="geo.placename" content="Mullanpur Dakha, Ludhiana, Punjab, India"
+- meta name="geo.position" content="30.8248;75.7315"
+- ICBM coordinates
+
+### Sitemap
+- Location: /sitemap.xml (27 URLs)
+- Includes lastmod, changefreq, priority
+- Referenced in robots.txt
+- Auto-generated at build time by scripts/prerender-seo.js
+
+### AI Crawler Access
+robots.txt explicitly allows: GPTBot, ClaudeBot, PerplexityBot
+
+### Prerendering
+Build script (scripts/prerender-seo.js) generates static HTML for all 27 public routes in dist/. Each prerendered file has:
+- Correct title, meta description, OG tags, canonical
+- JSON-LD structured data
+- Crawlable static content (headings, paragraphs, links)
+
+---
+
+## 9. Data Models
+
+### User
+Fields: name, email, normalizedEmail, passwordHash, role, assignedId (loginId), roleId, status (active/suspended/pending_activation), invitationTokenHash, invitationExpiry, lastLogin
+
+### Student
+Fields: studentId (HUN-S-YYYY-XXXX), name, email, phone, course, batch, enrollmentStatus, assignedTeacher, joinDate
+
+### Staff
+Fields: staffId (HUN-T-XXXX), name, email, phone, designation, department, role, roleId, employmentStatus, assignedBatches
+
+### Batch
+Fields: name, course, timing, assignedTeacher, active (boolean)
+
+### Assignment
+Fields: title, description, batch, deadline, maxMarks, assignedBy, submissions[]
+
+### Submission
+Fields: assignmentId, studentId, content, submittedAt, marks, feedback, status
+
+### Attendance
+Fields: studentId, studentName, batch, date, status (present/absent/late), markedBy
+
+### FeeRecord
+Fields: studentId, studentName, course, totalFee, paidAmount, balance, dueDate, status
+
+### Announcement
+Fields: title, message, audience (students/staff/all), authorName, authorRole, publishDate, active
+
+### Lead (Enquiry)
+Fields: name, phone, email, course, message, source, status (new/contacted/enrolled/closed), createdAt
+
+### AuditLog
+Fields: actorName, actorRole, action, targetType, targetId, notes, timestamp
+
+---
+
+## 10. Environment Variables Required
+
+```
+PORT                        Express port (default 5000)
+MONGODB_URI                 MongoDB Atlas connection string
+JWT_SECRET                  Min 32-char random string
+INVITATION_EXPIRY_HOURS     Default 72
+INITIAL_ADMIN_NAME          First admin account name
+INITIAL_ADMIN_EMAIL         First admin email (also used as super-admin fallback)
+INITIAL_ADMIN_PASSWORD      First admin password
+SMTP_HOST                   smtp.gmail.com
+SMTP_PORT                   587
+SMTP_USER                   Gmail address
+SMTP_PASS                   Google App Password
+SMTP_FROM                   Display name + email
+INQUIRY_NOTIFICATION_EMAIL  Where enquiry emails go
+NODE_ENV                    production
+ALLOWED_ORIGINS             https://hunar.courses,https://www.hunar.courses
+```
+
+---
+
+## 11. Known Issues & Debugging Guide
+
+### 503 on all /api/* routes
+Cause: MongoDB not connected on Vercel.
+Fix:
+1. Verify MONGODB_URI is set in Vercel → Settings → Environment Variables
+2. In MongoDB Atlas → Network Access → add 0.0.0.0/0 (Vercel uses dynamic IPs)
+3. Redeploy after fixing env vars
+4. Test: GET /api/health should return {"status":"ok","database":"connected"}
+
+### Login returns 401 immediately
+Cause: Wrong loginId format or incorrect password.
+Check: loginId must be HUN-S-YYYY-XXXX or HUN-T-XXXX or email address.
+Admin reset: npm run reset-password
+
+### Invitation email not received
+Cause: SMTP not configured or Google App Password incorrect.
+Fix: Use Google App Password (not account password). Enable 2FA on Gmail first.
+
+### Student portal shows no data
+Cause: Student's batch not assigned or teacher not assigned to batch.
+Fix: Admin → Batches → assign teacher. Admin → Students → assign batch.
+
+### Attendance batch select shows blank
+Fixed: loadAllData now auto-selects batches[0].name on load.
+
+### Course select blank in Create Batch modal
+Fixed: openAddBatch pre-selects courseOptions[0].title.
+
+### CinematicIntro blocks homepage on first visit
+Fixed: intro now starts 800ms after page load so logo/hero are visible first.
+
+### vercel.json "Invalid config" error
+Fixed: file must contain exactly one JSON object. Remove $schema if it causes schema validator conflicts.
+
+### Admin panel shows "Unable to load admin dashboard"
+Same as 503 issue — MongoDB not connected. See fix above.
+
+---
+
+## 12. Build & Deploy
+
+```bash
+# Local development
+npm run dev           # Vite + Express dev server
+
+# Production build
+npm run build         # vite build + scripts/prerender-seo.js
+
+# Start production server (self-hosted)
+npm run start         # node server/server.js
+
+# Lint
+npm run lint          # oxlint
+
+# Integration tests
+npm run test:integration
+
+# Reset admin password
+npm run reset-password
+```
+
+### Vercel deploy
+Push to main branch → Vercel auto-deploys.
+Build command: npm run build
+Output directory: dist
+API: api/index.js (Vercel serverless function)
+
+---
+
+## 13. Course Catalog
+
+- [Diploma in Digital Marketing](https://www.hunar.courses/course/diploma-in-digital-marketing): SEO, social media, Meta/Google Ads, analytics, ₹10,000 live ad budget.
+- [30 Days AI Workshop](https://www.hunar.courses/course/30-days-ai-workshop): 29 daily modules, HeyGen, ElevenLabs, Make.com, Claude, prompt engineering.
+- [Full Stack Web Development](https://www.hunar.courses/course/full-stack-web-dev): HTML, CSS, JS, React, Node.js, MongoDB, deployment.
+- [Graphic Designing (AI-Powered)](https://www.hunar.courses/course/graphic-designing-ai): Photoshop, Illustrator, Canva, AI image tools, brand identity.
+- [Video Editing & Motion Graphics](https://www.hunar.courses/course/video-editing-motion-graphics): Premiere Pro, After Effects, motion typography.
+- [AI-Powered Front-End Development](https://www.hunar.courses/course/ai-powered-front-end-development): front-end with AI coding assistants.
+- [Back-End Development](https://www.hunar.courses/course/back-end-development): Node.js, Express, databases, APIs.
+- [Performance Marketing](https://www.hunar.courses/course/performance-marketing): paid ad strategy, ROAS, funnel optimization.
+- [Social Media Growth Mastery](https://www.hunar.courses/course/social-media-growth-mastery): organic growth, content strategy, reels.
+- [Google Growth Mastery](https://www.hunar.courses/course/google-growth-mastery): Google Ads, SEO, Google Analytics.
+- [Digital Marketing with AI](https://www.hunar.courses/course/digital-marketing-ai): AI-powered marketing workflows.
+- [Basic Computer Course](https://www.hunar.courses/course/basic-computer-course): MS Office, internet, typing, fundamentals.
+
+---
+
+## 14. Contact
+
+- Campus: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana, Punjab 141101
+- Phone: +91 94637-95116
+- Email: byteblaze.hunar@gmail.com
+- WhatsApp: https://wa.me/919463795116
+- Instagram: https://www.instagram.com/hunar.punjab/
+- Facebook: https://facebook.com/hunar.punjab
+- Hours: Monday–Saturday 9:00 AM–7:00 PM IST; Sunday by appointment
+
