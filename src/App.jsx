@@ -58,20 +58,20 @@ function AppContent() {
   const pageVariants = {
     initial: {
       opacity: 0,
-      y: shouldReduceMotion ? 0 : 8
+      y: shouldReduceMotion ? 0 : 6
     },
     animate: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.2 : 0.38,
+        duration: shouldReduceMotion ? 0.1 : 0.25,
         ease: [0.22, 1, 0.36, 1]
       }
     },
     exit: {
       opacity: 0,
       transition: {
-        duration: 0.18,
+        duration: 0.12,
         ease: "easeOut"
       }
     }

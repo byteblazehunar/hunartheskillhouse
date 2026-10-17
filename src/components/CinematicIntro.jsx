@@ -10,6 +10,12 @@ export default function CinematicIntro() {
       return;
     }
 
+    // Disable cinematic intro on mobile — logo and content must appear instantly
+    if (window.innerWidth < 768) {
+      sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
+      return;
+    }
+
     // Check if we've already shown the intro this session
     const hasSeenIntro = sessionStorage.getItem("hasSeenHunarIntro_v4");
     if (hasSeenIntro) {
@@ -41,7 +47,7 @@ export default function CinematicIntro() {
 
       window.addEventListener("click", handleSkip);
       window.addEventListener("keydown", handleSkip);
-    }, 800); // homepage visible for 800ms before intro overlays
+    }, 800);
 
     return () => {
       clearTimeout(tStart);

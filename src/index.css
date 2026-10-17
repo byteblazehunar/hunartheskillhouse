@@ -887,26 +887,19 @@ select option:disabled {
 @media (max-width: 860px) {
   .hero-grid {
     grid-template-columns: 1fr !important;
-    gap: 32px !important;
+    gap: 28px !important;
+  }
+
+  /* On mobile: text first, image second */
+  .hero-content {
+    order: 1;
+    text-align: left;
   }
 
   .hero-media {
-    order: -1; /* Image above text on mobile */
-    max-width: 300px;
+    order: 2;
+    max-width: 280px;
     margin: 0 auto;
-  }
-
-  .hero-content {
-    text-align: center;
-  }
-
-  .hero-content .eyebrow {
-    text-align: center;
-  }
-
-  /* Center hero CTAs on mobile */
-  .hero-content > div[style*="flexWrap: wrap"] {
-    justify-content: center;
   }
 }
 
