@@ -269,6 +269,21 @@ const LeadSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// 14. Certificate Schema
+const CertificateSchema = new mongoose.Schema(
+  {
+    certCode: { type: String, required: true, unique: true, index: true, trim: true, uppercase: true },
+    studentId: { type: String, required: true, index: true },
+    studentName: { type: String, required: true },
+    course: { type: String, required: true },
+    batch: { type: String, default: "" },
+    grade: { type: String, default: "Completion" },
+    issueDate: { type: Date, default: Date.now },
+    isValid: { type: Boolean, default: true }
+  },
+  { timestamps: true }
+);
+
 // Export Mongoose Models with model-reuse guard
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 export const Student = mongoose.models.Student || mongoose.model("Student", StudentSchema);
@@ -284,3 +299,4 @@ export const Timetable = mongoose.models.Timetable || mongoose.model("Timetable"
 export const FeeRecord = mongoose.models.FeeRecord || mongoose.model("FeeRecord", FeeRecordSchema);
 export const Role = mongoose.models.Role || mongoose.model("Role", RoleSchema);
 export const Lead = mongoose.models.Lead || mongoose.model("Lead", LeadSchema);
+export const Certificate = mongoose.models.Certificate || mongoose.model("Certificate", CertificateSchema);

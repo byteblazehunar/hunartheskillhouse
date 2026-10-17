@@ -11,21 +11,35 @@ export function SiteContentProvider({ children }) {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/content")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Unable to load website content (${response.status}).`);
-        return response.json();
-      })
-      .then((data) => {
-        if (active && data && typeof data === "object" && !Array.isArray(data)) {
-          setContent(data);
-        }
-      })
-      .catch((error) => {
-        console.warn("Website content could not be loaded:", error);
-      });
+    let retryTimer = null;
+
+    function loadContent(attempt = 1) {
+      fetch("/api/content")
+        .then((response) => {
+          if (response.status === 503) throw Object.assign(new Error("503"), { retryable: true });
+          if (!response.ok) throw new Error(`${response.status}`);
+          return response.json();
+        })
+        .then((data) => {
+          if (active && data && typeof data === "object" && !Array.isArray(data)) {
+            setContent(data);
+          }
+        })
+        .catch((error) => {
+          if (!active) return;
+          // Retry once after 4s on 503 (database cold start on Vercel)
+          if (error.retryable && attempt < 2) {
+            retryTimer = setTimeout(() => loadContent(attempt + 1), 4000);
+          } else {
+            console.warn("Website content could not be loaded:", error.message);
+          }
+        });
+    }
+
+    loadContent();
     return () => {
       active = false;
+      if (retryTimer) clearTimeout(retryTimer);
     };
   }, []);
 

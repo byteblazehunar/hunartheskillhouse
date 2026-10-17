@@ -35,60 +35,53 @@ function mergePublishedCourses(liveCourses) {
   const coursesBySlug = new Map(
     coursesData.map((course, index) => [course.slug, normalizeCourse(course, index)])
   );
-
   liveCourses.forEach((course, index) => {
     const normalizedCourse = normalizeCourse(course, coursesData.length + index);
     if (!normalizedCourse.title) return;
-
     coursesBySlug.set(normalizedCourse.slug, {
       ...coursesBySlug.get(normalizedCourse.slug),
       ...normalizedCourse
     });
   });
-
   return Array.from(coursesBySlug.values());
 }
 
+// Module-level cache — one fetch per session, shared across all hook instances
+const _cache = { courses: null, batches: null, coursesPromise: null, batchesPromise: null };
+
+function fetchCourses() {
+  if (_cache.coursesPromise) return _cache.coursesPromise;
+  _cache.coursesPromise = fetch("/api/courses")
+    .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+    .then((data) => { if (Array.isArray(data)) { _cache.courses = mergePublishedCourses(data); } return _cache.courses; })
+    .catch((err) => { console.warn("Live course catalog unavailable, using published:", err.message); _cache.coursesPromise = null; return null; });
+  return _cache.coursesPromise;
+}
+
+function fetchBatches() {
+  if (_cache.batchesPromise) return _cache.batchesPromise;
+  _cache.batchesPromise = fetch("/api/public/batches")
+    .then((r) => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+    .then((data) => { if (Array.isArray(data)) { _cache.batches = data; } return _cache.batches; })
+    .catch((err) => { console.warn("Batch timings unavailable:", err.message); _cache.batchesPromise = null; return null; });
+  return _cache.batchesPromise;
+}
+
 export default function usePublicCatalog() {
-  const [courses, setCourses] = useState(coursesData);
-  const [batches, setBatches] = useState([]);
-  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [courses, setCourses] = useState(_cache.courses || coursesData);
+  const [batches, setBatches] = useState(_cache.batches || []);
+  const [loadingCourses, setLoadingCourses] = useState(!_cache.courses);
 
   useEffect(() => {
     let active = true;
-
-    fetch("/api/courses")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Unable to load courses (${response.status}).`);
-        return response.json();
-      })
-      .then((data) => {
-        if (active && Array.isArray(data)) {
-          setCourses(mergePublishedCourses(data));
-        }
-      })
-      .catch((error) => {
-        console.warn("Live course catalog could not be loaded; showing the published catalog:", error);
-      })
-      .finally(() => {
-        if (active) setLoadingCourses(false);
-      });
-
-    fetch("/api/public/batches")
-      .then((response) => {
-        if (!response.ok) throw new Error(`Unable to load batch timings (${response.status}).`);
-        return response.json();
-      })
-      .then((data) => {
-        if (active && Array.isArray(data)) setBatches(data);
-      })
-      .catch((error) => {
-        console.warn("Available batch timings could not be loaded:", error);
-      });
-
-    return () => {
-      active = false;
-    };
+    fetchCourses().then((result) => {
+      if (active && result) { setCourses(result); }
+      if (active) setLoadingCourses(false);
+    });
+    fetchBatches().then((result) => {
+      if (active && result) setBatches(result);
+    });
+    return () => { active = false; };
   }, []);
 
   return { courses, batches, loadingCourses };

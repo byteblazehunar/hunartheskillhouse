@@ -64,7 +64,7 @@ export default function Contact() {
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your inquiry. Please try again.");
       }
-      setEmailWarning(result.emailSent ? "" : result.message);
+      setEmailWarning(result.emailSent ? "" : "Your enquiry was saved. A confirmation email could not be sent — our team will contact you by phone.");
       setSubmitted(true);
     } catch (err) {
       console.error("Contact inquiry submission failed:", err);
@@ -386,7 +386,7 @@ export default function Contact() {
             }}>
               <iframe
                 title="Hunar The Skill House Campus Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3424.3411440628373!2d75.6481615!3d30.8771146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a82643a672cf3%3A0xb363dc0b4461eb4c!2sUCO%20Bank%2C%20Mullanpur%20Dakha!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3424.3411440628373!2d75.6481615!3d30.8771146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a82643a672cf3%3A0xb363dc0b4461eb4c!2sHunar%20The%20Skill%20House%2C%20First%20Floor%2C%20UCO%20Bank%2C%20Ferozpur%20Rd%2C%20Mullanpur%20Dakha!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

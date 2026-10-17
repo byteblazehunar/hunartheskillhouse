@@ -55,7 +55,7 @@ export default function Enroll() {
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your enrollment request. Please try again.");
       }
-      setEmailWarning(result.emailSent ? "" : result.message);
+      setEmailWarning(result.emailSent ? "" : "Your application was saved. A confirmation email could not be sent — our team will contact you by phone.");
       setSubmitted(true);
     } catch (err) {
       console.error("Enrollment request submission failed:", err);

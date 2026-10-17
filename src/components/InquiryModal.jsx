@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, CheckCircle, ShieldCheck } from "lucide-react";
 import { coursesData } from "../data/coursesData";
 import { siteConfig } from "../data/siteConfig";
@@ -17,6 +17,8 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [emailWarning, setEmailWarning] = useState("");
+  const firstFocusableRef = useRef(null);
+  const lastFocusableRef = useRef(null);
 
   useEffect(() => {
     if (preselectedCourseTitle) {
@@ -26,11 +28,27 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") { onClose(); return; }
+      // Focus trap — cycle within modal
+      if (e.key === "Tab") {
+        const focusable = document.querySelectorAll(
+          '[data-modal-focus] button:not([disabled]), [data-modal-focus] input, [data-modal-focus] select, [data-modal-focus] textarea'
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      }
     };
     if (isOpen) {
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
+      // Move focus into modal on open
+      setTimeout(() => firstFocusableRef.current?.focus(), 50);
     } else {
       document.body.style.overflow = "unset";
       setSubmitted(false);
@@ -73,7 +91,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
       if (!response.ok) {
         throw new Error(result.message || "Unable to submit your inquiry. Please try again.");
       }
-      setEmailWarning(result.emailSent ? "" : result.message);
+      setEmailWarning(result.emailSent ? "" : "Your request was saved. A confirmation email could not be sent — our counselor will contact you by phone.");
       setSubmitted(true);
     } catch (err) {
       console.error("Inquiry submission failed:", err);
@@ -107,6 +125,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
       <div
         className="animate-fade-in"
         data-lenis-prevent
+        data-modal-focus
         style={{
           backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border)",
@@ -122,6 +141,7 @@ export default function InquiryModal({ isOpen, onClose, preselectedCourseTitle =
       >
         {/* Close */}
         <button
+          ref={firstFocusableRef}
           onClick={onClose}
           style={{
             position: "absolute",

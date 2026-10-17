@@ -20,28 +20,28 @@ export default function VerifyCertificate() {
   const [result, setResult] = useState(null);
   const [searched, setSearched] = useState(false);
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
-    if (!certCode.trim()) return;
+    const clean = certCode.trim().toUpperCase();
+    if (!clean) return;
 
     setLoading(true);
     setSearched(true);
     setResult(null);
 
-    setTimeout(() => {
-      setLoading(false);
-      const cleaned = certCode.trim().toUpperCase();
-
-      if (cleaned.startsWith("HNR-")) {
-        setResult({
-          valid: false,
-          code: cleaned,
-          message: "This certificate code is not available in the live Hunar verification registry. Please contact the admissions team for confirmation."
-        });
-      } else {
-        setResult({ valid: false, code: cleaned, message: "Enter a valid Hunar certificate code to verify the credential." });
+    try {
+      const res = await fetch(`/api/certificates/verify?code=${encodeURIComponent(clean)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setResult({ valid: false, code: clean, message: data.message || "Verification service unavailable. Please try again later." });
+        return;
       }
-    }, 500);
+      setResult({ ...data, code: clean });
+    } catch {
+      setResult({ valid: false, code: clean, message: "Unable to reach the verification service. Please check your connection and try again." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

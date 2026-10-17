@@ -14,7 +14,8 @@ import {
   Timetable,
   FeeRecord,
   Role,
-  Lead
+  Lead,
+  Certificate
 } from "../models/index.js";
 
 const DISABLED_FALLBACK_MESSAGE = "MongoDB must be connected. Local JSON storage and demo data are disabled.";
@@ -1497,4 +1498,35 @@ export async function reassignStaffRole(fromRoleId, toRoleId, toRoleName) {
     }
   }
   return staffToReassign.length;
+}
+
+// ==========================================
+// CERTIFICATES
+// ==========================================
+export async function verifyCertificate(certCode) {
+  if (!certCode) return null;
+  const clean = String(certCode).trim().toUpperCase();
+  if (isDbConnected()) {
+    try {
+      return await Certificate.findOne({ certCode: clean, isValid: true }).lean();
+    } catch (error) {
+      throw new Error(`MongoDB could not verify the certificate: ${error.message}`);
+    }
+  }
+  return null;
+}
+
+export async function createCertificate(data) {
+  if (!isDbConnected()) throw new Error("MongoDB must be connected to issue certificates.");
+  try {
+    const code = String(data.certCode || "").trim().toUpperCase();
+    const created = await Certificate.findOneAndUpdate(
+      { certCode: code },
+      { $set: { ...data, certCode: code } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    return created.toObject();
+  } catch (e) {
+    throw new Error(`MongoDB could not create the certificate: ${e.message}`);
+  }
 }

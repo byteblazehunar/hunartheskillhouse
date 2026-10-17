@@ -66,7 +66,9 @@ import {
   deleteRole,
   getStaffAssignedToRole,
   getStaffCountForRole,
-  reassignStaffRole
+  reassignStaffRole,
+  verifyCertificate,
+  createCertificate
 } from "./services/dataService.js";
 import {
   hashPassword,
@@ -227,6 +229,54 @@ router.get("/health", (req, res) => {
   };
 
   res.status(databaseConnected ? 200 : 503).json(health);
+});
+
+// ══════════════════════════════════════════════
+// 1B. CERTIFICATE VERIFICATION (Public)
+// ══════════════════════════════════════════════
+
+// GET /api/certificates/verify?code=HNR-2026-XXXXXXXX
+router.get("/certificates/verify", async (req, res) => {
+  try {
+    const code = String(req.query.code || "").trim().toUpperCase();
+    if (!code || code.length < 4 || code.length > 64) {
+      return res.status(400).json({ success: false, valid: false, message: "Enter a valid certificate code." });
+    }
+    const cert = await verifyCertificate(code);
+    if (!cert) {
+      return res.json({ success: true, valid: false, code });
+    }
+    return res.json({
+      success: true,
+      valid: true,
+      code: cert.certCode,
+      studentName: cert.studentName,
+      course: cert.course,
+      batch: cert.batch || "",
+      grade: cert.grade || "Completion",
+      issueDate: cert.issueDate
+        ? new Date(cert.issueDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+        : ""
+    });
+  } catch (error) {
+    console.error("[Certificate Verify Error]:", error.message);
+    res.status(503).json({ success: false, valid: false, message: "Certificate registry is temporarily unavailable. Please try again later." });
+  }
+});
+
+// POST /api/certificates (admin only — issue a certificate)
+router.post("/certificates", authenticate, requireRole(["admin"]), async (req, res) => {
+  try {
+    const { certCode, studentId, studentName, course, batch, grade } = req.body;
+    if (!certCode || !studentName || !course) {
+      return res.status(400).json({ success: false, message: "certCode, studentName and course are required." });
+    }
+    const cert = await createCertificate({ certCode, studentId, studentName, course, batch, grade });
+    await logAction(req.user.name, req.user.role, "ISSUE_CERTIFICATE", "Certificate", certCode);
+    res.status(201).json({ success: true, certificate: cert });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || "Error issuing certificate." });
+  }
 });
 
 // ══════════════════════════════════════════════
