@@ -366,9 +366,9 @@ export default function Home({ onOpenDemo }) {
           </div>
 
           {/* Course Grid */}
-          <div style={{
+          <div className="course-grid" style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(330px, 100%), 1fr))",
             gap: "24px"
           }}>
             {filteredCourses.map((course) => (
@@ -937,7 +937,7 @@ export default function Home({ onOpenDemo }) {
 
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))",
               gap: "20px"
             }}>
               {testimonialsData.slice(0, 3).map((item) => (

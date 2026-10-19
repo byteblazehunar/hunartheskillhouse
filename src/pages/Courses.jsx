@@ -171,7 +171,7 @@ export default function Courses({ onOpenDemo }) {
           ) : (
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(330px, 100%), 1fr))",
               gap: "24px"
             }}>
               {filteredCourses.map((course) => (

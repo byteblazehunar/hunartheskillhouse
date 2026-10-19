@@ -43,7 +43,7 @@ export default function Blog() {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))",
             gap: "32px"
           }}>
             {blogData.map((post) => (

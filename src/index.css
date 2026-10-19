@@ -995,11 +995,16 @@ select option:disabled {
 /* --- Course grid --- */
 @media (max-width: 480px) {
   /* Full width cards on very small screens */
-  [style*="minmax(330px"] {
+  .course-grid,
+  [style*="minmax(min(330px"],
+  [style*="minmax(min(340px"] {
     grid-template-columns: 1fr !important;
   }
 
-  [style*="minmax(300px"] {
+  [style*="minmax(min(300px"],
+  [style*="minmax(min(320px"],
+  [style*="minmax(300px"],
+  [style*="minmax(320px"] {
     grid-template-columns: 1fr !important;
   }
 }
@@ -1126,11 +1131,14 @@ img, video, iframe {
 }
 
 /* Prevent layout-breaking horizontal overflow */
-.container,
-.container-narrow,
-.container-wide,
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 .site-wrapper {
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
