@@ -1,6 +1,9 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
+// Detect mobile once at module level — avoids SSR issues and is stable
+const isMobileDevice = typeof window !== "undefined" && window.innerWidth <= 768;
+
 export function ScrollReveal({
   children,
   as = "div",
@@ -14,25 +17,29 @@ export function ScrollReveal({
   amount = 0.2
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
 
-  const actualDuration = shouldReduceMotion ? 0.3 : isMobile ? 0.5 : duration;
-  const actualY = shouldReduceMotion ? 0 : isMobile ? Math.min(yOffset, 20) : yOffset;
+  // On mobile or reduced-motion: skip animation entirely, render visible immediately.
+  // This avoids IntersectionObserver issues caused by overflow:hidden on body.
+  if (shouldReduceMotion || isMobileDevice) {
+    const Tag = as;
+    return (
+      <Tag id={id} className={className} style={style}>
+        {children}
+      </Tag>
+    );
+  }
 
   const MotionComponent = motion[as] || motion.div;
 
   const containerVariants = {
-    hidden: {
-      opacity: 0,
-      y: actualY
-    },
+    hidden: { opacity: 0, y: yOffset },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: actualDuration,
+        duration,
         delay,
-        ease: [0.22, 1, 0.36, 1], // Smooth cubic bezier
+        ease: [0.22, 1, 0.36, 1],
         ...(staggerChildren > 0 && {
           staggerChildren,
           delayChildren: delay
@@ -63,15 +70,23 @@ export function ScrollItem({
   yOffset = 24
 }) {
   const shouldReduceMotion = useReducedMotion();
-  const actualY = shouldReduceMotion ? 0 : yOffset;
+
+  // Same: skip animation on mobile
+  if (shouldReduceMotion || isMobileDevice) {
+    return (
+      <div className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: actualY },
+    hidden: { opacity: 0, y: yOffset },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.3 : 0.6,
+        duration: 0.6,
         ease: [0.22, 1, 0.36, 1]
       }
     }

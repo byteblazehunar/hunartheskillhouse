@@ -1131,10 +1131,8 @@ img, video, iframe {
 }
 
 /* Prevent layout-breaking horizontal overflow */
-html,
 body {
   overflow-x: hidden;
-  max-width: 100%;
 }
 
 .site-wrapper {
