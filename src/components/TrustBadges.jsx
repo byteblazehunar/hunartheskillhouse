@@ -43,6 +43,7 @@ export default function TrustBadges() {
         position: "relative",
         overflow: "hidden",
         width: "100%",
+        maxWidth: "100vw",
         transition: "background-color var(--transition-theme)"
       }}
     >
@@ -131,6 +132,7 @@ export default function TrustBadges() {
         .features-marquee-container {
           overflow: hidden;
           width: 100%;
+          max-width: 100vw;
           position: relative;
           outline: none;
         }

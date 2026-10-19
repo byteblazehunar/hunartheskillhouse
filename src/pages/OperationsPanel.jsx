@@ -579,15 +579,26 @@ export default function OperationsPanel() {
         minHeight: "100vh",
         backgroundColor: "var(--color-background)",
         color: "var(--color-text-primary)",
-        fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+        fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+        position: "relative"
       }}
     >
+      {/* ══════════════════════════════════════════════ */}
+      {/* MOBILE SIDEBAR OVERLAY BACKDROP */}
+      {/* ══════════════════════════════════════════════ */}
+      <div
+        className={`admin-sidebar-overlay ${mobileMenuOpen ? "active" : ""}`}
+        onClick={() => setMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* ══════════════════════════════════════════════ */}
       {/* OPERATIONS SIDEBAR NAVIGATION */}
       {/* ══════════════════════════════════════════════ */}
       <aside
         style={{
           width: "280px",
+          minWidth: "280px",
           backgroundColor: "var(--color-surface)",
           borderRight: "1px solid var(--color-border)",
           display: "flex",
@@ -595,8 +606,9 @@ export default function OperationsPanel() {
           position: "sticky",
           top: 0,
           height: "100vh",
-          zIndex: 40
+          zIndex: 200
         }}
+        className={`admin-sidebar ${mobileMenuOpen ? "open" : ""}`}
       >
         {/* Brand & Desk Identifier */}
         <div
@@ -644,6 +656,21 @@ export default function OperationsPanel() {
               </p>
             </div>
           </div>
+          {/* Close button — visible on mobile */}
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="mobile-close-btn"
+            style={{
+              display: "none",
+              background: "none",
+              border: "none",
+              color: "var(--color-text-secondary)",
+              cursor: "pointer",
+              padding: "4px"
+            }}
+          >
+            <span style={{ fontSize: "20px", lineHeight: 1 }}>✕</span>
+          </button>
         </div>
 
         {/* User Identity & Active Role Badge */}
@@ -829,7 +856,7 @@ export default function OperationsPanel() {
         {/* Top Operational Header */}
         <header
           style={{
-            padding: "16px 28px",
+            padding: "16px 20px",
             borderBottom: "1px solid var(--color-border)",
             backgroundColor: "var(--color-surface)",
             display: "flex",
@@ -837,16 +864,35 @@ export default function OperationsPanel() {
             justifyContent: "space-between",
             position: "sticky",
             top: 0,
-            zIndex: 30
+            zIndex: 30,
+            gap: "12px"
           }}
         >
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="mobile-hamburger-btn"
+              style={{
+                display: "none",
+                background: "none",
+                border: "none",
+                color: "var(--color-text-primary)",
+                cursor: "pointer",
+                padding: "4px",
+                flexShrink: 0
+              }}
+            >
+              <span style={{ fontSize: "20px", lineHeight: 1 }}>☰</span>
+            </button>
+            <div style={{ minWidth: 0 }}>
             <h1 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0 }}>
               {visibleModules.find((m) => m.id === activeTab)?.label || "Operational Workspace"}
             </h1>
             <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
               Authorized operations desk for {user?.name || "Staff"} ({user?.roleName || "Operational Staff"})
             </p>
+          </div>
           </div>
 
           {/* Quick Context Actions based on permission */}

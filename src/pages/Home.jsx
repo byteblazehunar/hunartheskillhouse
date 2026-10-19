@@ -257,13 +257,26 @@ export default function Home({ onOpenDemo }) {
           @media (max-width: 860px) {
             .hero-grid {
               grid-template-columns: 1fr !important;
-              gap: 36px !important;
+              gap: 28px !important;
             }
             .hero-media {
               order: 2;
+              max-width: 260px !important;
+              margin: 0 auto;
             }
             .hero-content {
               order: 1;
+            }
+            .hero-founder-container {
+              max-width: 280px !important;
+            }
+            .hero-founder-badge {
+              padding: 10px 18px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            .hero-media {
+              max-width: 220px !important;
             }
           }
         `}</style>
@@ -272,8 +285,8 @@ export default function Home({ onOpenDemo }) {
       {/* ═══ TRUST STRIP ═════════════════════════════════════════════ */}
       <TrustBadges />
 
-      <section className="section-tight" aria-label="Hunar at a glance">
-        <div className="container" style={{
+      <section className="section-tight stats-glance-section" aria-label="Hunar at a glance">
+        <div className="container stats-glance-grid" style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
           gap: "16px"
@@ -284,9 +297,10 @@ export default function Home({ onOpenDemo }) {
               textAlign: "center",
               backgroundColor: "var(--color-surface)",
               border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)"
+              borderRadius: "var(--radius-lg)",
+              userSelect: "none"
             }}>
-              <div style={{ fontSize: "1.55rem", fontWeight: 800, color: "var(--color-brand-text)" }}>{stat.value}</div>
+              <div style={{ fontSize: "1.55rem", fontWeight: 800, color: "var(--color-brand-text)", userSelect: "none" }}>{stat.value}</div>
               <div style={{ marginTop: "4px", color: "var(--color-text-secondary)", fontSize: "0.82rem" }}>{stat.label}</div>
             </div>
           ))}

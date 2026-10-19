@@ -1604,15 +1604,26 @@ export default function AdminPortal() {
         minHeight: "100vh",
         backgroundColor: "var(--color-background)",
         color: "var(--color-text-primary)",
-        fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+        fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+        position: "relative"
       }}
     >
+      {/* ══════════════════════════════════════════════ */}
+      {/* MOBILE SIDEBAR OVERLAY BACKDROP */}
+      {/* ══════════════════════════════════════════════ */}
+      <div
+        className={`admin-sidebar-overlay ${sidebarOpen ? "active" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* ══════════════════════════════════════════════ */}
       {/* SIDEBAR NAVIGATION (COLLAPSIBLE GROUPS & RBAC) */}
       {/* ══════════════════════════════════════════════ */}
       <aside
         style={{
           width: "285px",
+          minWidth: "285px",
           backgroundColor: "var(--color-surface)",
           borderRight: "1px solid var(--color-border)",
           display: "flex",
@@ -1620,7 +1631,7 @@ export default function AdminPortal() {
           position: "sticky",
           top: 0,
           height: "100vh",
-          zIndex: 40,
+          zIndex: 200,
           transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
           transform: sidebarOpen ? "translateX(0)" : undefined
         }}
@@ -1920,10 +1931,11 @@ export default function AdminPortal() {
             </h1>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }} className="admin-header-actions">
             {/* Quick Action: Add Student */}
             <button
               onClick={openAddStudent}
+              className="admin-header-register-btn"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -1983,6 +1995,7 @@ export default function AdminPortal() {
 
             {/* Institute Tag */}
             <div
+              className="admin-header-tag"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -2003,7 +2016,7 @@ export default function AdminPortal() {
         </header>
 
         {/* Dynamic Tab Body */}
-        <main style={{ flex: 1, padding: "24px", overflowY: "auto" }}>
+        <main style={{ flex: 1, padding: "24px", overflowY: "auto" }} className="admin-main-body">
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 1: OVERVIEW DASHBOARD */}
           {/* ══════════════════════════════════════════════ */}
