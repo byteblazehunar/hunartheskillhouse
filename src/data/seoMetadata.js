@@ -44,7 +44,7 @@ export const pageMetadata = {
     keywords: "AI learning articles Ludhiana, web development career guide, digital marketing AI tips, Hunar blog"
   },
   "/careers": {
-    title: "Careers at Hunar The Skill House | Join Our Team",
+    title: "Opportunities at Hunar | Join Our Team",
     description: "Explore career opportunities at Hunar The Skill House. Join our team of educators, mentors, creators and operators in Mullanpur Dakha, Ludhiana.",
     keywords: "Hunar careers, jobs at Hunar The Skill House, teaching jobs Ludhiana, mentor jobs Mullanpur Dakha"
   },

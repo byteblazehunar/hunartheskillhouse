@@ -57,7 +57,7 @@ export default function Navbar({ onOpenDemo }) {
     { label: "Blog", path: "/blog" },
     { label: "Verify", path: "/verify" },
     { label: "Contact", path: "/contact" },
-    { label: "Careers", path: "/careers" }
+    { label: "Opportunities at Hunar", path: "/careers" }
   ];
 
   const isActive = (path) => {

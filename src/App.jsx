@@ -27,7 +27,7 @@ import FAQPage from "./pages/FAQPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
-import Careers from "./pages/Careers";
+import OpportunitiesAtHunar from "./pages/OpportunitiesAtHunar";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import Enroll from "./pages/Enroll";
 import Login from "./pages/Login";
@@ -114,7 +114,7 @@ function AppContent() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost onOpenDemo={handleOpenDemo} />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/careers" element={<Careers />} />
+                <Route path="/careers" element={<OpportunitiesAtHunar />} />
                 <Route path="/verify" element={<VerifyCertificate />} />
                 <Route path="/enroll" element={<Enroll />} />
                 <Route path="/login" element={<Login />} />

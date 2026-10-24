@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const JOB_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc4fO7sXsfYKwRdItHOzMlioiZUtN65aKoVHY6iKptOT-IowA/viewform?pli=1";
 
-export default function Careers() {
+export default function OpportunitiesAtHunar() {
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
       <section className="section-tight" style={{ backgroundColor: "var(--color-surface-secondary)", borderBottom: "1px solid var(--color-border)" }}>
