@@ -165,6 +165,10 @@ export default function Home({ onOpenDemo }) {
                 <img
                   src="/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = "/founder-transparent.png";
+                  }}
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
                 <div className="hero-founder-badge" style={{ position: "absolute", left: "18px", right: "18px", bottom: "18px", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
@@ -715,7 +719,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════════ */}
+      {/* ═══ MENTORS — Editorial, not card-based ═════════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>

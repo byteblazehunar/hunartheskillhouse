@@ -48,7 +48,16 @@ app.use(
 
 app.use(
   cors({
-    origin: (origin, callback) => callback(null, !origin || allowedOrigins.has(origin))
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+      try {
+        const hostname = new URL(origin).hostname;
+        const isVercelPreview = hostname.endsWith(".vercel.app");
+        return callback(null, isVercelPreview);
+      } catch {
+        return callback(null, false);
+      }
+    }
   })
 );
 

@@ -106,7 +106,11 @@ export default function Navbar({ onOpenDemo }) {
           >
             <img
               src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
-              alt="Hunar The Skill House"
+              alt="Hunar The Skill House logo"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = "/favicon.svg";
+              }}
               style={{
                 height: isScrolled ? "38px" : "44px",
                 width: "auto",
