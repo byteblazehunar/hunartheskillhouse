@@ -961,21 +961,16 @@ select option:disabled {
     gap: 28px !important;
   }
 
-  /* On mobile: text first, image second */
   .hero-content {
     order: 1;
     text-align: left;
+    max-width: 760px;
   }
 
-  .hero-media {
-    order: 2;
-    max-width: 260px;
-    margin: 0 auto;
-  }
-
-  .hero-founder-container {
-    max-width: 280px !important;
-    margin: 0 auto;
+  .hero-media,
+  .hero-founder-container,
+  .hero-founder-badge {
+    display: none !important;
   }
 }
 
@@ -983,6 +978,17 @@ select option:disabled {
   .hero-media {
     max-width: 220px;
   }
+}
+
+/* --- Admin portal responsive layout --- */
+.admin-control-center { min-width: 0; overflow-x: hidden; }
+.admin-main-body { min-width: 0; }
+.admin-main-body table { width: 100%; min-width: 640px; }
+@media (max-width: 768px) {
+  .admin-main-body { padding: 16px !important; }
+  .admin-header-actions { gap: 6px !important; flex-wrap: wrap; }
+  .admin-header-register-btn { display: none !important; }
+  .admin-main-body > * { max-width: 100%; }
 }
 
 /* --- Navbar responsive --- */

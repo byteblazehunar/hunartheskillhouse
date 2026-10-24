@@ -57,7 +57,7 @@ export default function Careers() {
               <iframe
                 title="Hunar The Skill House job application form"
                 src={JOB_FORM_URL}
-                style={{ display: "block", width: "100%", height: "min(1100px, 75vh)", minHeight: "720px", border: 0 }}
+                style={{ display: "block", width: "100%", height: "clamp(620px, 72vh, 900px)", minHeight: "620px", border: 0 }}
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"
               />
