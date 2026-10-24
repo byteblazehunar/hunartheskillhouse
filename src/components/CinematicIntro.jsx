@@ -21,7 +21,15 @@ export default function CinematicIntro() {
   return (
     <div className="hunar-startup-screen" role="status" aria-live="polite" aria-label="Loading Hunar The Skill House">
       <div className="hunar-startup-card">
-        <img src="/logo-light.png" alt="Hunar The Skill House" className="hunar-startup-logo" />
+        <img
+          src="/logo-light.png"
+          alt="Hunar The Skill House"
+          className="hunar-startup-logo"
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = "/logo-dark.png";
+          }}
+        />
         <div className="hunar-startup-spinner" aria-hidden="true" />
         <span>Loading your learning journey</span>
       </div>
