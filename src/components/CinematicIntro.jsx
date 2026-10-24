@@ -22,7 +22,7 @@ export default function CinematicIntro() {
     <div className="hunar-startup-screen" role="status" aria-live="polite" aria-label="Loading Hunar The Skill House">
       <div className="hunar-startup-card">
         <img
-          src="/logo-light.png"
+          src="/LOGO BG - HUNAR.png"
           alt="Hunar The Skill House"
           className="hunar-startup-logo"
           onError={(event) => {
