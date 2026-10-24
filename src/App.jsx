@@ -85,7 +85,7 @@ function AppContent() {
       <CinematicIntro />
       <SeoManager />
       {!isPortal && <SmoothScroll isPaused={demoModalOpen} />}
-      {/* Subtle animated yellow gradient background */
+      {/* Subtle animated yellow gradient background */}
       <div className="bg-gradient-ambient" />
 
       <div className="site-wrapper" style={{ position: "relative", zIndex: 1 }}>

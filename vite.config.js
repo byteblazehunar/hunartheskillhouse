@@ -1,10 +1,15 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
+import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import apiRouter from './server/apiRouter.js';
 import { connectDB } from './server/config/db.js';
 import { bootstrapSystem } from './server/bootstrap.js';
+
+// Vercel project variables are mounted outside the repository in local preview.
+dotenv.config({ path: '/vercel/share/.env.project' });
+dotenv.config({ path: '.env.development.local' });
 
 function hunarBackendPlugin() {
   return {
