@@ -41,9 +41,9 @@ export async function bootstrapSystem() {
   const existingAdmin = await User.exists({ role: "admin" });
   if (existingAdmin) return;
 
-  const email = process.env.INITIAL_ADMIN_EMAIL?.trim().toLowerCase();
-  const name = process.env.INITIAL_ADMIN_NAME?.trim();
-  const password = process.env.INITIAL_ADMIN_PASSWORD;
+  const email = (process.env.ADMIN_EMAIL || process.env.INITIAL_ADMIN_EMAIL)?.trim().toLowerCase();
+  const name = (process.env.ADMIN_NAME || process.env.INITIAL_ADMIN_NAME || "Hunar Administrator").trim();
+  const password = process.env.ADMIN_PASS || process.env.INITIAL_ADMIN_PASSWORD;
 
   if (!email && !name && !password) {
     console.warn("[Bootstrap] No admin account exists. Set INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_NAME, and INITIAL_ADMIN_PASSWORD to create one.");

@@ -11,7 +11,7 @@ export async function resolveUserPermissions(user) {
 
   // Fallback to role name or system default based on user.role
   // Super admin email fallback is read from env — never hardcoded in source
-  const superAdminEmail = process.env.INITIAL_ADMIN_EMAIL || "";
+  const superAdminEmail = (process.env.ADMIN_EMAIL || process.env.INITIAL_ADMIN_EMAIL || "").trim().toLowerCase();
   if (!roleDoc) {
     if (
       user.role === "admin" ||

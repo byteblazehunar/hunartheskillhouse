@@ -50,7 +50,7 @@ export default function StaffPortal() {
   const [annAudience, setAnnAudience] = useState("students");
   const [annSuccess, setAnnSuccess] = useState("");
 
-  const logoSrc = theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png";
+  const logoSrc = theme === "light" ? "/logo-light.png" : "/logo-dark.png";
 
   useEffect(() => {
     const token = localStorage.getItem("hunar_token");
