@@ -13,7 +13,6 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import InquiryModal from "./components/InquiryModal";
 import WhatsAppFloating from "./components/WhatsAppFloating";
-import CinematicIntro from "./components/CinematicIntro";
 import SeoManager from "./components/SeoManager";
 
 // Pages
@@ -84,9 +83,7 @@ function AppContent() {
     <>
       <SeoManager />
       {!isPortal && <SmoothScroll isPaused={demoModalOpen} />}
-      {!isPortal && <CinematicIntro />}
-
-      {/* Subtle animated yellow gradient background */}
+      {/* Subtle animated yellow gradient background */
       <div className="bg-gradient-ambient" />
 
       <div className="site-wrapper" style={{ position: "relative", zIndex: 1 }}>
