@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import express from 'express';
 import helmet from 'helmet';
 import apiRouter from './server/apiRouter.js';
@@ -48,6 +48,11 @@ function hunarBackendPlugin() {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), hunarBackendPlugin()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  Object.assign(process.env, env);
+
+  return {
+    plugins: [react(), hunarBackendPlugin()],
+  };
 });

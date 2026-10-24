@@ -3,11 +3,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET || JWT_SECRET.startsWith("replace-with-")) {
-  throw new Error("Set JWT_SECRET to a private, unique value in the environment.");
-}
 const JWT_EXPIRES_IN = "7d";
+
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret.startsWith("replace-with-")) {
+    throw new Error("JWT_SECRET must be configured before authentication is used.");
+  }
+  return secret;
+}
 
 // Hash a password securely with salt rounds
 export async function hashPassword(plainPassword) {
@@ -22,13 +26,13 @@ export async function comparePassword(plainPassword, passwordHash) {
 
 // Sign JWT token for authenticated session
 export function signToken(payload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
 }
 
 // Verify JWT token
 export function verifyToken(token) {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, getJwtSecret());
   } catch (error) {
     return null;
   }
