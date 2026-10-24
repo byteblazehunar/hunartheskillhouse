@@ -163,11 +163,11 @@ export default function Home({ onOpenDemo }) {
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
               <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/founder-cropped.png"
+                  src="/assets/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, founder of Hunar The Skill House"
                   onError={(event) => {
                     event.currentTarget.onerror = null;
-                    event.currentTarget.src = "/founder-transparent.png";
+                    event.currentTarget.src = "/assets/founder-cutout-tight.png";
                   }}
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
