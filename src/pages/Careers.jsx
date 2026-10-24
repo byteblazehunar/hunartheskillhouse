@@ -42,7 +42,7 @@ export default function Careers() {
 
           <div className="hunar-card opportunities-founder-card" style={{ padding: "clamp(20px, 4vw, 42px)", marginBottom: "24px", display: "grid", gridTemplateColumns: "minmax(160px, 220px) minmax(0, 1fr)", gap: "clamp(24px, 5vw, 48px)", alignItems: "center" }}>
             <img
-              src="/founder-cropped.png"
+              src="/founder-portrait-light.jpg"
               alt="Gurlove Malhi, founder of Hunar The Skill House"
               onError={(event) => {
                 if (event.currentTarget.dataset.fallback === "cutout") {
