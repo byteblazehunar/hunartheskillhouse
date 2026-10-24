@@ -163,11 +163,16 @@ export default function Home({ onOpenDemo }) {
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
               <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/founder-portrait-light.jpg"
-                  alt="Gurlove Malhi, Founder of Hunar The Skill House"
+                  src="/founder-cropped.png"
+                  alt="Gurlove Malhi, founder of Hunar The Skill House"
                   onError={(event) => {
-                    event.currentTarget.onerror = null;
-                    event.currentTarget.src = "/founder-transparent.png";
+                    if (event.currentTarget.dataset.fallback === "cutout") {
+                      event.currentTarget.dataset.fallback = "transparent";
+                      event.currentTarget.src = "/founder-transparent.png";
+                    } else {
+                      event.currentTarget.dataset.fallback = "cutout";
+                      event.currentTarget.src = "/founder-cutout-tight.png";
+                    }
                   }}
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
