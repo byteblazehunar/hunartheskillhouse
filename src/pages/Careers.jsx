@@ -12,11 +12,11 @@ export default function Careers() {
           <div style={{ fontSize: "0.85rem", color: "var(--color-text-muted)", marginBottom: "16px" }}>
             <Link to="/" style={{ color: "var(--color-text-secondary)" }}>Home</Link>
             <span style={{ margin: "0 8px" }}>/</span>
-            <span style={{ color: "var(--color-brand-text)", fontWeight: "600" }}>Careers</span>
+            <span style={{ color: "var(--color-brand-text)", fontWeight: "600" }}>Opportunities at Hunar</span>
           </div>
           <div className="eyebrow">Grow with Hunar</div>
           <h1 style={{ fontSize: "clamp(2.3rem, 5vw, 4.2rem)", maxWidth: "820px", marginBottom: "18px" }}>
-            Build the next generation of skilled professionals.
+            Opportunities at Hunar
           </h1>
           <p style={{ color: "var(--color-text-secondary)", fontSize: "1.08rem", lineHeight: "1.75", maxWidth: "700px" }}>
             We are looking for educators, mentors, creators and operators who care about practical learning and meaningful careers.
@@ -40,6 +40,22 @@ export default function Careers() {
             ))}
           </div>
 
+          <div className="hunar-card opportunities-founder-card" style={{ padding: "clamp(20px, 4vw, 42px)", marginBottom: "24px", display: "grid", gridTemplateColumns: "minmax(160px, 220px) minmax(0, 1fr)", gap: "clamp(24px, 5vw, 48px)", alignItems: "center" }}>
+            <img
+              src="/assets/founder-cropped.png"
+              alt="Gurlove Malhi, founder of Hunar The Skill House"
+              style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-lg)", display: "block", border: "1px solid var(--color-border)" }}
+            />
+            <div>
+              <div className="eyebrow">A note from our founder</div>
+              <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", margin: "8px 0 12px" }}>Build meaningful work with us.</h2>
+              <p style={{ color: "var(--color-text-secondary)", lineHeight: "1.7", margin: 0 }}>
+                At Hunar, every role helps make practical, career-focused learning more accessible. Bring your ideas, care and craft to a team building better opportunities for learners.
+              </p>
+              <p style={{ color: "var(--color-text-primary)", fontWeight: "700", margin: "16px 0 0" }}>Gurlove Malhi · Founder</p>
+            </div>
+          </div>
+
           <div className="hunar-card" style={{ padding: "clamp(20px, 4vw, 42px)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "20px", flexWrap: "wrap", marginBottom: "24px" }}>
               <div>
@@ -53,21 +69,36 @@ export default function Careers() {
                 Open in new tab <ExternalLink size={16} />
               </a>
             </div>
-            <div style={{ border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", overflow: "hidden", background: "var(--color-surface-secondary)" }}>
-              <iframe
-                title="Hunar The Skill House job application form"
-                src={JOB_FORM_URL}
-                style={{ display: "block", width: "100%", height: "min(1100px, 75vh)", minHeight: "720px", border: 0 }}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
+            <div style={{ border: "1px solid var(--color-brand-border)", borderRadius: "var(--radius-lg)", padding: "clamp(24px, 5vw, 48px)", background: "var(--color-surface-secondary)", textAlign: "center" }}>
+              <div style={{ width: "56px", height: "56px", display: "grid", placeItems: "center", margin: "0 auto 18px", borderRadius: "50%", background: "var(--color-brand-subtle-bg)", color: "var(--color-brand-text)" }}>
+                <BriefcaseBusiness size={26} aria-hidden="true" />
+              </div>
+              <h3 style={{ fontSize: "clamp(1.2rem, 3vw, 1.6rem)", marginBottom: "10px" }}>Ready to take the next step?</h3>
+              <p style={{ color: "var(--color-text-secondary)", lineHeight: "1.65", maxWidth: "540px", margin: "0 auto 22px" }}>
+                Our secure Google application form opens in a new tab so it works reliably on every device.
+              </p>
+              <a className="btn btn-primary" href={JOB_FORM_URL} target="_blank" rel="noopener noreferrer">
+                Apply now <ExternalLink size={16} />
+              </a>
             </div>
             <p style={{ color: "var(--color-text-muted)", fontSize: "0.82rem", margin: "14px 0 0", textAlign: "center" }}>
-              If the form does not load, use “Open in new tab” above.
+              The application form opens securely in a new tab.
             </p>
           </div>
         </div>
       </section>
+      <style>{`
+        @media (max-width: 640px) {
+          .opportunities-founder-card {
+            grid-template-columns: 1fr !important;
+            text-align: center;
+          }
+          .opportunities-founder-card img {
+            width: min(100%, 220px) !important;
+            margin: 0 auto;
+          }
+        }
+      `}</style>
     </div>
   );
 }

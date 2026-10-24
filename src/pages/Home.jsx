@@ -27,7 +27,6 @@ export default function Home({ onOpenDemo }) {
   const { content } = useSiteContent();
   const { courses } = usePublicCatalog();
   const homepage = content.homepage || {};
-  const founder = content.founder || {};
   const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : [
     { label: "Industry Programs", value: "12+" },
     { label: "Students Trained", value: "1,000+" },
@@ -55,7 +54,7 @@ export default function Home({ onOpenDemo }) {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "1.15fr 0.85fr",
+            gridTemplateColumns: "minmax(0, 1fr)",
             gap: "clamp(36px, 5vw, 64px)",
             alignItems: "center"
           }} className="hero-grid">
@@ -161,95 +160,20 @@ export default function Home({ onOpenDemo }) {
               </motion.div>
             </div>
 
-            {/* Right — Floating Founder Portrait & Badge */}
-            <div className="hero-media" style={{ display: "flex", justifyContent: "center", position: "relative", alignItems: "center" }}>
-              <motion.div
-                className="hero-founder-container"
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
-                animate={{ 
-                  opacity: 1, 
-                  y: shouldReduceMotion ? 0 : [0, -12, 0] 
-                }}
-                transition={{ 
-                  opacity: { duration: 0.8, ease: "easeOut" },
-                  y: { repeat: Infinity, duration: 6, ease: "easeInOut" }
-                }}
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: "460px"
-                }}
-              >
-                {/* Clean Cutout Founder Image */}
+            <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
+              <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/assets/founder-transparent.png"
-                  alt={`${founder.name || "Gurlove Malhi"}, Founder of Hunar The Skill House`}
-                  style={{
-                    width: "100%",
-                    maxHeight: "520px",
-                    height: "auto",
-                    display: "block",
-                    objectFit: "contain",
-                    zIndex: 5,
-                    filter: "drop-shadow(0px 20px 30px rgba(0, 0, 0, 0.2))",
-                    pointerEvents: "none",
-                    userSelect: "none"
-                  }}
+                  src="/founder-portrait-light.jpg"
+                  alt="Gurlove Malhi, Founder of Hunar The Skill House"
+                  style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
-
-                {/* Floating Name Badge at the Bottom of the Image */}
-                <div
-                  className="hero-founder-badge"
-                  style={{
-                    marginTop: "-36px",
-                    position: "relative",
-                    zIndex: 10,
-                    backgroundColor: "var(--color-surface)",
-                    border: "1px solid var(--color-border)",
-                    boxShadow: "0 14px 35px rgba(0, 0, 0, 0.16)",
-                    padding: "12px 28px",
-                    borderRadius: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "2px",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
-                    textAlign: "center"
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      backgroundColor: "var(--color-brand)"
-                    }} />
-                    <span style={{
-                      fontSize: "1.15rem",
-                      fontWeight: "700",
-                      color: "var(--color-text-primary)",
-                      fontFamily: "var(--font-heading)",
-                      letterSpacing: "-0.01em"
-                    }}>
-                      {founder.name || "Gurlove Malhi"}
-                    </span>
-                  </div>
-                  <span style={{
-                    fontSize: "0.8rem",
-                    color: "var(--color-brand-text)",
-                    fontWeight: "600",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em"
-                  }}>
-                    {founder.title || "Founder & Director"} · Hunar The Skill House
-                  </span>
+                <div className="hero-founder-badge" style={{ position: "absolute", left: "18px", right: "18px", bottom: "18px", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
+                  <strong style={{ display: "block", fontSize: "1rem" }}>Gurlove Malhi</strong>
+                  <span style={{ fontSize: "0.78rem", color: "#D9D7CB" }}>Founder, Hunar The Skill House</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -402,7 +326,7 @@ export default function Home({ onOpenDemo }) {
                   }}
                 >
                   <img
-                    src={featuredCourse.image}
+                    src={featuredCourse.image || "/hunar_modern_lab.jpg"}
                     alt={featuredCourse.title}
                     className="course-preview-img"
                     style={{ width: "100%", height: "auto", display: "block" }}
