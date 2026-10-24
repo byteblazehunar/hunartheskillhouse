@@ -19,7 +19,7 @@ export default function ActivateAccount() {
   const { token } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const logoSrc = theme === "light" ? "/assets/LOGO BG - HUNAR.png" : "/assets/LOGO BG 2- HUNAR.png";
+  const logoSrc = theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png";
 
   const [verifying, setVerifying] = useState(true);
   const [tokenError, setTokenError] = useState("");

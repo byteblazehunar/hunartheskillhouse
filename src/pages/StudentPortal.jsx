@@ -33,7 +33,7 @@ export default function StudentPortal() {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [submitError, setSubmitError] = useState("");
 
-  const logoSrc = theme === "light" ? "/assets/LOGO BG - HUNAR.png" : "/assets/LOGO BG 2- HUNAR.png";
+  const logoSrc = theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png";
 
   useEffect(() => {
     const token = localStorage.getItem("hunar_token");

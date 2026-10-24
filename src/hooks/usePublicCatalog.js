@@ -17,7 +17,7 @@ function normalizeCourse(course, index) {
     level: course.level || publishedCourse?.level || "",
     shortDesc: course.shortDesc || course.description || publishedCourse?.shortDesc || "Explore this practical, instructor-led program at Hunar.",
     tagline: course.tagline || publishedCourse?.tagline || course.description || "Build practical, industry-ready skills at Hunar.",
-    image: course.image || publishedCourse?.image || "/assets/hunar_modern_lab.jpg",
+    image: course.image || publishedCourse?.image || "/hunar_modern_lab.jpg",
     highlights: Array.isArray(course.highlights) ? course.highlights : (publishedCourse?.highlights || course.syllabus || []),
     tools: Array.isArray(course.tools) ? course.tools : (publishedCourse?.tools || []),
     syllabus: Array.isArray(course.syllabus) && course.syllabus.length ? course.syllabus : (publishedCourse?.syllabus || []),

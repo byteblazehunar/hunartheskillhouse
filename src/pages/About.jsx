@@ -163,7 +163,7 @@ export default function About({ onOpenDemo }) {
                 backgroundColor: "var(--color-surface-secondary)"
               }}>
                 <img
-                  src="/assets/hunar_modern_lab.jpg"
+                  src="/hunar_modern_lab.jpg"
                   alt="Hunar The Skill House Lab Workstation"
                   style={{ width: "100%", height: "auto", display: "block" }}
                 />
@@ -239,7 +239,7 @@ export default function About({ onOpenDemo }) {
                   boxShadow: "var(--shadow-lg)"
                 }}>
                 <img
-                  src="/assets/founder-portrait-dark.jpg"
+                  src="/founder-portrait-dark.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
                   className="owner-portrait-img"
                   style={{
@@ -613,7 +613,7 @@ export default function About({ onOpenDemo }) {
                 boxShadow: "var(--shadow-sm)"
               }}>
               <img
-                src="/assets/hunar_modern_lab.jpg"
+                src="/hunar_modern_lab.jpg"
                 alt="Hunar Lab Workstations"
                 className="course-preview-img"
                 style={{ width: "100%", height: "280px", objectFit: "cover" }}
@@ -635,7 +635,7 @@ export default function About({ onOpenDemo }) {
                 boxShadow: "var(--shadow-sm)"
               }}>
               <img
-                src="/assets/hunar_mentor_review.jpg"
+                src="/hunar_mentor_review.jpg"
                 alt="Hunar 1-on-1 Mentorship Review"
                 className="course-preview-img"
                 style={{ width: "100%", height: "280px", objectFit: "cover" }}
