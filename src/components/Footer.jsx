@@ -15,7 +15,7 @@ export default function Footer() {
   const phone = contact.phone || siteConfig.phone;
   const email = contact.email || siteConfig.email;
   const officeHours = contact.officeHours || siteConfig.officeHours.weekdays;
-  const logoSrc = theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png";
+  const logoSrc = theme === "light" ? "/logo-light.png" : "/logo-dark.png";
 
   const scrollToTop = (e) => {
     e.preventDefault();

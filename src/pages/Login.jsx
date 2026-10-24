@@ -29,7 +29,7 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme } = useTheme();
-  const logoSrc = theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png";
+  const logoSrc = theme === "light" ? "/logo-light.png" : "/logo-dark.png";
 
   const prefilledId = location.state?.prefillId || localStorage.getItem("hunar_last_login_id") || "";
   const initialRole = location.state?.prefillRole === "staff" || location.state?.prefillRole === "teacher" ? "staff" : "student";

@@ -105,7 +105,7 @@ export default function Navbar({ onOpenDemo }) {
             aria-label="Hunar The Skill House - Return to home"
           >
             <img
-              src={theme === "light" ? "/LOGO BG - HUNAR.png" : "/LOGO BG 2- HUNAR.png"}
+              src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
               alt="Hunar The Skill House"
               style={{
                 height: isScrolled ? "38px" : "44px",
