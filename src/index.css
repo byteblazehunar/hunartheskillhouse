@@ -247,7 +247,7 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPOGRAPHY HIERARCHY — Restrained, human, fluid
-   ═════���═════════════════════════════════════════════════════════════ */
+   ═════�����═════════════════════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-text-primary);
@@ -1167,7 +1167,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═════════════════════���═════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
    ═════════════════════════════════════════════���═════════════════════ */
@@ -1194,6 +1194,9 @@ body {
 }
 
 .hunar-startup-logo {
+  width: min(220px, 70vw);
+  height: auto;
+  object-fit: contain;
   width: min(260px, 70vw);
   height: auto;
   object-fit: contain;
