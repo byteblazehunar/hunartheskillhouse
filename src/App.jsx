@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import InquiryModal from "./components/InquiryModal";
 import WhatsAppFloating from "./components/WhatsAppFloating";
 import SeoManager from "./components/SeoManager";
+import CinematicIntro from "./components/CinematicIntro";
 
 // Pages
 import Home from "./pages/Home";
@@ -81,6 +82,7 @@ function AppContent() {
 
   return (
     <>
+      <CinematicIntro />
       <SeoManager />
       {!isPortal && <SmoothScroll isPaused={demoModalOpen} />}
       {/* Subtle animated yellow gradient background */
