@@ -43,6 +43,11 @@ export const pageMetadata = {
     description: "Practical career and learning articles from Hunar The Skill House faculty in Mullanpur Dakha. Topics include AI tools for beginners, job-ready web development, and digital marketing with AI.",
     keywords: "AI learning articles Ludhiana, web development career guide, digital marketing AI tips, Hunar blog"
   },
+  "/careers": {
+    title: "Careers at Hunar The Skill House | Join Our Team",
+    description: "Explore career opportunities at Hunar The Skill House. Join our team of educators, mentors, creators and operators in Mullanpur Dakha, Ludhiana.",
+    keywords: "Hunar careers, jobs at Hunar The Skill House, teaching jobs Ludhiana, mentor jobs Mullanpur Dakha"
+  },
   "/contact": {
     title: "Contact Hunar The Skill House | Mullanpur Dakha, Ludhiana",
     description: "Contact Hunar The Skill House: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana. Call +91 94637-95116. Book a free demo class or campus visit Monday–Saturday 9 AM–7 PM.",

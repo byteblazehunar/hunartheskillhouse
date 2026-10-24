@@ -34,6 +34,7 @@ app.use(
         imgSrc: ["'self'", "data:", "https:"],
         connectSrc: ["'self'", "https://hunar.courses", "https://www.hunar.courses"],
         frameAncestors: ["'none'"],
+        frameSrc: ["'self'", "https://docs.google.com", "https://forms.google.com"],
         baseUri: ["'self'"],
         formAction: ["'self'"]
       }

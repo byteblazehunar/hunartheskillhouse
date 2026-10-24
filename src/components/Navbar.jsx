@@ -56,7 +56,8 @@ export default function Navbar({ onOpenDemo }) {
     { label: "FAQ", path: "/faq" },
     { label: "Blog", path: "/blog" },
     { label: "Verify", path: "/verify" },
-    { label: "Contact", path: "/contact" }
+    { label: "Contact", path: "/contact" },
+    { label: "Careers", path: "/careers" }
   ];
 
   const isActive = (path) => {
