@@ -58,10 +58,6 @@ export default function CinematicIntro() {
               transform: phase >= 1 ? "scale(1)" : "scale(0.72)",
               transition: "opacity 0.7s ease, transform 0.9s cubic-bezier(0.7, 0, 0.3, 1)",
             }}
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = "/logo-dark.png";
-            }}
           />
         </div>
         <span className="hunar-startup-label" style={{ opacity: phase >= 2 ? 1 : 0 }}>
