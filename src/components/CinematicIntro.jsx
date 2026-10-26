@@ -50,7 +50,7 @@ export default function CinematicIntro() {
         <div className="hunar-startup-mark" aria-hidden="true">
           <span className="hunar-startup-ring" />
           <img
-            src="/logo-light.png"
+            src="/hunar-white-logo.png"
             alt="Hunar The Skill House logo"
             className="hunar-startup-logo"
             style={{
