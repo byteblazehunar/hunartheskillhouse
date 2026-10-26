@@ -47,8 +47,7 @@ export default function CinematicIntro() {
           transition: "transform 1s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease",
         }}
       >
-        <div className="hunar-startup-mark" aria-hidden="true">
-          <span className="hunar-startup-ring" />
+        <div className="hunar-startup-mark">
           <img
             src="/hunar-white-logo.png"
             alt="Hunar The Skill House logo"

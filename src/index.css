@@ -247,7 +247,7 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPOGRAPHY HIERARCHY — Restrained, human, fluid
-   ═════�������═════════════════════════════════════════════════════════════ */
+   ═════���������═════════════════════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-text-primary);
@@ -1167,7 +1167,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ════════════════�����══���═���═════════════════════════════════════════════
+/* ════════════���═══�����══���═���═════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
    ════════════════════���═���══════════════════════���═════════════════════ */
@@ -1178,8 +1178,8 @@ body {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #171916;
-  color: #f5f3e9;
+  background: #000000;
+  color: #ffffff;
 }
 
 .hunar-startup-card {
@@ -1197,40 +1197,18 @@ body {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(280px, 76vw);
-  aspect-ratio: 1;
+  width: min(360px, 86vw);
 }
 
 .hunar-startup-logo {
   position: relative;
   z-index: 1;
   display: block;
-  width: min(220px, 62vw);
-  max-height: 112px;
+  width: 100%;
+  max-width: 360px;
   height: auto;
   object-fit: contain;
   animation: hunar-startup-breathe 2.2s ease-in-out infinite;
-}
-
-.hunar-startup-ring {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-top-color: #ffffff;
-  border-right-color: rgba(239, 219, 25, 0.85);
-  border-radius: 50%;
-  animation: hunar-startup-spin 1.8s linear infinite;
-}
-
-.hunar-startup-ring::after {
-  content: "";
-  position: absolute;
-  inset: 13%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left-color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  animation: hunar-startup-spin 1.2s linear infinite reverse;
 }
 
 .hunar-startup-label {
