@@ -47,22 +47,24 @@ export default function CinematicIntro() {
           transition: "transform 1s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease",
         }}
       >
-        <img
-          src="/logo-light.png"
-          alt="Hunar The Skill House logo"
-          className="hunar-startup-logo"
-          style={{
-            opacity: phase >= 1 ? 1 : 0,
-            transform: phase >= 1 ? "scale(1)" : "scale(0.75)",
-            transition: "opacity 0.7s ease, transform 0.9s cubic-bezier(0.7, 0, 0.3, 1)",
-          }}
-          onError={(event) => {
-            event.currentTarget.onerror = null;
-            event.currentTarget.src = "/logo-dark.png";
-          }}
-        />
-        <div className="hunar-startup-spinner" aria-hidden="true" />
-        <span style={{ opacity: phase >= 2 ? 1 : 0, transition: "opacity 0.6s ease" }}>
+        <div className="hunar-startup-mark" aria-hidden="true">
+          <span className="hunar-startup-ring" />
+          <img
+            src="/logo-light.png"
+            alt="Hunar The Skill House logo"
+            className="hunar-startup-logo"
+            style={{
+              opacity: phase >= 1 ? 1 : 0,
+              transform: phase >= 1 ? "scale(1)" : "scale(0.72)",
+              transition: "opacity 0.7s ease, transform 0.9s cubic-bezier(0.7, 0, 0.3, 1)",
+            }}
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = "/logo-dark.png";
+            }}
+          />
+        </div>
+        <span className="hunar-startup-label" style={{ opacity: phase >= 2 ? 1 : 0 }}>
           Loading your learning journey
         </span>
       </div>

@@ -1167,10 +1167,10 @@ body {
   overflow-x: hidden;
 }
 
-/* ═══════════════════���═���═════════════════════════════════════════════
+/* ════════════════���══���═���═════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
-   ═════════════════════════════════════════════���═════════════════════ */
+   ══════════════════════���══════════════════════���═════════════════════ */
 .hunar-startup-screen {
   position: fixed;
   inset: 0;
@@ -1186,28 +1186,62 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 22px;
   text-align: center;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
+.hunar-startup-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(280px, 76vw);
+  aspect-ratio: 1;
+}
+
 .hunar-startup-logo {
+  position: relative;
+  z-index: 1;
   display: block;
-  width: min(260px, 70vw);
+  width: min(220px, 62vw);
   max-height: 112px;
   height: auto;
   object-fit: contain;
+  filter: brightness(0) invert(1);
+  animation: hunar-startup-breathe 2.2s ease-in-out infinite;
 }
 
-.hunar-startup-spinner {
-  width: 28px;
-  height: 28px;
-  border: 2px solid rgba(245, 243, 233, 0.3);
-  border-top-color: #efdb19;
+.hunar-startup-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top-color: #ffffff;
+  border-right-color: rgba(239, 219, 25, 0.85);
   border-radius: 50%;
-  animation: hunar-startup-spin 0.8s linear infinite;
+  animation: hunar-startup-spin 1.8s linear infinite;
+}
+
+.hunar-startup-ring::after {
+  content: "";
+  position: absolute;
+  inset: 13%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: hunar-startup-spin 1.2s linear infinite reverse;
+}
+
+.hunar-startup-label {
+  color: rgba(255, 255, 255, 0.72);
+  transition: opacity 0.6s ease;
+}
+
+@keyframes hunar-startup-breathe {
+  0%, 100% { opacity: 0.78; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 
 @keyframes hunar-startup-spin {
@@ -1215,7 +1249,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hunar-startup-spinner { animation: none; }
+  .hunar-startup-ring,
+  .hunar-startup-ring::after,
+  .hunar-startup-logo { animation: none; }
 }
 
 .seo-prerender {
