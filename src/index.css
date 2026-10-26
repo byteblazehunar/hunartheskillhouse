@@ -594,7 +594,7 @@ select option:disabled {
   transform: scale(1.04);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═══��═══════════════════════════════════════════════════════════════
    FORMS — Professional inputs with clear focus states
    ═══════════════════════════════════════════════════════════════════ */
 .form-group {
@@ -922,7 +922,7 @@ select option:disabled {
   box-shadow: 0 0 0 3px var(--color-focus);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════���══════════════════════════════
    COMPREHENSIVE MOBILE RESPONSIVENESS
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -1167,7 +1167,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ═════════════════════���═════════════════════════════════════════════
+/* ═══════════════════���═���═════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
    ═════════════════════════════════════════════���═════════════════════ */
@@ -1194,10 +1194,9 @@ body {
 }
 
 .hunar-startup-logo {
-  width: min(220px, 70vw);
-  height: auto;
-  object-fit: contain;
+  display: block;
   width: min(260px, 70vw);
+  max-height: 112px;
   height: auto;
   object-fit: contain;
 }

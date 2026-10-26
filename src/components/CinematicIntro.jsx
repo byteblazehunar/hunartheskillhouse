@@ -61,17 +61,7 @@ export default function CinematicIntro() {
             event.currentTarget.src = "/logo-dark.png";
           }}
         />
-        <div
-          aria-hidden="true"
-          style={{
-            width: 34,
-            height: 34,
-            border: "2px solid rgba(245, 243, 233, 0.25)",
-            borderTopColor: "#efdb19",
-            borderRadius: "50%",
-            animation: "hunar-startup-spin 0.8s linear infinite",
-          }}
-        />
+        <div className="hunar-startup-spinner" aria-hidden="true" />
         <span style={{ opacity: phase >= 2 ? 1 : 0, transition: "opacity 0.6s ease" }}>
           Loading your learning journey
         </span>
