@@ -3244,7 +3244,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 5: COURSES & BATCHES */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════════���════════════════ */}
           {activeTab === "courses" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {/* Courses Section */}
@@ -5414,6 +5414,11 @@ export default function AdminPortal() {
       {/* ══════════════════════════════════════════════ */}
       {(modalType === "add_course" || modalType === "edit_course") && (
         <div
+          className="admin-modal-overlay"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setModalType(null);
+          }}
           style={{
             position: "fixed",
             inset: 0,
@@ -5441,7 +5446,7 @@ export default function AdminPortal() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
               <div>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: "0 0 4px 0" }}>
+                <h3 id="course-modal-title" style={{ fontSize: "1.1rem", fontWeight: 800, margin: "0 0 4px 0" }}>
                   {modalType === "edit_course" ? "Edit Course & Curriculum" : "Create New Program"}
                 </h3>
                 <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
@@ -6383,7 +6388,7 @@ export default function AdminPortal() {
 
       {/* ══════════════════════════════════════════════ */}
       {/* MODAL: ANNOUNCEMENT (POST & EDIT) */}
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═════════════════════════════════════���════════ */}
       {(modalType === "post_announcement" || modalType === "edit_announcement") && (
         <div
           style={{

@@ -1002,6 +1002,50 @@ select option:disabled {
   }
 }
 
+/* --- Admin course modal --- */
+.admin-modal-overlay {
+  padding: clamp(12px, 3vw, 32px) !important;
+  background: rgba(12, 13, 11, 0.72) !important;
+  backdrop-filter: blur(8px) saturate(0.85);
+  overflow-y: auto;
+}
+
+.admin-modal-overlay > div {
+  width: min(100%, 680px) !important;
+  max-height: min(820px, calc(100dvh - 32px)) !important;
+  padding: clamp(20px, 3vw, 32px) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42) !important;
+}
+
+.admin-modal-overlay input,
+.admin-modal-overlay select,
+.admin-modal-overlay textarea {
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.admin-modal-overlay textarea {
+  min-height: 88px;
+}
+
+@media (max-width: 640px) {
+  .admin-modal-overlay {
+    align-items: flex-start !important;
+    padding: 12px !important;
+  }
+
+  .admin-modal-overlay > div {
+    max-height: calc(100dvh - 24px) !important;
+    border-radius: 16px !important;
+    padding: 18px !important;
+  }
+
+  .admin-modal-overlay [style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* --- Admin portal responsive layout --- */
 .admin-control-center {
   min-width: 0;
