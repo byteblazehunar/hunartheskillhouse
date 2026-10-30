@@ -247,7 +247,7 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPOGRAPHY HIERARCHY — Restrained, human, fluid
-   ═════���������═════════════════════════════════════════════════════════════ */
+   ═════�����������═════════════════════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-text-primary);
@@ -964,6 +964,92 @@ select option:disabled {
   /* Cards — remove hover transform on touch to prevent layout jump */
   .hunar-card:hover {
     transform: none;
+  }
+}
+
+/* --- Homepage visual motion --- */
+.home-hero {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.home-hero::before,
+.home-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: clamp(220px, 32vw, 460px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(12px);
+  opacity: 0.42;
+  animation: home-orbit 14s ease-in-out infinite alternate;
+}
+
+.home-hero::before {
+  top: 8%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(239, 219, 25, 0.2), transparent 68%);
+}
+
+.home-hero::after {
+  bottom: -30%;
+  left: -12%;
+  background: radial-gradient(circle, rgba(36, 79, 72, 0.12), transparent 68%);
+  animation-delay: -5s;
+}
+
+.home-founder-visual {
+  animation: home-founder-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.home-founder-visual::before {
+  content: "";
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--color-brand-text) 48%, transparent);
+  border-radius: var(--radius-xl);
+  transform: rotate(4deg);
+  transition: transform 400ms ease;
+}
+
+.home-founder-visual:hover::before {
+  transform: rotate(1deg) translate(-4px, 4px);
+}
+
+.home-stat-card {
+  transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+}
+
+.home-stat-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--color-brand-text) 50%, var(--color-border));
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes home-founder-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(0.6deg); }
+}
+
+@keyframes home-orbit {
+  from { transform: translate3d(-10px, -8px, 0) scale(0.94); }
+  to { transform: translate3d(16px, 12px, 0) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero::before,
+  .home-hero::after,
+  .home-founder-visual {
+    animation: none;
+  }
+
+  .home-stat-card,
+  .home-founder-visual::before {
+    transition: none;
   }
 }
 

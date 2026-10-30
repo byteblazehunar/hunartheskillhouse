@@ -46,7 +46,7 @@ export default function Home({ onOpenDemo }) {
   return (
     <div>
       {/* ═══ HERO SECTION ════════════════════════════════════════════ */}
-      <section style={{
+      <section className="home-hero" style={{
         paddingTop: "clamp(48px, 6vw, 76px)",
         paddingBottom: "clamp(56px, 7vw, 88px)",
         position: "relative"
@@ -161,7 +161,7 @@ export default function Home({ onOpenDemo }) {
             </div>
 
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
-              <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
+              <div className="hero-founder-container home-founder-visual" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
                   src="/assets/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, founder of Hunar The Skill House"
@@ -220,7 +220,7 @@ export default function Home({ onOpenDemo }) {
           gap: "16px"
         }}>
           {homepageStats.map((stat, index) => (
-            <div key={`${stat.label}-${index}`} style={{
+            <div className="home-stat-card" key={`${stat.label}-${index}`} style={{
               padding: "20px",
               textAlign: "center",
               backgroundColor: "var(--color-surface)",
