@@ -109,7 +109,7 @@ export default function Navbar({ onOpenDemo }) {
               alt="Hunar The Skill House logo"
               onError={(event) => {
                 event.currentTarget.onerror = null;
-                event.currentTarget.src = "/favicon.svg";
+                event.currentTarget.src = "/hunar-white-logo.png";
               }}
               style={{
                 height: isScrolled ? "38px" : "44px",

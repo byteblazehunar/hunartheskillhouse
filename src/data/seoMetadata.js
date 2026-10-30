@@ -4,7 +4,7 @@ import { faqData } from "./faqData.js";
 import { siteConfig } from "./siteConfig.js";
 
 export const SITE_URL = "https://www.hunar.courses";
-export const DEFAULT_IMAGE = `${SITE_URL}/logo-light.png`;
+export const DEFAULT_IMAGE = `${SITE_URL}/hunar-white-logo.png`;
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const pageMetadata = {
