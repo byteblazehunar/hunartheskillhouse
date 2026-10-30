@@ -167,6 +167,9 @@ export default function Home({ onOpenDemo }) {
                   width="780"
                   height="975"
                   alt="Gurlove Malhi, founder of Hunar The Skill House"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   onError={(event) => {
                     event.currentTarget.onerror = null;
                     event.currentTarget.src = "/assets/founder-cutout-tight.png";
@@ -336,6 +339,8 @@ export default function Home({ onOpenDemo }) {
                     width="1200"
                     height="800"
                     alt={featuredCourse.title}
+                    loading="lazy"
+                    decoding="async"
                     className="course-preview-img"
                     style={{ width: "100%", height: "auto", display: "block" }}
                   />

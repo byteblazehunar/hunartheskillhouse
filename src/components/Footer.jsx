@@ -14,6 +14,8 @@ export default function Footer() {
   const location = contact.address || siteConfig.location;
   const phone = contact.phone || siteConfig.phone;
   const email = contact.email || siteConfig.email;
+  const [emailUser, emailDomain] = email.split("@");
+  const emailLabel = emailUser && emailDomain ? `${emailUser} [at] ${emailDomain}` : email;
   const officeHours = contact.officeHours || siteConfig.officeHours.weekdays;
   const logoSrc = theme === "light" ? "/logo-light.png" : "/logo-dark.png";
 
@@ -184,7 +186,7 @@ export default function Footer() {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -193,7 +195,7 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Quick Links
-            </h4>
+            </h2>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {[
                 { to: "/", label: "Home" },
@@ -229,7 +231,7 @@ export default function Footer() {
 
           {/* Column 3: Programs */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -238,7 +240,7 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Programs
-            </h4>
+            </h2>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {courses.map((course) => (
                 <li key={course.slug}>
@@ -263,7 +265,7 @@ export default function Footer() {
 
           {/* Column 4: Contact */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -272,11 +274,11 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Campus & Contact
-            </h4>
+            </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "0.88rem" }}>
               <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <MapPin size={16} style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-text-muted)" }} />
-                <span>{location}</span>
+                <address style={{ fontStyle: "normal" }}>{location}</address>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Phone size={16} style={{ flexShrink: 0, color: "var(--color-text-muted)" }} />
@@ -289,9 +291,9 @@ export default function Footer() {
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Mail size={16} style={{ flexShrink: 0, color: "var(--color-text-muted)" }} />
-                <a href={`mailto:${email}`} style={{ color: "var(--color-text-secondary)" }}>
-                  {email}
-                </a>
+                  <a href={`mailto:${email}`} style={{ color: "var(--color-text-secondary)" }} aria-label="Email Hunar The Skill House">
+                    {emailLabel}
+                  </a>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <Clock size={16} style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-text-muted)" }} />
