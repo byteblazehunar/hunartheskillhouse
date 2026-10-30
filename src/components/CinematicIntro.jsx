@@ -10,12 +10,12 @@ export default function CinematicIntro() {
     const timers = [
       window.setTimeout(() => setPhase(1), 350),
       window.setTimeout(() => setPhase(2), 900),
-      window.setTimeout(() => setPhase(3), 1900),
-      window.setTimeout(() => setPhase(4), 2600),
+      window.setTimeout(() => setPhase(3), 1100),
+      window.setTimeout(() => setPhase(4), 1350),
       window.setTimeout(() => {
         setShow(false);
         document.body.style.overflow = "";
-      }, 3200),
+      }, 1650),
     ];
 
     return () => {

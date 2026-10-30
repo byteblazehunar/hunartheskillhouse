@@ -164,6 +164,8 @@ export default function Home({ onOpenDemo }) {
               <div className="hero-founder-container home-founder-visual" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
                   src="/assets/founder-portrait-light.jpg"
+                  width="780"
+                  height="975"
                   alt="Gurlove Malhi, founder of Hunar The Skill House"
                   onError={(event) => {
                     event.currentTarget.onerror = null;
@@ -331,6 +333,8 @@ export default function Home({ onOpenDemo }) {
                 >
                   <img
                     src={featuredCourse.image || "/hunar_modern_lab.jpg"}
+                    width="1200"
+                    height="800"
                     alt={featuredCourse.title}
                     className="course-preview-img"
                     style={{ width: "100%", height: "auto", display: "block" }}
@@ -681,9 +685,9 @@ export default function Home({ onOpenDemo }) {
                         {p.avatar}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
+                        <h3 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
                           {p.name}
-                        </h4>
+                        </h3>
                         <div style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", fontWeight: "600" }}>
                           {p.role}
                         </div>
@@ -914,9 +918,9 @@ export default function Home({ onOpenDemo }) {
                         {item.initials}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
+                        <h3 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
                           {item.name}
-                        </h4>
+                        </h3>
                         <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
                           {item.course}
                         </span>
