@@ -1003,9 +1003,92 @@ select option:disabled {
 }
 
 /* --- Admin portal responsive layout --- */
-.admin-control-center { min-width: 0; overflow-x: hidden; }
-.admin-main-body { min-width: 0; }
-.admin-main-body table { width: 100%; min-width: 640px; }
+.admin-control-center {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.admin-control-center > div:not(.admin-sidebar-overlay),
+.admin-main-body,
+.admin-main-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-main-body {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.admin-main-body table {
+  width: 100%;
+  min-width: 640px;
+}
+
+.admin-main-body [style*="gridTemplateColumns"] {
+  min-width: 0;
+}
+
+.admin-main-body input,
+.admin-main-body select,
+.admin-main-body textarea {
+  max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    width: min(285px, 88vw) !important;
+    min-width: min(285px, 88vw) !important;
+  }
+
+  .admin-main-body {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-main-body {
+    padding: 16px !important;
+  }
+
+  .admin-header-actions {
+    gap: 6px !important;
+    flex-wrap: wrap;
+  }
+
+  .admin-header-register-btn {
+    display: none !important;
+  }
+
+  .admin-main-body > * {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-control-center header {
+    height: auto !important;
+    min-height: 64px;
+    padding: 10px 14px !important;
+  }
+
+  .admin-control-center header h1 {
+    max-width: 42vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-header-actions button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .admin-main-body table {
+    min-width: 560px;
+  }
+}
 @media (max-width: 768px) {
   .admin-main-body { padding: 16px !important; }
   .admin-header-actions { gap: 6px !important; flex-wrap: wrap; }
@@ -1167,7 +1250,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ════════════���═══�����══���═���═════════════════════════════════════════════
+/* ══════════���═���═══�����══���═���═════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
    ════════════════════���═���══════════════════════���═════════════════════ */
