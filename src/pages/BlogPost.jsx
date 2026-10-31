@@ -89,6 +89,12 @@ export default function BlogPost({ onOpenDemo }) {
             ))}
           </div>
 
+          <div aria-label="Article tags" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "28px" }}>
+            {(post.tags || []).map((tag) => (
+              <span key={tag} className="badge" style={{ color: "var(--color-text-secondary)" }}>{tag}</span>
+            ))}
+          </div>
+
           {/* Author Callout */}
           <div className="hunar-card" style={{
             marginTop: "48px",

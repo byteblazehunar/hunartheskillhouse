@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
               <p style={{ color: "var(--color-text-secondary)" }}>
                 Hunar The Skill House ("we", "our", or "us"), an initiative powered by Byteblaze Technologies,
                 is dedicated to protecting the privacy and personal data of our students, website visitors, and program enrollees.
-                This Privacy Policy outlines how we collect, store, and utilize your information when you access https://www.hunar.courses
+                This Privacy Policy outlines how we collect, store, and utilize your information when you access https://hunar.courses
                 or interact with our campus representatives in Mullanpur Dakha, Ludhiana.
               </p>
             </section>

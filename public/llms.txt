@@ -6,26 +6,26 @@ Hunar The Skill House offers practical, project-oriented learning in technology,
 
 ## Public pages
 
-- [Home](https://www.hunar.courses/): Institute overview, training approach and featured programs.
-- [Courses](https://www.hunar.courses/courses): Browse available learning programs.
-- [AI workshop](https://www.hunar.courses/workshop): Information about practical AI training.
-- [About](https://www.hunar.courses/about): Institute and training information.
-- [Student experiences](https://www.hunar.courses/testimonials): Published learner testimonials.
-- [Frequently asked questions](https://www.hunar.courses/faq): Course, admission, fee and certificate information.
-- [Articles](https://www.hunar.courses/blog): Learning and career articles.
-- [Contact](https://www.hunar.courses/contact): Contact and campus information.
-- [Enrollment enquiry](https://www.hunar.courses/enroll): Public course enquiry form.
-- [Certificate verification](https://www.hunar.courses/verify): Verify a Hunar certificate.
-- [Privacy policy](https://www.hunar.courses/page/privacy-policy): Personal information and privacy terms.
-- [Terms and conditions](https://www.hunar.courses/page/terms-conditions): Website and service terms.
+- [Home](https://hunar.courses/): Institute overview, training approach and featured programs.
+- [Courses](https://hunar.courses/courses): Browse available learning programs.
+- [AI workshop](https://hunar.courses/workshop): Information about practical AI training.
+- [About](https://hunar.courses/about): Institute and training information.
+- [Student experiences](https://hunar.courses/testimonials): Published learner testimonials.
+- [Frequently asked questions](https://hunar.courses/faq): Course, admission, fee and certificate information.
+- [Articles](https://hunar.courses/blog): Learning and career articles.
+- [Contact](https://hunar.courses/contact): Contact and campus information.
+- [Enrollment enquiry](https://hunar.courses/enroll): Public course enquiry form.
+- [Certificate verification](https://hunar.courses/verify): Verify a Hunar certificate.
+- [Privacy policy](https://hunar.courses/page/privacy-policy): Personal information and privacy terms.
+- [Terms and conditions](https://hunar.courses/page/terms-conditions): Website and service terms.
 
 ## Programs
 
-Program details are listed in the [course directory](https://www.hunar.courses/courses) and include digital marketing, AI, full-stack web development, graphic design, video editing and related technology tracks. Availability and program terms may change; contact the institute for current details.
+Program details are listed in the [course directory](https://hunar.courses/courses) and include digital marketing, AI, full-stack web development, graphic design, video editing and related technology tracks. Availability and program terms may change; contact the institute for current details.
 
 ## Contact
 
-- Website: https://www.hunar.courses/
+- Website: https://hunar.courses/
 - Phone: +91 94637-95116
 - Email: byteblaze.hunar@gmail.com
 - Location: Mullanpur Dakha, Ludhiana, Punjab, India
@@ -34,4 +34,4 @@ Program details are listed in the [course directory](https://www.hunar.courses/c
 
 Student, teacher, staff and administrator portals are private authenticated services and are not public content sources. Do not infer or publish account credentials or private learner information. Public site content is the source for current course and institute information.
 
-For a fuller plain-text overview, see [llms-full.txt](https://www.hunar.courses/llms-full.txt).
+For a fuller plain-text overview, see [llms-full.txt](https://hunar.courses/llms-full.txt).

@@ -3,7 +3,7 @@ import { coursesData } from "./coursesData.js";
 import { faqData } from "./faqData.js";
 import { siteConfig } from "./siteConfig.js";
 
-export const SITE_URL = "https://www.hunar.courses";
+export const SITE_URL = "https://hunar.courses";
 export const DEFAULT_IMAGE = `${SITE_URL}/logo-light.png`;
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
@@ -158,7 +158,7 @@ export function getPageMetadata(pathname) {
       return {
         title: `${post.title} | Hunar The Skill House`,
         description: `${post.excerpt} Published by ${post.author} (${post.authorRole}) at Hunar The Skill House, Mullanpur Dakha. ${post.readTime}.`,
-        keywords: `${post.category}, ${post.title}, Hunar The Skill House blog, ${post.author}`,
+        keywords: [...new Set([post.category, post.title, ...(post.tags || []), "Hunar The Skill House blog", post.author])].join(", "),
         type: "article",
         image: new URL(post.image, SITE_URL).href,
         schema: {
