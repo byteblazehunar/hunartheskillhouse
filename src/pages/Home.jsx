@@ -329,6 +329,8 @@ export default function Home({ onOpenDemo }) {
                     src={featuredCourse.image || "/hunar_modern_lab.jpg"}
                     alt={featuredCourse.title}
                     className="course-preview-img"
+                    width="800"
+                    height="500"
                     style={{ width: "100%", height: "auto", display: "block" }}
                   />
                 </div>
@@ -715,7 +717,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════��═══ */}
+      {/* ═══ MENTORS — Editorial, not card-based ═════════════════���═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>

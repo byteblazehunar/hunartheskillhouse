@@ -152,7 +152,7 @@ export default function CourseCard({ course, onOpenDemo }) {
               justifyContent: "center"
             }}
           >
-            Details
+            View {course.title} course details
           </Link>
 
           <button

@@ -9,9 +9,9 @@ const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const pageMetadata = {
   "/": {
-    title: "Skill Courses in Mullanpur Dakha | Hunar The Skill House",
-    description: "Practical AI, digital marketing, web development and design courses in Mullanpur Dakha, Ludhiana. ISO 9001:2015 certified with workstation-based training.",
-    keywords: "skill development institute Mullanpur, computer courses Mullanpur Dakha, AI course Ludhiana, web development course Ludhiana, digital marketing course Ludhiana, Hunar The Skill House"
+    title: "AI & Digital Marketing Courses in Mullanpur | Hunar",
+    description: "Practical AI, digital marketing, Google Ads and technology courses in Mullanpur Dakha, Ludhiana. ISO-certified, workstation-based training.",
+    keywords: "AI courses Mullanpur Dakha, digital marketing course Ludhiana, Google Ads course Ludhiana, technology courses Mullanpur, Hunar The Skill House"
   },
   "/courses": {
     title: "AI, Technology & Digital Skills Courses in Ludhiana | Hunar",

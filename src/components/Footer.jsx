@@ -51,6 +51,8 @@ export default function Footer() {
               <img
                 src={logoSrc}
                 alt="Hunar The Skill House"
+                width="220"
+                height="60"
                 style={{ height: "42px", width: "auto", display: "block" }}
               />
             </Link>
