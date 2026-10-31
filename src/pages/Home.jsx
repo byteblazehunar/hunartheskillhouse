@@ -163,7 +163,7 @@ export default function Home({ onOpenDemo }) {
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
               <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/founder-portrait-light.jpg"
+                  src="/assets/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
@@ -326,7 +326,7 @@ export default function Home({ onOpenDemo }) {
                   }}
                 >
                   <img
-                    src={featuredCourse.image || "/hunar_modern_lab.jpg"}
+                    src={featuredCourse.image || "/assets/hunar_modern_lab.jpg"}
                     alt={featuredCourse.title}
                     className="course-preview-img"
                     style={{ width: "100%", height: "auto", display: "block" }}
@@ -715,7 +715,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════════ */}
+      {/* ═══ MENTORS — Editorial, not card-based ═════════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
