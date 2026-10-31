@@ -967,21 +967,10 @@ select option:disabled {
     max-width: 760px;
   }
 
-  .hero-media {
-    display: flex !important;
-    max-width: min(100%, 320px) !important;
-    margin: 0 auto;
-  }
-
-  .hero-founder-container {
-    width: 100% !important;
-  }
-
+  .hero-media,
+  .hero-founder-container,
   .hero-founder-badge {
-    left: 10px !important;
-    right: 10px !important;
-    bottom: 10px !important;
-    padding: 10px 12px !important;
+    display: none !important;
   }
 }
 
@@ -1159,7 +1148,7 @@ body {
 /* ═══════════════════════════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
-   ═════════════════════════════════════════════���═════════════════════ */
+   ═══════════════════════════════════════════════════════════════════ */
 .seo-prerender {
   position: absolute;
   width: 1px;

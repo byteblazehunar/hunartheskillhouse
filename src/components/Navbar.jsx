@@ -107,8 +107,6 @@ export default function Navbar({ onOpenDemo }) {
             <img
               src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
               alt="Hunar The Skill House"
-              width="220"
-              height="60"
               style={{
                 height: isScrolled ? "38px" : "44px",
                 width: "auto",

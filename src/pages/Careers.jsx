@@ -42,12 +42,9 @@ export default function Careers() {
 
           <div className="hunar-card opportunities-founder-card" style={{ padding: "clamp(20px, 4vw, 42px)", marginBottom: "24px", display: "grid", gridTemplateColumns: "minmax(160px, 220px) minmax(0, 1fr)", gap: "clamp(24px, 5vw, 48px)", alignItems: "center" }}>
             <img
-              src="/assets/founder-cropped.png"
-  alt="Gurlove Malhi, founder of Hunar The Skill House"
-  width="781"
-  height="920"
-  loading="lazy"
-  style={{ width: "100%", height: "auto", aspectRatio: "1 / 1", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-lg)", display: "block", border: "1px solid var(--color-border)" }}
+              src="/founder-cropped.png"
+              alt="Gurlove Malhi, founder of Hunar The Skill House"
+              style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-lg)", display: "block", border: "1px solid var(--color-border)" }}
             />
             <div>
               <div className="eyebrow">A note from our founder</div>

@@ -163,12 +163,9 @@ export default function Home({ onOpenDemo }) {
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
               <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/assets/founder-portrait-light.jpg"
+                  src="/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
-                  width="600"
-                  height="750"
-                  loading="eager"
-                  style={{ width: "100%", height: "auto", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
+                  style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
                 <div className="hero-founder-badge" style={{ position: "absolute", left: "18px", right: "18px", bottom: "18px", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
                   <strong style={{ display: "block", fontSize: "1rem" }}>Gurlove Malhi</strong>
@@ -329,11 +326,9 @@ export default function Home({ onOpenDemo }) {
                   }}
                 >
                   <img
-                    src={featuredCourse.image || "/assets/hunar_modern_lab.jpg"}
+                    src={featuredCourse.image || "/hunar_modern_lab.jpg"}
                     alt={featuredCourse.title}
                     className="course-preview-img"
-                    width="800"
-                    height="500"
                     style={{ width: "100%", height: "auto", display: "block" }}
                   />
                 </div>
@@ -682,9 +677,9 @@ export default function Home({ onOpenDemo }) {
                         {p.avatar}
                       </div>
                       <div>
-                        <h3 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
+                        <h4 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
                           {p.name}
-                        </h3>
+                        </h4>
                         <div style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", fontWeight: "600" }}>
                           {p.role}
                         </div>
@@ -720,7 +715,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════���═══ */}
+      {/* ═══ MENTORS — Editorial, not card-based ═════════════════════ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
@@ -915,9 +910,9 @@ export default function Home({ onOpenDemo }) {
                         {item.initials}
                       </div>
                       <div>
-                        <h3 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
+                        <h4 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
                           {item.name}
-                        </h3>
+                        </h4>
                         <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
                           {item.course}
                         </span>

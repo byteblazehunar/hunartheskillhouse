@@ -239,12 +239,9 @@ export default function About({ onOpenDemo }) {
                   boxShadow: "var(--shadow-lg)"
                 }}>
                 <img
-                  src="/assets/founder-portrait-dark.jpg"
-  alt="Gurlove Malhi, Founder of Hunar The Skill House"
-  className="owner-portrait-img"
-  width="600"
-  height="750"
-  loading="lazy"
+                  src="/founder-portrait-dark.jpg"
+                  alt="Gurlove Malhi, Founder of Hunar The Skill House"
+                  className="owner-portrait-img"
                   style={{
                     width: "100%",
                     height: "auto",
