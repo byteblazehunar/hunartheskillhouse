@@ -677,9 +677,9 @@ export default function Home({ onOpenDemo }) {
                         {p.avatar}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
+                        <h3 style={{ fontSize: "1rem", marginBottom: "2px", color: "var(--color-text-primary)" }}>
                           {p.name}
-                        </h4>
+                        </h3>
                         <div style={{ fontSize: "0.82rem", color: "var(--color-brand-text)", fontWeight: "600" }}>
                           {p.role}
                         </div>
@@ -715,7 +715,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════════ */}
+      {/* ═══ MENTORS — Editorial, not card-based ═════════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
@@ -910,9 +910,9 @@ export default function Home({ onOpenDemo }) {
                         {item.initials}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
+                        <h3 style={{ fontSize: "0.9rem", marginBottom: "1px" }}>
                           {item.name}
-                        </h4>
+                        </h3>
                         <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
                           {item.course}
                         </span>

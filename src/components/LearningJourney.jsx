@@ -73,13 +73,13 @@ export default function LearningJourney() {
                   {step.number}
                 </div>
 
-                <h4 style={{
+                <h3 style={{
                   fontSize: "1rem",
                   marginBottom: "8px",
                   color: "var(--color-text-primary)"
                 }}>
                   {step.title}
-                </h4>
+                </h3>
 
                 <p style={{
                   fontSize: "0.85rem",

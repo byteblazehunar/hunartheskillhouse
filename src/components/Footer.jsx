@@ -184,7 +184,7 @@ export default function Footer() {
 
           {/* Column 2: Quick Links */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -193,7 +193,7 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Quick Links
-            </h4>
+            </h2>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {[
                 { to: "/", label: "Home" },
@@ -229,7 +229,7 @@ export default function Footer() {
 
           {/* Column 3: Programs */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -238,7 +238,7 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Programs
-            </h4>
+            </h2>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {courses.map((course) => (
                 <li key={course.slug}>
@@ -263,7 +263,7 @@ export default function Footer() {
 
           {/* Column 4: Contact */}
           <div>
-            <h4 style={{
+            <h2 style={{
               fontSize: "0.82rem",
               fontWeight: "700",
               color: "var(--color-text-primary)",
@@ -272,7 +272,7 @@ export default function Footer() {
               letterSpacing: "0.06em"
             }}>
               Campus & Contact
-            </h4>
+            </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "0.88rem" }}>
               <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                 <MapPin size={16} style={{ flexShrink: 0, marginTop: "3px", color: "var(--color-text-muted)" }} />

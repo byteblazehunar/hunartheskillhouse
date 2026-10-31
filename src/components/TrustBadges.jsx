@@ -88,9 +88,9 @@ export default function TrustBadges() {
                   >
                     <div className="features-item-heading-row">
                       <span className="features-accent-line" aria-hidden="true" />
-                      <h4 className="features-item-title">
+                      <h3 className="features-item-title">
                         {item.title}
-                      </h4>
+                      </h3>
                     </div>
                     <p className="features-item-desc">
                       {item.desc}
@@ -114,9 +114,9 @@ export default function TrustBadges() {
                 >
                   <div className="features-item-heading-row">
                     <span className="features-accent-line" aria-hidden="true" />
-                    <h4 className="features-item-title">
-                      {item.title}
-                    </h4>
+                    <h3 className="features-item-title">
+{item.title}
+                      </h3>
                   </div>
                   <p className="features-item-desc">
                     {item.desc}
