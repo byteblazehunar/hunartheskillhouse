@@ -3,12 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
 import { siteConfig } from "../data/siteConfig";
 import { useTheme } from "../context/ThemeContext";
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function Navbar({ onOpenDemo }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { content } = useSiteContent();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -47,18 +49,14 @@ export default function Navbar({ onOpenDemo }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileMenuOpen]);
 
-  const navLinks = [
-    { label: "Home", path: "/" },
-    { label: "Courses", path: "/courses" },
-    { label: "AI Workshop", path: "/workshop" },
-    { label: "About", path: "/about" },
-    { label: "Testimonials", path: "/testimonials" },
-    { label: "FAQ", path: "/faq" },
-    { label: "Blog", path: "/blog" },
-    { label: "Verify", path: "/verify" },
-    { label: "Contact", path: "/contact" },
-    { label: "Careers", path: "/careers" }
+  const defaultNavLinks = [
+    { label: "Home", path: "/" }, { label: "Courses", path: "/courses" }, { label: "AI Workshop", path: "/workshop" },
+    { label: "About", path: "/about" }, { label: "Testimonials", path: "/testimonials" }, { label: "FAQ", path: "/faq" },
+    { label: "Blog", path: "/blog" }, { label: "Verify", path: "/verify" }, { label: "Contact", path: "/contact" }, { label: "Careers", path: "/careers" }
   ];
+  const navLinks = Array.isArray(content.navigation?.header) && content.navigation.header.length
+    ? content.navigation.header.map((link) => ({ label: link.label, path: link.href }))
+    : defaultNavLinks;
 
   const isActive = (path) => {
     if (path === "/") return location.pathname === "/";
