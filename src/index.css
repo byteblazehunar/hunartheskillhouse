@@ -1097,6 +1097,26 @@ select option:disabled {
   }
 }
 
+/* --- Blog reading experience --- */
+.blog-article-body p:first-child::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  color: var(--color-brand-text);
+  font-size: 3.7em;
+  font-weight: 800;
+  line-height: 0.8;
+}
+
+.blog-article-body p {
+  max-width: 70ch;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .blog-article-body { gap: 18px !important; }
+  .blog-article-body p:first-child::first-letter { font-size: 3em; }
+}
+
 /* --- Portal navigation and data surfaces --- */
 .student-profile-summary { display: block; }
 @media (max-width: 540px) {

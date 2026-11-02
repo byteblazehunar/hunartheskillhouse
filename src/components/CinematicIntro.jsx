@@ -3,28 +3,23 @@ import { useTheme } from "../context/ThemeContext";
 
 export default function CinematicIntro() {
   const { theme } = useTheme();
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     // Respect user's motion preference
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    // Disable cinematic intro on mobile — logo and content must appear instantly
-    if (window.innerWidth < 768) {
-      sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
+      setShow(false);
       return;
     }
 
     // Check if we've already shown the intro this session
     const hasSeenIntro = sessionStorage.getItem("hasSeenHunarIntro_v4");
     if (hasSeenIntro) {
+      setShow(false);
       return;
     }
 
-    // Delay intro so homepage + logo are visible first (800ms head start)
     const tStart = setTimeout(() => {
       setShow(true);
       document.body.style.overflow = "hidden";
@@ -56,7 +51,7 @@ export default function CinematicIntro() {
         window.removeEventListener("click", handleSkip);
         window.removeEventListener("keydown", handleSkip);
       };
-    }, 800);
+    }, 0);
 
     return () => {
       clearTimeout(tStart);
