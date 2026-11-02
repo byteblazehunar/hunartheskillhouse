@@ -52,11 +52,13 @@ import {
   FileCheck,
   Compass,
   ArrowRight,
-  KeyRound
+  KeyRound,
+  Edit3
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import CMSManager from "../components/admin/CMSManager";
 import CertificateManager from "../components/admin/CertificateManager";
+import SitePagesManager from "../components/admin/SitePagesManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
 import usePortalTab from "../hooks/usePortalTab";
@@ -66,7 +68,7 @@ const ADMIN_PORTAL_TABS = [
   "overview", "activity", "notifications", "students", "invitations", "enrollments",
   "courses", "attendance", "assignments", "assessments", "progress", "staff",
   "staff_invitations", "departments", "teaching_assignments", "timetable",
-  "course_categories", "batches", "cms_homepage", "cms_about", "cms_founder",
+  "course_categories", "batches", "cms_homepage", "cms_site_pages", "cms_about", "cms_founder",
   "cms_faculty", "cms_testimonials", "cms_blog", "announcements", "cms_faqs", "cms_contact",
   "cms_gallery", "cms_navigation", "certificates", "fees", "receipts", "leads", "reports", "calendar",
   "users", "roles", "audit", "security", "settings", "profile"
@@ -1530,6 +1532,7 @@ export default function AdminPortal() {
       roles: ["admin", "super_admin"],
       items: [
         { id: "cms_homepage", label: "Homepage Content", icon: Globe, perms: ["website.homepage_edit"] },
+  { id: "cms_site_pages", label: "All Pages / Site Editor", icon: Edit3, perms: ["website.content_view"] },
   { id: "certificates", label: "Certificates & Report Cards", icon: Award, perms: ["reports.export"] },
         { id: "cms_about", label: "About Hunar", icon: FileText, perms: ["website.about_founder_edit"] },
         { id: "cms_founder", label: "Founder & Leadership", icon: UserCheck, perms: ["website.about_founder_edit"] },
@@ -1897,7 +1900,7 @@ export default function AdminPortal() {
 
       {/* ══════════════════════════════════════════════ */}
       {/* MAIN CONTENT AREA */}
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═��════════════════════════════════════════════ */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Top Header Bar */}
         <header
@@ -4096,7 +4099,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 11: LEADS & INQUIRIES */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════���══════ */}
           {activeTab === "leads" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
@@ -4576,7 +4579,8 @@ export default function AdminPortal() {
   {/* WEBSITE CONTENT MANAGEMENT (CMS) MODULES */}
   {/* ══════════════════════════════════════════════ */}
   {activeTab === "certificates" && <CertificateManager authToken={authToken} students={students} showToast={showToast} />}
-  {(activeTab.startsWith("cms_") || activeTab === "cms_navigation") && (
+  {activeTab === "cms_site_pages" && <SitePagesManager authToken={authToken} showToast={showToast} />}
+  {(activeTab.startsWith("cms_") && activeTab !== "cms_site_pages" || activeTab === "cms_navigation") && (
             <CMSManager activeTab={activeTab} authToken={authToken} showToast={showToast} />
           )}
 
@@ -6159,7 +6163,7 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═══════════════════════════���══════════════════ */}
       {/* MODAL: FEE PAYMENT (RECORD & EDIT) */}
       {/* ══════════════════════════════════════════════ */}
       {(modalType === "record_fee" || modalType === "edit_fee") && (
