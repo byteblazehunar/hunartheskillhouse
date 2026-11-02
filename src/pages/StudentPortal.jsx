@@ -203,7 +203,7 @@ export default function StudentPortal() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ textAlign: "right", display: "none", sm: "block" }}>
+              <div className="student-profile-summary" style={{ textAlign: "right" }}>
               <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--color-text-primary)" }}>
                 {profile.name}
               </div>

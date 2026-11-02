@@ -247,7 +247,7 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════
    TYPOGRAPHY HIERARCHY — Restrained, human, fluid
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════���═════════════════════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-text-primary);
@@ -735,6 +735,12 @@ select option:disabled {
     --container-pad: 18px;
   }
 
+  .container,
+  .container-wide,
+  .container-narrow {
+    max-width: 100%;
+  }
+
   .section {
     padding-top: clamp(48px, 6vw, 72px);
     padding-bottom: clamp(48px, 6vw, 72px);
@@ -1091,9 +1097,41 @@ select option:disabled {
   }
 }
 
-/* --- Tables in portals --- */
+/* --- Portal navigation and data surfaces --- */
+.student-profile-summary { display: block; }
+@media (max-width: 540px) {
+  .student-profile-summary { display: none; }
+  .student-portal-header .container { gap: 10px !important; }
+}
+
+.portal-tab-list,
+[role="tablist"] {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-tab-list::-webkit-scrollbar,
+[role="tablist"]::-webkit-scrollbar {
+  display: none;
+}
+
 @media (max-width: 640px) {
-  table {
+  [role="tablist"] {
+    gap: 4px !important;
+    margin-left: calc(var(--container-pad) * -1);
+    margin-right: calc(var(--container-pad) * -1);
+    padding-left: var(--container-pad) !important;
+    padding-right: var(--container-pad) !important;
+  }
+
+  [role="tablist"] button {
+    min-height: 46px;
+    padding: 10px 14px !important;
+    font-size: 0.78rem !important;
+  }
+
+  table { 
     font-size: 0.82rem;
   }
 
@@ -1148,7 +1186,7 @@ body {
 /* ═══════════════════════════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)
-   ═══════════════════════════════════════════════════════════════════ */
+   ═════════════════════════════════════════════���═════════════════════ */
 .seo-prerender {
   position: absolute;
   width: 1px;

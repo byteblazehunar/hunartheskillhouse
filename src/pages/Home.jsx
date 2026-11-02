@@ -54,7 +54,7 @@ export default function Home({ onOpenDemo }) {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
+            gridTemplateColumns: "minmax(0, 1.08fr) minmax(280px, 0.92fr)",
             gap: "clamp(36px, 5vw, 64px)",
             alignItems: "center"
           }} className="hero-grid">

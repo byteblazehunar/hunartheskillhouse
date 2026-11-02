@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "../context/ThemeContext";
 
 export default function CinematicIntro() {
-  const [show, setShow] = useState(false); // Start hidden — homepage shows immediately
+  const { theme } = useTheme();
+  const [show, setShow] = useState(false);
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
@@ -45,8 +47,15 @@ export default function CinematicIntro() {
         clearTimeout(t4); clearTimeout(t5);
       };
 
-      window.addEventListener("click", handleSkip);
-      window.addEventListener("keydown", handleSkip);
+      window.addEventListener("click", handleSkip, { once: true });
+      window.addEventListener("keydown", handleSkip, { once: true });
+
+      return () => {
+        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+        clearTimeout(t4); clearTimeout(t5);
+        window.removeEventListener("click", handleSkip);
+        window.removeEventListener("keydown", handleSkip);
+      };
     }, 800);
 
     return () => {
@@ -76,7 +85,16 @@ export default function CinematicIntro() {
         perspective: "1000px"
       }}
     >
-      <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img
+            src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
+            alt="Hunar The Skill House"
+            width="240"
+            height="80"
+            fetchPriority="high"
+            decoding="async"
+            style={{ position: "absolute", width: "min(52vw, 240px)", height: "auto", opacity: phase >= 2 ? 0 : 1, transform: phase >= 2 ? "scale(1.08)" : "scale(1)", transition: "opacity 0.5s ease, transform 0.8s ease", objectFit: "contain" }}
+          />
         
         {/* Text Reveal Container */}
         <div
