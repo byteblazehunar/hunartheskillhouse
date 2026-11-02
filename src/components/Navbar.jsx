@@ -240,6 +240,7 @@ export default function Navbar({ onOpenDemo }) {
               }}
               className="mobile-menu-btn"
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-panel"
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -276,6 +277,7 @@ export default function Navbar({ onOpenDemo }) {
           onClick={() => setMobileMenuOpen(false)}
         >
           <div
+            id="mobile-navigation-panel"
             className="animate-fade-in"
             data-lenis-prevent
             style={{

@@ -731,6 +731,17 @@ select option:disabled {
    RESPONSIVE SCALING
    ═══════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+  .mobile-menu-btn:focus-visible,
+  .desktop-nav a:focus-visible,
+  .hero-content .btn:focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 3px;
+  }
+
+  .hero-content .btn {
+    min-height: 48px;
+  }
+
   :root {
     --container-pad: 18px;
   }

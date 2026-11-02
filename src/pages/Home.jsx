@@ -167,7 +167,7 @@ export default function Home({ onOpenDemo }) {
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
-                <div className="hero-founder-badge" style={{ position: "absolute", left: "18px", right: "18px", bottom: "18px", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
+                <div className="hero-founder-badge" style={{ position: "absolute", left: "clamp(10px, 3vw, 18px)", right: "clamp(10px, 3vw, 18px)", bottom: "clamp(10px, 3vw, 18px)", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
                   <strong style={{ display: "block", fontSize: "1rem" }}>Gurlove Malhi</strong>
                   <span style={{ fontSize: "0.78rem", color: "#D9D7CB" }}>Founder, Hunar The Skill House</span>
                 </div>
@@ -715,7 +715,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════��═══ */}
+      {/* ═══ MENTORS — Editorial, not card-based ════��════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
