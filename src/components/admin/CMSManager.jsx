@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "../../context/SiteContentContext";
+import { blogData } from "../../data/blogData";
 import {
   Globe,
   FileText,
@@ -74,6 +75,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
   const [faqs, setFaqs] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [mediaList, setMediaList] = useState([]);
+  const [blogJson, setBlogJson] = useState(() => JSON.stringify(blogData, null, 2));
 
   // Form states
   const [faqForm, setFaqForm] = useState({ question: "", answer: "", category: "Admissions" });
@@ -109,6 +111,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
         const data = await contentRes.json();
         if (data && Object.keys(data).length > 0) {
           setCmsContent((prev) => ({ ...prev, ...data }));
+          if (Array.isArray(data.blog)) setBlogJson(JSON.stringify(data.blog, null, 2));
         }
       }
       if (faqsRes && faqsRes.ok) setFaqs(await faqsRes.json());
@@ -244,7 +247,24 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
   // RENDER BASED ON ACTIVE TAB
   // ══════════════════════════════════════════════════════
 
-  // 1. HOMEPAGE CONTENT
+  // 1. BLOG CONTENT
+  if (activeTab === "cms_blog") {
+    const publishBlog = async () => {
+      try {
+        const parsed = JSON.parse(blogJson);
+        if (!Array.isArray(parsed)) throw new Error("Blog content must be a JSON array.");
+        await handleSaveSection("blog", parsed);
+      } catch (error) {
+        showToast(error.message, "error");
+      }
+    };
+    return <section style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <header><span className="badge badge-brand"><BookOpen size={14} /> BLOG CMS</span><h3 style={{ margin: "12px 0 6px" }}>Blog posts and articles</h3><p style={{ margin: 0, color: "var(--color-text-secondary)" }}>Control titles, excerpts, images, authors, dates, categories, and article content from one publishable editor.</p></header>
+      <div className="hunar-card" style={{ padding: 20 }}><textarea aria-label="Blog content JSON" value={blogJson} onChange={(event) => setBlogJson(event.target.value)} rows={24} style={{ width: "100%", fontFamily: "monospace", fontSize: "0.82rem", padding: 14, borderRadius: 10, border: "1px solid var(--color-border)", background: "var(--color-background)", color: "var(--color-text-primary)" }} /><button className="btn btn-primary" onClick={publishBlog} disabled={loading} style={{ marginTop: 14 }}><Save size={16} /> {loading ? "Publishing..." : "Publish blog changes"}</button></div>
+    </section>;
+  }
+
+  // 2. HOMEPAGE CONTENT
   if (activeTab === "cms_homepage") {
     const hp = cmsContent.homepage || {};
     return (

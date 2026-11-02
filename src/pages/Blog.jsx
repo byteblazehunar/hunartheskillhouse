@@ -1,9 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSiteContent } from "../context/SiteContentContext";
 import { Calendar, Clock, ArrowRight, User } from "lucide-react";
 import { blogData } from "../data/blogData";
 
 export default function Blog() {
+  const { content } = useSiteContent();
+  const posts = Array.isArray(content.blog) && content.blog.length ? content.blog : blogData;
+
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
       {/* Hero */}
@@ -46,7 +50,7 @@ export default function Blog() {
             gridTemplateColumns: "repeat(auto-fit, minmax(min(340px, 100%), 1fr))",
             gap: "32px"
           }}>
-            {blogData.map((post) => (
+            {posts.map((post) => (
               <article
                 key={post.slug}
                 className="hunar-card"

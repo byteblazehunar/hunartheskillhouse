@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { blogData } from "../data/blogData";
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function BlogPost({ onOpenDemo }) {
   const { slug } = useParams();
+  const { content } = useSiteContent();
   const [readingProgress, setReadingProgress] = useState(0);
-  const post = blogData.find((p) => p.slug === slug);
+  const posts = Array.isArray(content.blog) && content.blog.length ? content.blog : blogData;
+  const post = posts.find((p) => p.slug === slug);
 
   useEffect(() => {
     const updateProgress = () => {

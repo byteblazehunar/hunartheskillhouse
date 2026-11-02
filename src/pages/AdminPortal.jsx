@@ -56,6 +56,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import CMSManager from "../components/admin/CMSManager";
+import CertificateManager from "../components/admin/CertificateManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
 import usePortalTab from "../hooks/usePortalTab";
@@ -66,8 +67,8 @@ const ADMIN_PORTAL_TABS = [
   "courses", "attendance", "assignments", "assessments", "progress", "staff",
   "staff_invitations", "departments", "teaching_assignments", "timetable",
   "course_categories", "batches", "cms_homepage", "cms_about", "cms_founder",
-  "cms_faculty", "cms_testimonials", "announcements", "cms_faqs", "cms_contact",
-  "cms_gallery", "cms_navigation", "fees", "receipts", "leads", "reports", "calendar",
+  "cms_faculty", "cms_testimonials", "cms_blog", "announcements", "cms_faqs", "cms_contact",
+  "cms_gallery", "cms_navigation", "certificates", "fees", "receipts", "leads", "reports", "calendar",
   "users", "roles", "audit", "security", "settings", "profile"
 ];
 
@@ -1529,9 +1530,11 @@ export default function AdminPortal() {
       roles: ["admin", "super_admin"],
       items: [
         { id: "cms_homepage", label: "Homepage Content", icon: Globe, perms: ["website.homepage_edit"] },
+  { id: "certificates", label: "Certificates & Report Cards", icon: Award, perms: ["reports.export"] },
         { id: "cms_about", label: "About Hunar", icon: FileText, perms: ["website.about_founder_edit"] },
         { id: "cms_founder", label: "Founder & Leadership", icon: UserCheck, perms: ["website.about_founder_edit"] },
         { id: "cms_faculty", label: "Teachers & Faculty", icon: Users, perms: ["website.content_view"] },
+  { id: "cms_blog", label: "Blog & Articles", icon: BookOpen, perms: ["website.content_view"] },
         { id: "courses", label: "Courses on Website", icon: BookOpen, perms: ["website.courses_edit"] },
         { id: "cms_testimonials", label: "Student Success Stories", icon: Sparkles, perms: ["website.testimonials_manage"] },
         { id: "announcements", label: "Announcements", icon: Bell, perms: ["website.announcements_manage"] },
@@ -3244,7 +3247,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 5: COURSES & BATCHES */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════════���════════════════ */}
           {activeTab === "courses" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {/* Courses Section */}
@@ -4570,9 +4573,10 @@ export default function AdminPortal() {
           )}
 
           {/* ══════════════════════════════════════════════ */}
-          {/* WEBSITE CONTENT MANAGEMENT (CMS) MODULES */}
-          {/* ══════════════════════════════════════════════ */}
-          {(activeTab.startsWith("cms_") || activeTab === "cms_navigation") && (
+  {/* WEBSITE CONTENT MANAGEMENT (CMS) MODULES */}
+  {/* ══════════════════════════════════════════════ */}
+  {activeTab === "certificates" && <CertificateManager authToken={authToken} students={students} showToast={showToast} />}
+  {(activeTab.startsWith("cms_") || activeTab === "cms_navigation") && (
             <CMSManager activeTab={activeTab} authToken={authToken} showToast={showToast} />
           )}
 
@@ -6383,7 +6387,7 @@ export default function AdminPortal() {
 
       {/* ══════════════════════════════════════════════ */}
       {/* MODAL: ANNOUNCEMENT (POST & EDIT) */}
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═════════════════════════════════════���════════ */}
       {(modalType === "post_announcement" || modalType === "edit_announcement") && (
         <div
           style={{
