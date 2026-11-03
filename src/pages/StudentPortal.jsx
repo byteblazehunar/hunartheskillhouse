@@ -620,7 +620,7 @@ export default function StudentPortal() {
                   <div style={{ display: "flex", gap: "18px", fontSize: "0.82rem", color: "var(--color-text-muted)", marginBottom: "16px", flexWrap: "wrap" }}>
                     <span>Deadline: <strong>{new Date(assign.deadline).toLocaleDateString()}</strong></span>
                     <span>Max Marks: <strong>{assign.maxMarks || 100}</strong></span>
-                    <span>Instructor: <strong>{assign.assignedBy || "Paramjit Singh"}</strong></span>
+                    <span>Instructor: <strong>{assign.assignedBy || "Mr. Umang Shukla"}</strong></span>
                   </div>
 
                   {/* Submission Form / Status */}

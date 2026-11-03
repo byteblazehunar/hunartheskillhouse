@@ -715,7 +715,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ════��════════════��═══ */}
+      {/* ══�� MENTORS — Editorial, not card-based ════��════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
@@ -761,7 +761,7 @@ export default function Home({ onOpenDemo }) {
                     PS
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    {content.faculty?.leadInstructor || "Paramjit Singh"}
+                    {content.faculty?.leadInstructor || "Mr. Umang Shukla"}
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",
@@ -816,7 +816,7 @@ export default function Home({ onOpenDemo }) {
                     LS
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    Lakshay Sharma
+                    Mr. Umang Shukla
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",

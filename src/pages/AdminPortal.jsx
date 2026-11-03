@@ -4097,7 +4097,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════════════��════════════ */}
           {/* TAB 11: LEADS & INQUIRIES */}
           {/* ═══════════════════════════════════════���══════ */}
           {activeTab === "leads" && (
@@ -4391,7 +4391,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 14: SECURITY & AUDIT LOGS */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ══════════════════════════���═══════════════════ */}
           {activeTab === "audit" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
@@ -4563,7 +4563,7 @@ export default function AdminPortal() {
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Lead Faculty</span>
-                      <strong>Paramjit Singh (Web Dev, AI & Digital Marketing)</strong>
+                      <strong>Mr. Umang Shukla (Web Dev, AI & Digital Marketing)</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Support Helpline</span>
@@ -4822,7 +4822,7 @@ export default function AdminPortal() {
                     <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Assigned Mentor</label>
                     <input
                       type="text"
-                      placeholder="e.g. Paramjit Singh"
+                      placeholder="e.g. Mr. Umang Shukla"
                       value={studentForm.assignedTeacher || ""}
                       onChange={(e) => setStudentForm({ ...studentForm, assignedTeacher: e.target.value })}
                       style={{
@@ -5532,7 +5532,7 @@ export default function AdminPortal() {
                 <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Lead Faculty / Instructor</label>
                 <input
                   type="text"
-                  placeholder="e.g. Paramjit Singh"
+                  placeholder="e.g. Mr. Umang Shukla"
                   value={courseForm.assignedTeacher || ""}
                   onChange={(e) => setCourseForm({ ...courseForm, assignedTeacher: e.target.value })}
                   style={{
@@ -6086,7 +6086,7 @@ export default function AdminPortal() {
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Instructor</label>
                   <input
                     type="text"
-                    placeholder="e.g. Paramjit Singh"
+                    placeholder="e.g. Mr. Umang Shukla"
                     value={timetableForm.teacher}
                     onChange={(e) => setTimetableForm({ ...timetableForm, teacher: e.target.value })}
                     style={{

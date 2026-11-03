@@ -1,7 +1,7 @@
 export const testimonialsData = [
   {
     id: "t1",
-    name: "Lakshay Sharma",
+    name: "Mr. Umang Shukla",
     course: "Full Stack Web Development Student",
     rating: 5,
     quote: "Hunar helped me build real skills and complete my course with confidence. The support and certification process was seamless. Building real applications instead of just watching videos made all the difference.",

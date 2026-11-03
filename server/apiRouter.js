@@ -2704,7 +2704,10 @@ router.put("/content/:section", authenticate, requireRole(["admin"]), async (req
       content = JSON.parse(raw);
     } catch {}
 
-    content[section] = { ...(content[section] || {}), ...req.body };
+    const incoming = req.body;
+    content[section] = (Array.isArray(incoming) || incoming === null || typeof incoming !== "object")
+      ? incoming
+      : { ...(content[section] || {}), ...incoming };
     await fs.writeFile(path.join(DATA_DIR, "content.json"), JSON.stringify(content, null, 2));
     await logAction(req.user.name, req.user.role, "UPDATE_CMS_CONTENT", "CMS", section);
 

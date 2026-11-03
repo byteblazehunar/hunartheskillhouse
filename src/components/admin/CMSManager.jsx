@@ -57,7 +57,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
       location: "Mullanpur Dakha, Ludhiana"
     },
     faculty: {
-      leadInstructor: "Paramjit Singh",
+      leadInstructor: "Mr. Umang Shukla",
       domains: "Full Stack Web Development, Artificial Intelligence & Machine Learning, Performance Marketing",
       pedagogy: "Project-first, lab-intensive curriculum with 1-on-1 code reviews and live client projects."
     },
@@ -628,7 +628,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: "0 0 4px 0" }}>Faculty & Academic Pedagogy</h3>
             <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
-              Lead technical instructor Paramjit Singh and institutional hands-on methodology.
+              Lead technical instructor Mr. Umang Shukla and institutional hands-on methodology.
             </p>
           </div>
           <button
@@ -660,7 +660,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
             </label>
             <input
               type="text"
-              value={fac.leadInstructor || "Paramjit Singh"}
+              value={fac.leadInstructor || "Mr. Umang Shukla"}
               onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, leadInstructor: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
             />

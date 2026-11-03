@@ -35,7 +35,7 @@ export const siteConfig = {
     role: "Founder of Hunar The Skill House"
   },
   leadTeacher: {
-    name: "Paramjit Singh",
+    name: "Mr. Umang Shukla",
     role: "Teacher",
     subjects: [
       "Web Development",

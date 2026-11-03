@@ -300,9 +300,9 @@ export default function ExtraSubviews({
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
           {[
-            { name: "Computer Applications & AI", head: "Paramjit Singh", staffCount: 2, lab: "Lab 2 (AI Cluster)" },
-            { name: "Web Technologies & Software", head: "Paramjit Singh", staffCount: 2, lab: "Lab 1 (Silicon Room)" },
-            { name: "Digital Marketing & Analytics", head: "Paramjit Singh", staffCount: 1, lab: "Media Studio" }
+            { name: "Computer Applications & AI", head: "Mr. Umang Shukla", staffCount: 2, lab: "Lab 2 (AI Cluster)" },
+            { name: "Web Technologies & Software", head: "Mr. Umang Shukla", staffCount: 2, lab: "Lab 1 (Silicon Room)" },
+            { name: "Digital Marketing & Analytics", head: "Mr. Umang Shukla", staffCount: 1, lab: "Media Studio" }
           ].map((d, i) => (
             <div key={i} style={{ padding: "22px", backgroundColor: "var(--color-surface)", borderRadius: "14px", border: "1px solid var(--color-border)" }}>
               <div style={{ width: "40px", height: "40px", borderRadius: "10px", backgroundColor: "rgba(239, 219, 25, 0.15)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px" }}>

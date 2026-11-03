@@ -443,7 +443,7 @@ export default function About({ onOpenDemo }) {
             gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: "28px"
           }}>
-            {/* Teacher: Paramjit Singh */}
+            {/* Teacher: Mr. Umang Shukla */}
             <div style={{
               backgroundColor: "var(--color-surface-secondary)",
               border: "1px solid var(--color-border)",
@@ -467,11 +467,11 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  {(faculty.leadInstructor || "Paramjit Singh").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
+                  {(faculty.leadInstructor || "Mr. Umang Shukla").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    {faculty.leadInstructor || "Paramjit Singh"}
+                    {faculty.leadInstructor || "Mr. Umang Shukla"}
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
                     {faculty.title || "Teacher"}
@@ -513,7 +513,7 @@ export default function About({ onOpenDemo }) {
               </div>
             </div>
 
-            {/* Mentor: Lakshay Sharma */}
+            {/* Mentor: Mr. Umang Shukla */}
             <div style={{
               backgroundColor: "var(--color-surface-secondary)",
               border: "1px solid var(--color-border)",
@@ -541,7 +541,7 @@ export default function About({ onOpenDemo }) {
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    Lakshay Sharma
+                    Mr. Umang Shukla
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
                     Creative &amp; Motion Mentor
