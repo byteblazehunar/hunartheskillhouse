@@ -334,7 +334,8 @@ export default function AdminPortal() {
     email: "",
     phone: "",
     role: "student",
-    status: "active"
+    status: "active",
+    avatar: ""
   });
 
   // Generated Invitation Details Modal
@@ -1027,9 +1028,20 @@ export default function AdminPortal() {
       phone: u.phone || "",
       role: u.role || "student",
       status: u.status || "active",
+      avatar: u.avatar || u.profileImage || "",
       password: ""
     });
     setModalType("edit_user");
+  };
+
+  const handleUserAvatarUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return showToast("Please choose an image file.", "error");
+    if (file.size > 2 * 1024 * 1024) return showToast("Avatar must be smaller than 2 MB.", "error");
+    const reader = new FileReader();
+    reader.onload = () => setUserForm((current) => ({ ...current, avatar: reader.result }));
+    reader.readAsDataURL(file);
   };
 
   const handleUpdateUser = async (e) => {
@@ -4097,7 +4109,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* ═════════════════════════════════��════════════ */}
+          {/* ═════════════════════════════════���════════════ */}
           {/* TAB 11: LEADS & INQUIRIES */}
           {/* ═══════════════════════════════════════���══════ */}
           {activeTab === "leads" && (
@@ -4391,7 +4403,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 14: SECURITY & AUDIT LOGS */}
-          {/* ══════════════════════════���═══════════════════ */}
+          {/* ═════════════════════════������═══════════════════ */}
           {activeTab === "audit" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
@@ -5272,6 +5284,14 @@ export default function AdminPortal() {
                     fontSize: "0.85rem"
                   }}
                 />
+              </div>
+
+              <div style={{ display: "grid", gap: "8px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700 }}>Profile image</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  {userForm.avatar ? <img src={userForm.avatar} alt="User profile preview" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: "50%", border: "1px solid var(--color-border)" }} /> : <div aria-hidden="true" style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--color-surface-secondary)" }} />}
+                  <input type="file" accept="image/*" onChange={handleUserAvatarUpload} />
+                </div>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>

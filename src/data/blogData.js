@@ -9,7 +9,7 @@ export const blogData = [
     readTime: "5 min read",
     author: "Mr. Umang Shukla",
     authorRole: "Teacher — Artificial Intelligence (AI)",
-    image: "/hunar_modern_lab.jpg",
+    image: "/assets/hunar_modern_lab.jpg",
     excerpt: "Discover how our 30 Days AI workshop bridges the gap between theoretical AI concepts and high-impact daily commercial productivity.",
     content: [
       "Artificial Intelligence is no longer just a buzzword reserved for research labs; it is fundamentally altering how digital agencies, software companies, and creative studios operate on a daily basis.",
@@ -28,7 +28,7 @@ export const blogData = [
     readTime: "6 min read",
     author: "Mr. Umang Shukla",
     authorRole: "Teacher — Web Development",
-    image: "/course-fs.jpg",
+    image: "/assets/course-fs.jpg",
     excerpt: "Learn the modern web engineering skills employers actually look for: from scalable React components and REST APIs to production cloud deployments.",
     content: [
       "For years, technical education focused heavily on theoretical computer science exams and textbook definitions. Today, top hiring managers and IT agencies care about only one question: 'What have you built?'",
@@ -47,7 +47,7 @@ export const blogData = [
     readTime: "5 min read",
     author: "Mr. Umang Shukla",
     authorRole: "Teacher — Digital Marketing",
-    image: "/course-dm.jpg",
+    image: "/assets/course-dm.jpg",
     excerpt: "How generative AI, real ad budgets, and automated conversion tracking are changing performance marketing in 2026.",
     content: [
       "Digital marketing has transitioned from basic social posting into a sophisticated, data-driven science. High-growth brands now look for specialists who understand audience psychology, analytics, and rapid creative iteration.",
