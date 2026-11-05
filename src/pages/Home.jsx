@@ -432,7 +432,7 @@ export default function Home({ onOpenDemo }) {
                     <ArrowRight size={16} />
                   </button>
                   <Link to={`/course/${featuredCourse.slug}`} className="btn btn-outline">
-                    View Full Syllabus
+                    View Program Details
                   </Link>
                 </div>
               </div>
@@ -481,8 +481,7 @@ export default function Home({ onOpenDemo }) {
                   lineHeight: "1.7",
                   marginBottom: "24px"
                 }}>
-                  Master 29 daily hands-on AI modules: Prompt Engineering, HeyGen avatars,
-                  Claude coding workflows, Make.com automations, and custom AI agents.
+        A practical, mentor-led introduction to modern AI tools and workflows for everyday work.
                 </p>
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <Link to="/workshop" className="btn btn-primary">
@@ -715,7 +714,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ══�� MENTORS — Editorial, not card-based ════��════════════��═══ */}
+      {/* ══��� MENTORS — Editorial, not card-based ════��════════════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
