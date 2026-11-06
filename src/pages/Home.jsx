@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
   Star,
   Users,
   ShieldCheck
@@ -404,24 +403,15 @@ export default function Home({ onOpenDemo }) {
                   {featuredCourse.tagline}
                 </p>
 
-                <div style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  marginBottom: "28px"
+                <p style={{
+                  fontSize: "0.92rem",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: "1.65",
+                  marginBottom: "28px",
+                  maxWidth: "58ch"
                 }}>
-                  {featuredCourse.highlights.slice(0, 5).map((point, i) => (
-                    <div key={i} style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "8px",
-                      fontSize: "0.92rem"
-                    }}>
-                      <CheckCircle2 size={16} color="var(--color-brand-text)" style={{ flexShrink: 0, marginTop: "3px" }} />
-                      <span style={{ color: "var(--color-text-primary)" }}>{point}</span>
-                    </div>
-                  ))}
-                </div>
+                  {featuredCourse.shortDesc || "A practical, mentor-led program designed to build job-ready skills."}
+                </p>
 
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <button
@@ -714,7 +704,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ══��� MENTORS — Editorial, not card-based ════��════════════��═══ */}
+      {/* ══��� MENTORS — Editorial, not card-based ════��═════���══════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
