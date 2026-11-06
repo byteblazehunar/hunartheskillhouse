@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  Star,
-  Users,
-  ShieldCheck
+  Star
 } from "lucide-react";
 import { courseCategories } from "../data/coursesData";
 import { placementsData } from "../data/placementsData";
@@ -243,7 +241,7 @@ export default function Home({ onOpenDemo }) {
           }}>
             <div>
               <div className="eyebrow" style={{ marginBottom: "8px" }}>
-                Career-Focused Curriculum
+                Career-Focused Programs
               </div>
               <h2>Job-Ready Programs</h2>
               <p style={{ marginTop: "6px" }}>
@@ -475,7 +473,7 @@ export default function Home({ onOpenDemo }) {
                 </p>
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <Link to="/workshop" className="btn btn-primary">
-                    Explore Modules
+                    View Workshop
                     <ArrowRight size={16} />
                   </Link>
                   <button
