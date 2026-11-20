@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: "Hunar The Skill House",
   tagline: "Skills • Practical Learning • Technology • Career",
-  shortDesc: "Mullanpur's first AI-powered, job-ready skill institute. Powered by Byteblaze Technologies.",
-  location: "First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana, Punjab – 141101",
-  landmark: "Opposite Gurudwara Sahib, Ferozpur Road",
+  shortDesc: "Practical, career-focused digital skills training in Mullanpur Dakha, Ludhiana. Powered by Byteblaze Technologies.",
+  location: "Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101",
+  landmark: "Opposite Bus Stand, Mullanpur Dakha",
   city: "Mullanpur Dakha, Ludhiana",
   phone: "+91 94637-95116",
   phoneRaw: "919463795116",
@@ -35,13 +35,14 @@ export const siteConfig = {
     role: "Founder of Hunar The Skill House"
   },
   leadTeacher: {
+    name: "Ms. Nishika",
+    role: "Teacher — Full Stack & Web Development",
+    subjects: ["Full Stack Web Development", "Web Development"]
+  },
+  creativeInstructor: {
     name: "Mr. Umang Shukla",
-    role: "Teacher",
-    subjects: [
-      "Web Development",
-      "Artificial Intelligence (AI)",
-      "Digital Marketing"
-    ]
+    role: "Teacher — Graphic Design & Video Editing",
+    subjects: ["Graphic Design", "Photoshop", "Video Editing", "Motion Graphics"]
   },
   studentDesigners: {
     credit: "Designed by Students",

@@ -58,15 +58,19 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
     },
     faculty: {
       leadInstructor: "Mr. Umang Shukla",
-      domains: "Full Stack Web Development, Artificial Intelligence & Machine Learning, Performance Marketing",
-      pedagogy: "Project-first, lab-intensive curriculum with 1-on-1 code reviews and live client projects."
+      webInstructor: "Ms. Nishika",
+      webTitle: "Teacher — Full Stack & Web Development",
+      webDomains: "Full Stack Web Development, Web Development",
+      webPedagogy: "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work.",
+      domains: "Graphic Design, Photoshop, Video Editing, Motion Graphics",
+      pedagogy: "Project-first lab instruction with recorded lessons, live classes, and guided creative projects."
     },
     contact: {
       instituteName: "Hunar The Skill House",
       phone: "+91 94637 95116",
       whatsapp: "+91 94637 95116",
       email: "byteblaze.hunar@gmail.com",
-      address: "Opposite Bus Stand, Mullanpur Dakha, Ludhiana, Punjab 141101",
+      address: "Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101",
       officeHours: "Monday to Saturday: 9:00 AM – 6:30 PM",
       coordinates: "30.9168, 75.6885"
     }
@@ -628,7 +632,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
           <div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 800, margin: "0 0 4px 0" }}>Faculty & Academic Pedagogy</h3>
             <p style={{ fontSize: "0.78rem", color: "var(--color-text-secondary)", margin: 0 }}>
-              Lead technical instructor Mr. Umang Shukla and institutional hands-on methodology.
+              Edit the web development and creative instructor details, assigned subjects, and teaching approach.
             </p>
           </div>
           <button
@@ -660,19 +664,67 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
             </label>
             <input
               type="text"
-              value={fac.leadInstructor || "Mr. Umang Shukla"}
+              value={fac.leadInstructor || "Mr. Umang Shukla — Graphic Design & Video Editing"}
               onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, leadInstructor: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
-            />
-          </div>
+              />
+            </div>
 
-          <div>
-            <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
-              Assigned Instructional Domains
-            </label>
-            <input
-              type="text"
-              value={fac.domains || "Full Stack Web Development, Artificial Intelligence & Machine Learning, Performance Marketing"}
+            <div>
+              <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+                Web Development Instructor
+              </label>
+              <input
+                type="text"
+                value={fac.webInstructor || "Ms. Nishika"}
+                onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, webInstructor: e.target.value } })}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+                Web Development Instructor Title
+              </label>
+              <input
+                type="text"
+                value={fac.webTitle || "Teacher — Full Stack & Web Development"}
+                onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, webTitle: e.target.value } })}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+                Web Development Subjects
+              </label>
+              <input
+                type="text"
+                value={fac.webDomains || "Full Stack Web Development, Web Development"}
+                onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, webDomains: e.target.value } })}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+                Web Development Teaching Approach
+              </label>
+              <textarea
+                rows={3}
+                value={fac.webPedagogy || "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work."}
+                onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, webPedagogy: e.target.value } })}
+                style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: "6px", color: "var(--color-text-secondary)" }}>
+                Creative Instructor Subjects
+              </label>
+              <input
+                type="text"
+                value={fac.domains || "Graphic Design, Photoshop, Video Editing, Motion Graphics"}
               onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, domains: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
             />
@@ -684,7 +736,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
             </label>
             <textarea
               rows={4}
-              value={fac.pedagogy || ""}
+              value={fac.pedagogy || "Project-first instruction in graphic design, Photoshop, and video editing, with recorded lessons, live classes, and guided creative projects."}
               onChange={(e) => setCmsContent({ ...cmsContent, faculty: { ...fac, pedagogy: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
             />
@@ -1133,7 +1185,7 @@ export default function CMSManager({ activeTab, authToken, showToast }) {
             </label>
             <input
               type="text"
-              value={co.address || "Opposite Bus Stand, Mullanpur Dakha, Ludhiana, Punjab 141101"}
+              value={co.address || "Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101"}
               onChange={(e) => setCmsContent({ ...cmsContent, contact: { ...co, address: e.target.value } })}
               style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--color-border)", backgroundColor: "var(--color-background)", color: "var(--color-text-primary)", fontSize: "0.85rem" }}
             />

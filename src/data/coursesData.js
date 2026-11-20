@@ -209,9 +209,9 @@ export const coursesData = [
     shortDesc: "Master end-to-end web engineering: HTML5, modern CSS, JavaScript (ES6+), React.js, Node.js, Express, MongoDB, and production cloud deployment.",
     tagline: "Build production-ready, scalable web applications from scratch with clean code architecture and real GitHub commits.",
     mentor: {
-      name: "Mr. Umang Shukla",
-      role: "Teacher — Web Development",
-      exp: "Full-Stack Web Engineering Mentor"
+      name: "Ms. Nishika",
+      role: "Teacher — Full Stack & Web Development",
+      exp: "Full-Stack Web Engineering Instructor"
     },
     highlights: [
       "Full-stack MERN (MongoDB, Express, React, Node.js) stack architecture",
@@ -298,8 +298,8 @@ export const coursesData = [
     tagline: "Transform creative passion into high-paying commercial design skills. Build commercial branding, packaging, and digital ads.",
     mentor: {
       name: "Mr. Umang Shukla",
-      role: "Lead Creative Mentor & Visual Designer",
-      exp: "Specialist in Brand Identity & AI Art"
+      role: "Teacher — Graphic Design & Photoshop",
+      exp: "Graphic Design and Visual Editing Instructor"
     },
     highlights: [
       "Adobe Photoshop: advanced compositing, retouching, color grading",
@@ -386,8 +386,8 @@ export const coursesData = [
     tagline: "Turn raw footage into viral, cinematic storytelling. Master the tools powering YouTube, Instagram Reels, and commercial cinema.",
     mentor: {
       name: "Mr. Umang Shukla",
-      role: "Lead Visual & Motion Mentor",
-      exp: "Commercial Video Producer"
+role: "Teacher — Video Editing & Motion Graphics",
+  exp: "Commercial Video Producer"
     },
     highlights: [
       "Adobe Premiere Pro from basic timeline cuts to multi-cam editing",
@@ -472,9 +472,9 @@ export const coursesData = [
     shortDesc: "Master modern user interface engineering with HTML5, CSS3, modern JavaScript, React.js, Tailwind CSS, and AI code pairing tools.",
     tagline: "Build lightning-fast, ultra-responsive web applications using modern React and AI developer productivity workflows.",
     mentor: {
-      name: "Mr. Umang Shukla",
-      role: "Teacher — Web Development",
-      exp: "Frontend Architecture & UI Engineering"
+name: "Ms. Nishika",
+  role: "Teacher — Full Stack & Web Development",
+  exp: "Full Stack & Web Development Instructor"
     },
     highlights: [
       "Modern component-driven development with React.js",
@@ -511,22 +511,22 @@ export const coursesData = [
   },
   {
     id: "13",
-    slug: "back-end-development",
-    title: "Back-End Development",
-    category: "Tech & Development",
-    badge: "API & Cloud Track",
-    duration: "4 Months",
-    mode: "Offline Lab",
-    level: "Intermediate",
-    featured: false,
-    rating: 4.82,
-    reviewsCount: 39,
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
-    shortDesc: "Architect robust server-side applications, secure APIs, and relational/NoSQL databases with Node.js, Express, MongoDB, and Next.js.",
-    tagline: "Power the logic behind modern digital platforms. Learn database modeling, microservices, and server security.",
-    mentor: {
-      name: "Mr. Umang Shukla",
-      role: "Teacher — Web Development",
+slug: "back-end-development",
+  title: "Back-End Development",
+  category: "Tech & Development",
+  badge: "API & Cloud Track",
+  duration: "4 Months",
+  mode: "Offline Lab",
+  level: "Intermediate",
+  featured: false,
+  rating: 4.82,
+  reviewsCount: 39,
+  image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
+  shortDesc: "Architect robust server-side applications, secure APIs, and relational/NoSQL databases with Node.js, Express, MongoDB, and Next.js.",
+  tagline: "Power the logic behind modern digital platforms. Learn database modeling, microservices, and server security.",
+  mentor: {
+      name: "Ms. Nishika",
+      role: "Teacher — Full Stack & Web Development",
       exp: "Backend Systems & Database Architecture"
     },
     highlights: [

@@ -50,7 +50,7 @@ export const pageMetadata = {
   },
   "/contact": {
     title: "Contact Hunar The Skill House | Mullanpur Dakha, Ludhiana",
-    description: "Contact Hunar The Skill House: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana. Call +91 94637-95116. Book a free demo class or campus visit Monday–Saturday 9 AM–7 PM.",
+    description: "Contact Hunar The Skill House at Opposite Bus Stand, First Floor, Desraj Fruit and Juice Bar Complex, Mullanpur Dakha, Ludhiana, Punjab 141101. Call +91 94637-95116 to book a campus visit or demo class.",
     keywords: "contact Hunar Mullanpur, Hunar phone number, skill institute address Ludhiana, book demo class Hunar"
   },
   "/verify": {

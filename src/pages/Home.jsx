@@ -745,10 +745,10 @@ export default function Home({ onOpenDemo }) {
                     color: "var(--color-brand-text)",
                     marginBottom: "16px"
                   }}>
-                    PS
+                    MN
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    {content.faculty?.leadInstructor || "Mr. Umang Shukla"}
+                    {content.faculty?.webInstructor || "Ms. Nishika"}
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",
@@ -756,7 +756,7 @@ export default function Home({ onOpenDemo }) {
                     fontSize: "0.82rem",
                     marginBottom: "10px"
                   }}>
-                    {content.faculty?.domains || "Teacher — Web Dev, AI & Digital Marketing"}
+                    {content.faculty?.webTitle || "Teacher — Full Stack & Web Development"}
                   </div>
                   <p style={{
                     fontSize: "0.88rem",
@@ -764,10 +764,10 @@ export default function Home({ onOpenDemo }) {
                     lineHeight: "1.65",
                     marginBottom: "12px"
                   }}>
-                    {content.faculty?.pedagogy || "Lead faculty member dedicated to hands-on student mastery across Web Development, Artificial Intelligence (AI), and Digital Marketing."}
+                    {content.faculty?.webPedagogy || "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work."}
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {(content.faculty?.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+                    {(content.faculty?.webDomains || "Full Stack Web Development, Web Development")
                       .split(",")
                       .map((domain) => domain.trim())
                       .filter(Boolean)
@@ -800,7 +800,7 @@ export default function Home({ onOpenDemo }) {
                     color: "var(--color-brand-text)",
                     marginBottom: "16px"
                   }}>
-                    LS
+                    US
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
                     Mr. Umang Shukla
@@ -811,15 +811,14 @@ export default function Home({ onOpenDemo }) {
                     fontSize: "0.82rem",
                     marginBottom: "10px"
                   }}>
-                    Lead Creative & Motion Graphics Mentor
+                    Teacher — Graphic Design & Video Editing
                   </div>
                   <p style={{
                     fontSize: "0.88rem",
                     color: "var(--color-text-secondary)",
                     lineHeight: "1.65"
                   }}>
-                    Specialist in brand identity, video editing, After Effects typography,
-                    and AI visual workflows for commercial campaigns.
+                    Specialist in brand identity, Photoshop, video editing, and After Effects typography for commercial campaigns.
                   </p>
                 </div>
               </ScrollItem>

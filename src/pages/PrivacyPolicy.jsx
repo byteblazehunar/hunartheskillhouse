@@ -94,7 +94,7 @@ export default function PrivacyPolicy() {
                 If you have questions regarding this privacy policy or wish to request data correction, contact:
                 <br />
                 <strong>Registrar, Hunar The Skill House</strong><br />
-                First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana – 141101<br />
+                Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101<br />
                 Email: byteblaze.hunar@gmail.com | Phone: +91 94637-95116
               </p>
             </section>

@@ -108,7 +108,7 @@ export default function CourseResourceManager({ courseId, course, resources = []
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div>
           <h4 id="course-resources-heading" style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800 }}>LMS learning resources</h4>
-          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)", fontSize: "0.76rem" }}>Private course files for recorded lessons and class materials.</p>
+          <p style={{ margin: "4px 0 0", color: "var(--color-text-secondary)", fontSize: "0.76rem" }}>Private video lessons, live-class recordings, and downloadable course materials.</p>
         </div>
         <button type="button" onClick={() => fileInputRef.current?.click()} disabled={busy || !courseId} style={{ border: 0, borderRadius: 8, padding: "9px 12px", background: "var(--color-brand)", color: "#191A17", fontWeight: 750, cursor: busy || !courseId ? "not-allowed" : "pointer", opacity: !courseId ? 0.6 : 1, display: "inline-flex", alignItems: "center", gap: 7 }}>
           {busy ? <LoaderCircle size={16} className="animate-spin" /> : <Plus size={16} />}

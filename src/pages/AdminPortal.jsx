@@ -4580,7 +4580,7 @@ export default function AdminPortal() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.82rem" }}>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Campus Location</span>
-                      <strong>Mullanpur Dakha, Ludhiana, Punjab, India</strong>
+                      <strong>Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Founder & Director</span>
@@ -4588,7 +4588,7 @@ export default function AdminPortal() {
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Lead Faculty</span>
-                      <strong>Mr. Umang Shukla (Web Dev, AI & Digital Marketing)</strong>
+                      <strong>Ms. Nishika — Full Stack & Web Development<br />Mr. Umang Shukla — Graphic Design, Photoshop & Video Editing</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Support Helpline</span>

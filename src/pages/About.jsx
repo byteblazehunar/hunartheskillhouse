@@ -23,7 +23,7 @@ export default function About({ onOpenDemo }) {
   const founder = content.founder || {};
   const faculty = content.faculty || {};
   const contact = content.contact || {};
-  const facultyDomains = (faculty.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+  const facultyDomains = (faculty.webDomains || "Full Stack Web Development, Web Development")
     .split(",")
     .map((domain) => domain.trim())
     .filter(Boolean);
@@ -131,7 +131,7 @@ export default function About({ onOpenDemo }) {
                 {about.mission || "For decades, students in regional centers outside major metro hubs were faced with a frustrating dilemma: travel long distances to metropolitan institutes, or purchase pre-recorded online courses that offer zero accountability and no real feedback."}
               </p>
               <p style={{ fontSize: "1.02rem", color: "var(--color-text-secondary)", lineHeight: "1.8", marginBottom: "24px" }}>
-                {about.vision || "Hunar was established right on Ferozpur Road in Mullanpur Dakha, Ludhiana, to deliver world-class, production-grade training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios."}
+                {about.vision || "Hunar was established in Mullanpur Dakha, Ludhiana, to deliver practical, career-focused training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios."}
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "28px" }}>
@@ -467,14 +467,14 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  {(faculty.leadInstructor || "Mr. Umang Shukla").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
+                  {(faculty.webInstructor || "Ms. Nishika").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    {faculty.leadInstructor || "Mr. Umang Shukla"}
+                    {faculty.webInstructor || "Ms. Nishika"}
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
-                    {faculty.title || "Teacher"}
+                    {faculty.webTitle || "Teacher — Full Stack & Web Development"}
                   </div>
                 </div>
               </div>
@@ -499,7 +499,7 @@ export default function About({ onOpenDemo }) {
                 marginBottom: "20px",
                 flex: 1
               }}>
-                {faculty.pedagogy || "Leads curriculum delivery across full-stack web engineering, practical AI automation workflows, and performance-based digital marketing campaigns with real client ad budgets."}
+                {faculty.webPedagogy || "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work."}
               </p>
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -537,14 +537,14 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  LS
+                  US
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
                     Mr. Umang Shukla
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
-                    Creative &amp; Motion Mentor
+                    Teacher — Graphic Design &amp; Video Editing
                   </div>
                 </div>
               </div>
@@ -570,7 +570,7 @@ export default function About({ onOpenDemo }) {
                 marginBottom: "20px",
                 flex: 1
               }}>
-                Specializes in commercial visual communication, Premiere Pro timeline editing, After Effects typography, brand identity guidelines, and AI image generation.
+                Specializes in commercial visual communication, Premiere Pro timeline editing, After Effects typography, Photoshop, and brand identity systems.
               </p>
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
