@@ -85,37 +85,6 @@ export default function CourseCard({ course, onOpenDemo }) {
           {course.shortDesc}
         </p>
 
-        {/* Tools — compact */}
-        {course.tools && (
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "4px",
-            marginBottom: "16px"
-          }}>
-            {course.tools.slice(0, 3).map((tool, idx) => (
-              <span
-                key={idx}
-                style={{
-                  fontSize: "0.7rem",
-                  background: "var(--color-surface-secondary)",
-                  color: "var(--color-text-muted)",
-                  padding: "2px 8px",
-                  borderRadius: "var(--radius-sm)",
-                  border: "1px solid var(--color-border)"
-                }}
-              >
-                {tool}
-              </span>
-            ))}
-            {course.tools.length > 3 && (
-              <span style={{ fontSize: "0.7rem", color: "var(--color-text-muted)", alignSelf: "center" }}>
-                +{course.tools.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
         {/* Mentor */}
         {course.mentor && (
           <div style={{

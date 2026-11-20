@@ -52,12 +52,16 @@ import {
   FileCheck,
   Compass,
   ArrowRight,
-  KeyRound
+  KeyRound,
+  Edit3
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import CMSManager from "../components/admin/CMSManager";
+import CertificateManager from "../components/admin/CertificateManager";
+import SitePagesManager from "../components/admin/SitePagesManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
+import CourseResourceManager from "../components/admin/CourseResourceManager";
 import usePortalTab from "../hooks/usePortalTab";
 import { coursesData } from "../data/coursesData";
 
@@ -65,9 +69,9 @@ const ADMIN_PORTAL_TABS = [
   "overview", "activity", "notifications", "students", "invitations", "enrollments",
   "courses", "attendance", "assignments", "assessments", "progress", "staff",
   "staff_invitations", "departments", "teaching_assignments", "timetable",
-  "course_categories", "batches", "cms_homepage", "cms_about", "cms_founder",
-  "cms_faculty", "cms_testimonials", "announcements", "cms_faqs", "cms_contact",
-  "cms_gallery", "cms_navigation", "fees", "receipts", "leads", "reports", "calendar",
+  "course_categories", "batches", "cms_homepage", "cms_site_pages", "cms_about", "cms_founder",
+  "cms_faculty", "cms_testimonials", "cms_blog", "announcements", "cms_faqs", "cms_contact",
+  "cms_gallery", "cms_navigation", "certificates", "fees", "receipts", "leads", "reports", "calendar",
   "users", "roles", "audit", "security", "settings", "profile"
 ];
 
@@ -95,7 +99,8 @@ function courseFormFromRecord(course = {}) {
     tools: Array.isArray(course.tools) ? course.tools.join("\n") : "",
     curriculum: JSON.stringify(course.curriculum || [], null, 2),
     projects: JSON.stringify(course.projects || [], null, 2),
-    careerRoles: Array.isArray(course.careerRoles) ? course.careerRoles.join("\n") : ""
+    careerRoles: Array.isArray(course.careerRoles) ? course.careerRoles.join("\n") : "",
+    resources: Array.isArray(course.resources) ? course.resources : []
   };
 }
 
@@ -136,7 +141,8 @@ function coursePayloadFromForm(form) {
     tools: splitLines(form.tools),
     curriculum: parseJsonArray(form.curriculum, "Curriculum"),
     projects: parseJsonArray(form.projects, "Projects"),
-    careerRoles: splitLines(form.careerRoles)
+    careerRoles: splitLines(form.careerRoles),
+    resources: Array.isArray(form.resources) ? form.resources : []
   };
 }
 
@@ -290,7 +296,8 @@ export default function AdminPortal() {
     tools: "",
     curriculum: "[]",
     projects: "[]",
-    careerRoles: ""
+    careerRoles: "",
+    resources: []
   });
 
   const [batchForm, setBatchForm] = useState({
@@ -331,7 +338,8 @@ export default function AdminPortal() {
     email: "",
     phone: "",
     role: "student",
-    status: "active"
+    status: "active",
+    avatar: ""
   });
 
   // Generated Invitation Details Modal
@@ -1024,9 +1032,20 @@ export default function AdminPortal() {
       phone: u.phone || "",
       role: u.role || "student",
       status: u.status || "active",
+      avatar: u.avatar || u.profileImage || "",
       password: ""
     });
     setModalType("edit_user");
+  };
+
+  const handleUserAvatarUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return showToast("Please choose an image file.", "error");
+    if (file.size > 2 * 1024 * 1024) return showToast("Avatar must be smaller than 2 MB.", "error");
+    const reader = new FileReader();
+    reader.onload = () => setUserForm((current) => ({ ...current, avatar: reader.result }));
+    reader.readAsDataURL(file);
   };
 
   const handleUpdateUser = async (e) => {
@@ -1529,9 +1548,12 @@ export default function AdminPortal() {
       roles: ["admin", "super_admin"],
       items: [
         { id: "cms_homepage", label: "Homepage Content", icon: Globe, perms: ["website.homepage_edit"] },
+  { id: "cms_site_pages", label: "All Pages / Site Editor", icon: Edit3, perms: ["website.content_view"] },
+  { id: "certificates", label: "Certificates & Report Cards", icon: Award, perms: ["reports.export"] },
         { id: "cms_about", label: "About Hunar", icon: FileText, perms: ["website.about_founder_edit"] },
         { id: "cms_founder", label: "Founder & Leadership", icon: UserCheck, perms: ["website.about_founder_edit"] },
         { id: "cms_faculty", label: "Teachers & Faculty", icon: Users, perms: ["website.content_view"] },
+  { id: "cms_blog", label: "Blog & Articles", icon: BookOpen, perms: ["website.content_view"] },
         { id: "courses", label: "Courses on Website", icon: BookOpen, perms: ["website.courses_edit"] },
         { id: "cms_testimonials", label: "Student Success Stories", icon: Sparkles, perms: ["website.testimonials_manage"] },
         { id: "announcements", label: "Announcements", icon: Bell, perms: ["website.announcements_manage"] },
@@ -1602,11 +1624,12 @@ export default function AdminPortal() {
       style={{
         display: "flex",
         minHeight: "100vh",
-        backgroundColor: "var(--color-background)",
-        color: "var(--color-text-primary)",
+        backgroundColor: "#101413",
+        color: "#e9efeb",
         fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
         position: "relative"
       }}
+      data-crm-shell="true"
     >
       {/* ══════════════════════════════════════════════ */}
       {/* MOBILE SIDEBAR OVERLAY BACKDROP */}
@@ -1894,7 +1917,7 @@ export default function AdminPortal() {
 
       {/* ══════════════════════════════════════════════ */}
       {/* MAIN CONTENT AREA */}
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═��════════════════════════════════════════════ */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
         {/* Top Header Bar */}
         <header
@@ -2010,7 +2033,7 @@ export default function AdminPortal() {
               }}
             >
               <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981" }} />
-              <span>Mullanpur Dakha</span>
+              <span>Desraj Complex · Ludhiana</span>
             </div>
           </div>
         </header>
@@ -2022,6 +2045,14 @@ export default function AdminPortal() {
           {/* ══════════════════════════════════════════════ */}
           {activeTab === "overview" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <section className="admin-crm-welcome" aria-labelledby="crm-welcome-title">
+                <div>
+                  <span className="crm-eyebrow">Hunar · Institute CRM</span>
+                  <h2 id="crm-welcome-title">Good to see you, {adminUser?.name?.split(" ")[0] || "Admin"}</h2>
+                  <p>Admissions, academics and student success — all in one place.</p>
+                </div>
+                <address className="crm-address" style={{ fontStyle: "normal" }}>Opposite Bus Stand, Mullanpur Dakha<br />First Floor, Desraj Fruit and Juice Bar Complex<br />Ludhiana, Punjab 141101</address>
+              </section>
               {/* Metric Stat Cards */}
               <div
                 style={{
@@ -3244,7 +3275,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 5: COURSES & BATCHES */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════════���════════════════ */}
           {activeTab === "courses" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {/* Courses Section */}
@@ -4091,9 +4122,9 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════════════���════════════ */}
           {/* TAB 11: LEADS & INQUIRIES */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════���══════ */}
           {activeTab === "leads" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
@@ -4236,7 +4267,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════���══ */}
           {/* TAB 12: REPORTS & EXPORTS */}
           {/* ══════════════════════════════════════════════ */}
           {activeTab === "reports" && (
@@ -4385,7 +4416,7 @@ export default function AdminPortal() {
 
           {/* ══════════════════════════════════════════════ */}
           {/* TAB 14: SECURITY & AUDIT LOGS */}
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═════════════════════════������═══════════════════ */}
           {activeTab === "audit" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div
@@ -4549,7 +4580,7 @@ export default function AdminPortal() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "0.82rem" }}>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Campus Location</span>
-                      <strong>Mullanpur Dakha, Ludhiana, Punjab, India</strong>
+                      <strong>Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Founder & Director</span>
@@ -4557,7 +4588,7 @@ export default function AdminPortal() {
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Lead Faculty</span>
-                      <strong>Paramjit Singh (Web Dev, AI & Digital Marketing)</strong>
+                      <strong>Ms. Nishika — Full Stack & Web Development<br />Mr. Umang Shukla — Graphic Design, Photoshop & Video Editing</strong>
                     </div>
                     <div>
                       <span style={{ color: "var(--color-text-secondary)", display: "block" }}>Support Helpline</span>
@@ -4570,9 +4601,11 @@ export default function AdminPortal() {
           )}
 
           {/* ══════════════════════════════════════════════ */}
-          {/* WEBSITE CONTENT MANAGEMENT (CMS) MODULES */}
-          {/* ══════════════════════════════════════════════ */}
-          {(activeTab.startsWith("cms_") || activeTab === "cms_navigation") && (
+  {/* WEBSITE CONTENT MANAGEMENT (CMS) MODULES */}
+  {/* ══════════════════════════════════════════════ */}
+  {activeTab === "certificates" && <CertificateManager authToken={authToken} students={students} showToast={showToast} />}
+  {activeTab === "cms_site_pages" && <SitePagesManager authToken={authToken} showToast={showToast} />}
+  {(activeTab.startsWith("cms_") && activeTab !== "cms_site_pages" || activeTab === "cms_navigation") && (
             <CMSManager activeTab={activeTab} authToken={authToken} showToast={showToast} />
           )}
 
@@ -4814,7 +4847,7 @@ export default function AdminPortal() {
                     <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Assigned Mentor</label>
                     <input
                       type="text"
-                      placeholder="e.g. Paramjit Singh"
+                      placeholder="e.g. Mr. Umang Shukla"
                       value={studentForm.assignedTeacher || ""}
                       onChange={(e) => setStudentForm({ ...studentForm, assignedTeacher: e.target.value })}
                       style={{
@@ -5266,6 +5299,14 @@ export default function AdminPortal() {
                 />
               </div>
 
+              <div style={{ display: "grid", gap: "8px" }}>
+                <label style={{ fontSize: "0.78rem", fontWeight: 700 }}>Profile image</label>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  {userForm.avatar ? <img src={userForm.avatar} alt="User profile preview" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: "50%", border: "1px solid var(--color-border)" }} /> : <div aria-hidden="true" style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--color-surface-secondary)" }} />}
+                  <input type="file" accept="image/*" onChange={handleUserAvatarUpload} />
+                </div>
+              </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div>
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Email *</label>
@@ -5524,7 +5565,7 @@ export default function AdminPortal() {
                 <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Lead Faculty / Instructor</label>
                 <input
                   type="text"
-                  placeholder="e.g. Paramjit Singh"
+                  placeholder="e.g. Mr. Umang Shukla"
                   value={courseForm.assignedTeacher || ""}
                   onChange={(e) => setCourseForm({ ...courseForm, assignedTeacher: e.target.value })}
                   style={{
@@ -5681,6 +5722,17 @@ export default function AdminPortal() {
                   ))}
                 </div>
               </details>
+
+              {modalType === "edit_course" && (
+                <CourseResourceManager
+                  courseId={editingItem?.slug || editingItem?._id || editingItem?.id}
+                  course={courseForm}
+                  resources={courseForm.resources}
+                  onResourcesChange={(resources) => setCourseForm((current) => ({ ...current, resources }))}
+                  getAuthHeaders={getAuthHeaders}
+                  showToast={showToast}
+                />
+              )}
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
                 <button
@@ -6078,7 +6130,7 @@ export default function AdminPortal() {
                   <label style={{ fontSize: "0.78rem", fontWeight: 700, display: "block", marginBottom: "6px" }}>Instructor</label>
                   <input
                     type="text"
-                    placeholder="e.g. Paramjit Singh"
+                    placeholder="e.g. Mr. Umang Shukla"
                     value={timetableForm.teacher}
                     onChange={(e) => setTimetableForm({ ...timetableForm, teacher: e.target.value })}
                     style={{
@@ -6155,7 +6207,7 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═══════════════════════════���══════════════════ */}
       {/* MODAL: FEE PAYMENT (RECORD & EDIT) */}
       {/* ══════════════════════════════════════════════ */}
       {(modalType === "record_fee" || modalType === "edit_fee") && (
@@ -6383,7 +6435,7 @@ export default function AdminPortal() {
 
       {/* ══════════════════════════════════════════════ */}
       {/* MODAL: ANNOUNCEMENT (POST & EDIT) */}
-      {/* ══════════════════════════════════════════════ */}
+      {/* ═════════════════════════════════════���════════ */}
       {(modalType === "post_announcement" || modalType === "edit_announcement") && (
         <div
           style={{

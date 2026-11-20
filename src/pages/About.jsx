@@ -23,7 +23,7 @@ export default function About({ onOpenDemo }) {
   const founder = content.founder || {};
   const faculty = content.faculty || {};
   const contact = content.contact || {};
-  const facultyDomains = (faculty.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+  const facultyDomains = (faculty.webDomains || "Full Stack Web Development, Web Development")
     .split(",")
     .map((domain) => domain.trim())
     .filter(Boolean);
@@ -131,7 +131,7 @@ export default function About({ onOpenDemo }) {
                 {about.mission || "For decades, students in regional centers outside major metro hubs were faced with a frustrating dilemma: travel long distances to metropolitan institutes, or purchase pre-recorded online courses that offer zero accountability and no real feedback."}
               </p>
               <p style={{ fontSize: "1.02rem", color: "var(--color-text-secondary)", lineHeight: "1.8", marginBottom: "24px" }}>
-                {about.vision || "Hunar was established right on Ferozpur Road in Mullanpur Dakha, Ludhiana, to deliver world-class, production-grade training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios."}
+                {about.vision || "Hunar was established in Mullanpur Dakha, Ludhiana, to deliver practical, career-focused training locally. We replaced passive lectures with individual computer workstations, theoretical slide decks with live client ad accounts, and generic certificates with publicly verifiable portfolios."}
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "28px" }}>
@@ -163,7 +163,7 @@ export default function About({ onOpenDemo }) {
                 backgroundColor: "var(--color-surface-secondary)"
               }}>
                 <img
-                  src="/hunar_modern_lab.jpg"
+                  src="/assets/hunar_modern_lab.jpg"
                   alt="Hunar The Skill House Lab Workstation"
                   style={{ width: "100%", height: "auto", display: "block" }}
                 />
@@ -239,7 +239,7 @@ export default function About({ onOpenDemo }) {
                   boxShadow: "var(--shadow-lg)"
                 }}>
                 <img
-                  src="/founder-portrait-dark.jpg"
+                  src="/assets/founder-portrait-dark.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
                   className="owner-portrait-img"
                   style={{
@@ -443,7 +443,7 @@ export default function About({ onOpenDemo }) {
             gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: "28px"
           }}>
-            {/* Teacher: Paramjit Singh */}
+            {/* Teacher: Mr. Umang Shukla */}
             <div style={{
               backgroundColor: "var(--color-surface-secondary)",
               border: "1px solid var(--color-border)",
@@ -467,14 +467,14 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  {(faculty.leadInstructor || "Paramjit Singh").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
+                  {(faculty.webInstructor || "Ms. Nishika").split(/\s+/).map((part) => part[0]).join("").slice(0, 2)}
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    {faculty.leadInstructor || "Paramjit Singh"}
+                    {faculty.webInstructor || "Ms. Nishika"}
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
-                    {faculty.title || "Teacher"}
+                    {faculty.webTitle || "Teacher — Full Stack & Web Development"}
                   </div>
                 </div>
               </div>
@@ -499,7 +499,7 @@ export default function About({ onOpenDemo }) {
                 marginBottom: "20px",
                 flex: 1
               }}>
-                {faculty.pedagogy || "Leads curriculum delivery across full-stack web engineering, practical AI automation workflows, and performance-based digital marketing campaigns with real client ad budgets."}
+                {faculty.webPedagogy || "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work."}
               </p>
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -513,7 +513,7 @@ export default function About({ onOpenDemo }) {
               </div>
             </div>
 
-            {/* Mentor: Lakshay Sharma */}
+            {/* Mentor: Mr. Umang Shukla */}
             <div style={{
               backgroundColor: "var(--color-surface-secondary)",
               border: "1px solid var(--color-border)",
@@ -537,14 +537,14 @@ export default function About({ onOpenDemo }) {
                   color: "var(--color-brand-text)",
                   flexShrink: 0
                 }}>
-                  LS
+                  US
                 </div>
                 <div>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2px" }}>
-                    Lakshay Sharma
+                    Mr. Umang Shukla
                   </h3>
                   <div style={{ fontSize: "0.85rem", color: "var(--color-brand-text)", fontWeight: "700" }}>
-                    Creative &amp; Motion Mentor
+                    Teacher — Graphic Design &amp; Video Editing
                   </div>
                 </div>
               </div>
@@ -570,7 +570,7 @@ export default function About({ onOpenDemo }) {
                 marginBottom: "20px",
                 flex: 1
               }}>
-                Specializes in commercial visual communication, Premiere Pro timeline editing, After Effects typography, brand identity guidelines, and AI image generation.
+                Specializes in commercial visual communication, Premiere Pro timeline editing, After Effects typography, Photoshop, and brand identity systems.
               </p>
 
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -613,7 +613,7 @@ export default function About({ onOpenDemo }) {
                 boxShadow: "var(--shadow-sm)"
               }}>
               <img
-                src="/hunar_modern_lab.jpg"
+                src="/assets/hunar_modern_lab.jpg"
                 alt="Hunar Lab Workstations"
                 className="course-preview-img"
                 style={{ width: "100%", height: "280px", objectFit: "cover" }}
@@ -635,7 +635,7 @@ export default function About({ onOpenDemo }) {
                 boxShadow: "var(--shadow-sm)"
               }}>
               <img
-                src="/hunar_mentor_review.jpg"
+                src="/assets/hunar_mentor_review.jpg"
                 alt="Hunar 1-on-1 Mentorship Review"
                 className="course-preview-img"
                 style={{ width: "100%", height: "280px", objectFit: "cover" }}

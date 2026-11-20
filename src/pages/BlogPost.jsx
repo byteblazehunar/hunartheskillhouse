@@ -1,20 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
-import { Calendar, Clock, ArrowLeft, User, Share2, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { blogData } from "../data/blogData";
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function BlogPost({ onOpenDemo }) {
   const { slug } = useParams();
-  const post = blogData.find((p) => p.slug === slug);
+  const { content } = useSiteContent();
+  const [readingProgress, setReadingProgress] = useState(0);
+  const posts = Array.isArray(content.blog) && content.blog.length ? content.blog : blogData;
+  const post = posts.find((p) => p.slug === slug);
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      setReadingProgress(scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0);
+    };
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    return () => window.removeEventListener("scroll", updateProgress);
+  }, [slug]);
 
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
 
-  const otherPosts = blogData.filter((p) => p.slug !== slug).slice(0, 2);
-
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+      <div aria-hidden="true" style={{ position: "fixed", inset: "0 0 auto", height: "4px", background: "var(--color-brand)", transform: `scaleX(${readingProgress / 100})`, transformOrigin: "left", zIndex: 100 }} />
       {/* Header */}
       <section className="section-tight" style={{
         backgroundColor: "var(--color-surface-secondary)",
@@ -76,9 +89,9 @@ export default function BlogPost({ onOpenDemo }) {
           </div>
 
           {/* Paragraphs */}
-          <div style={{
+          <div className="blog-article-body" style={{
             color: "var(--color-text-primary)",
-            fontSize: "1.1rem",
+            fontSize: "clamp(1rem, 1.15vw, 1.12rem)",
             lineHeight: "1.9",
             display: "flex",
             flexDirection: "column",
@@ -86,6 +99,12 @@ export default function BlogPost({ onOpenDemo }) {
           }}>
             {post.content.map((para, idx) => (
               <p key={idx}>{para}</p>
+            ))}
+          </div>
+
+          <div aria-label="Article tags" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "28px" }}>
+            {(post.tags || []).map((tag) => (
+              <span key={tag} className="badge" style={{ color: "var(--color-text-secondary)" }}>{tag}</span>
             ))}
           </div>
 

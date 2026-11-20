@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
               <p style={{ color: "var(--color-text-secondary)" }}>
                 Hunar The Skill House ("we", "our", or "us"), an initiative powered by Byteblaze Technologies,
                 is dedicated to protecting the privacy and personal data of our students, website visitors, and program enrollees.
-                This Privacy Policy outlines how we collect, store, and utilize your information when you access https://www.hunar.courses
+                This Privacy Policy outlines how we collect, store, and utilize your information when you access https://hunar.courses
                 or interact with our campus representatives in Mullanpur Dakha, Ludhiana.
               </p>
             </section>
@@ -94,7 +94,7 @@ export default function PrivacyPolicy() {
                 If you have questions regarding this privacy policy or wish to request data correction, contact:
                 <br />
                 <strong>Registrar, Hunar The Skill House</strong><br />
-                First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana – 141101<br />
+                Opposite Bus Stand, Mullanpur Dakha, First Floor, Desraj Fruit and Juice Bar Complex, Ludhiana, Punjab 141101<br />
                 Email: byteblaze.hunar@gmail.com | Phone: +91 94637-95116
               </p>
             </section>

@@ -195,7 +195,7 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-              {[
+              {(Array.isArray(content.navigation?.footer) && content.navigation.footer.length ? content.navigation.footer.map((link) => ({ to: link.href, label: link.label })) : [
                 { to: "/", label: "Home" },
                 { to: "/courses", label: "All Programs" },
                 { to: "/workshop", label: "30 Days AI Workshop" },
@@ -206,7 +206,7 @@ export default function Footer() {
                 { to: "/contact", label: "Contact" },
                 { to: "/enroll", label: "Enroll" },
                 { to: "/verify", label: "Verify Certificate" }
-              ].map((item) => (
+              ]).map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}

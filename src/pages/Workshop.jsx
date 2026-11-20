@@ -211,11 +211,11 @@ export default function Workshop({ onOpenDemo }) {
                 Lead Workshop Instructor
               </div>
               <h3 style={{ fontSize: "1.3rem", fontWeight: "700", color: "var(--color-text-primary)", marginBottom: "4px" }}>
-                Paramjit Singh
+                Mr. Umang Shukla
               </h3>
               <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", lineHeight: "1.6" }}>
-                Teacher at Hunar The Skill House, leading Artificial Intelligence (AI), Web Development, and Digital Marketing programs.
-                Guiding students through daily hands-on prompt frameworks, custom GPTs, and production AI tools.
+Teacher at Hunar The Skill House, leading Artificial Intelligence and Digital Marketing programs. Ms. Nishika leads Full Stack and Web Development.
+  Guiding students through hands-on creative and production workflows.
               </p>
             </div>
           </div>

@@ -75,6 +75,12 @@ export default function StudentPortal() {
       });
   }, [navigate]);
 
+  const handleDownloadReportCard = () => {
+    const report = `<html><head><title>${profile?.studentId || "student"} report card</title><style>body{font-family:Arial;padding:48px;color:#111}main{border:4px solid #eddb19;padding:32px}table{width:100%;border-collapse:collapse}td{padding:12px;border-bottom:1px solid #ddd}</style></head><body><main><h1>Hunar The Skill House</h1><h2>Academic Report Card</h2><table><tr><td>Student</td><td>${profile?.name || ""}</td></tr><tr><td>Student ID</td><td>${profile?.studentId || ""}</td></tr><tr><td>Course</td><td>${profile?.course || ""}</td></tr><tr><td>Batch</td><td>${profile?.batch || ""}</td></tr><tr><td>Email</td><td>${profile?.email || ""}</td></tr></table></main></body></html>`;
+    const url = URL.createObjectURL(new Blob([report], { type: "text/html" }));
+    const link = document.createElement("a"); link.href = url; link.download = `${profile?.studentId || "student"}-report-card.html`; link.click(); URL.revokeObjectURL(url);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("hunar_token");
     localStorage.removeItem("hunar_user");
@@ -203,7 +209,7 @@ export default function StudentPortal() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ textAlign: "right", display: "none", sm: "block" }}>
+              <div className="student-profile-summary" style={{ textAlign: "right" }}>
               <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--color-text-primary)" }}>
                 {profile.name}
               </div>
@@ -614,7 +620,7 @@ export default function StudentPortal() {
                   <div style={{ display: "flex", gap: "18px", fontSize: "0.82rem", color: "var(--color-text-muted)", marginBottom: "16px", flexWrap: "wrap" }}>
                     <span>Deadline: <strong>{new Date(assign.deadline).toLocaleDateString()}</strong></span>
                     <span>Max Marks: <strong>{assign.maxMarks || 100}</strong></span>
-                    <span>Instructor: <strong>{assign.assignedBy || "Paramjit Singh"}</strong></span>
+                    <span>Instructor: <strong>{assign.assignedBy || "Mr. Umang Shukla"}</strong></span>
                   </div>
 
                   {/* Submission Form / Status */}
@@ -770,6 +776,11 @@ export default function StudentPortal() {
                 <span style={{ color: "var(--color-text-muted)", fontSize: "0.8rem", display: "block" }}>Campus Location</span>
                 <strong>Mullanpur Dakha, Ludhiana</strong>
               </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "24px" }}>
+              <button className="btn btn-primary" type="button" onClick={handleDownloadReportCard}><FileText size={16} /> Download report card</button>
+              <button className="btn btn-outline" type="button" onClick={() => navigate("/verify")}><ShieldCheck size={16} /> Verify certificate</button>
             </div>
 
             <div style={{

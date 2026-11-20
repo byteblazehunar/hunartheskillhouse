@@ -3,12 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
 import { siteConfig } from "../data/siteConfig";
 import { useTheme } from "../context/ThemeContext";
+import { useSiteContent } from "../context/SiteContentContext";
 
 export default function Navbar({ onOpenDemo }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { content } = useSiteContent();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -47,18 +49,14 @@ export default function Navbar({ onOpenDemo }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileMenuOpen]);
 
-  const navLinks = [
-    { label: "Home", path: "/" },
-    { label: "Courses", path: "/courses" },
-    { label: "AI Workshop", path: "/workshop" },
-    { label: "About", path: "/about" },
-    { label: "Testimonials", path: "/testimonials" },
-    { label: "FAQ", path: "/faq" },
-    { label: "Blog", path: "/blog" },
-    { label: "Verify", path: "/verify" },
-    { label: "Contact", path: "/contact" },
-    { label: "Careers", path: "/careers" }
+  const defaultNavLinks = [
+    { label: "Home", path: "/" }, { label: "Courses", path: "/courses" }, { label: "AI Workshop", path: "/workshop" },
+    { label: "About", path: "/about" }, { label: "Testimonials", path: "/testimonials" }, { label: "FAQ", path: "/faq" },
+    { label: "Blog", path: "/blog" }, { label: "Verify", path: "/verify" }, { label: "Contact", path: "/contact" }, { label: "Careers", path: "/careers" }
   ];
+  const navLinks = Array.isArray(content.navigation?.header) && content.navigation.header.length
+    ? content.navigation.header.map((link) => ({ label: link.label, path: link.href }))
+    : defaultNavLinks;
 
   const isActive = (path) => {
     if (path === "/") return location.pathname === "/";
@@ -240,6 +238,7 @@ export default function Navbar({ onOpenDemo }) {
               }}
               className="mobile-menu-btn"
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-panel"
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -276,14 +275,15 @@ export default function Navbar({ onOpenDemo }) {
           onClick={() => setMobileMenuOpen(false)}
         >
           <div
+            id="mobile-navigation-panel"
             className="animate-fade-in"
             data-lenis-prevent
             style={{
               backgroundColor: "var(--color-surface)",
               borderBottom: "1px solid var(--color-border)",
               padding: "16px var(--container-pad) 28px",
-              marginTop: "72px",
-              maxHeight: "calc(100vh - 72px)",
+            marginTop: "clamp(68px, 10vw, 84px)",
+            maxHeight: "calc(100dvh - clamp(68px, 10vw, 84px))",
               overflowY: "auto",
               boxShadow: "var(--shadow-xl)",
               display: "flex",
