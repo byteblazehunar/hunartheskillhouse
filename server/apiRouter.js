@@ -1,4 +1,7 @@
 import express from "express";
+import { Readable } from "node:stream";
+import { del as deleteBlob, get as getBlob } from "@vercel/blob";
+import { handleUpload } from "@vercel/blob/client";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -1826,6 +1829,7 @@ function normalizeCourseInput(body = {}) {
   for (const field of ["curriculum", "projects"]) {
     if (Array.isArray(body[field])) course[field] = body[field];
   }
+  if (Array.isArray(body.resources)) course.resources = body.resources;
   if (body.mentor && typeof body.mentor === "object" && !Array.isArray(body.mentor)) {
     course.mentor = body.mentor;
   }
@@ -1834,6 +1838,108 @@ function normalizeCourseInput(body = {}) {
   if (Number.isFinite(Number(body.reviewsCount))) course.reviewsCount = Number(body.reviewsCount);
   return course;
 }
+
+router.post("/courses/blob-upload", authenticate, requireRole(["admin"]), async (req, res) => {
+  try {
+    const result = await handleUpload({
+      request: req,
+      body: req.body,
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        let payload;
+        try {
+          payload = JSON.parse(clientPayload || "{}");
+        } catch {
+          throw new Error("Invalid upload metadata.");
+        }
+        const courseId = String(payload.courseId || "");
+        const validCourseId = /^[a-zA-Z0-9_-]{1,160}$/.test(courseId);
+        if (!validCourseId || !pathname.startsWith(`courses/${courseId}/`)) {
+          throw new Error("Choose a valid course before uploading.");
+        }
+        return {
+          allowedContentTypes: ["video/mp4", "video/webm", "video/quicktime", "application/pdf", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+          maximumSizeInBytes: 2 * 1024 * 1024 * 1024,
+          addRandomSuffix: true,
+          tokenPayload: JSON.stringify({ courseId })
+        };
+      }
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("[Course Resource Upload Error]:", error);
+    res.status(400).json({ success: false, message: error.message || "Unable to authorize upload." });
+  }
+});
+
+router.post("/courses/:id/resources", authenticate, requireRole(["admin"]), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { pathname, url, filename, contentType, size, kind } = req.body || {};
+    if (!pathname || !url || !filename || !pathname.startsWith(`courses/${id}/`) || !url.includes(".private.blob.vercel-storage.com/")) {
+      return res.status(400).json({ success: false, message: "Invalid private course resource." });
+    }
+    const allCourses = await getAllCourses();
+    const course = allCourses.find((item) => String(item.slug || item._id || item.id) === id);
+    const courseTitle = String(req.body.courseTitle || course?.title || "").trim();
+    const courseCategory = String(req.body.courseCategory || course?.category || "").trim();
+    const courseDescription = String(req.body.courseDescription || course?.description || course?.shortDesc || "").trim();
+    if (!courseTitle || !courseCategory || !courseDescription) {
+      return res.status(400).json({ success: false, message: "Course details are required to save this resource." });
+    }
+    const resource = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      pathname,
+      url,
+      filename: String(filename).slice(0, 180),
+      contentType: String(contentType || "application/octet-stream").slice(0, 120),
+      size: Number.isFinite(Number(size)) ? Number(size) : 0,
+      kind: kind === "live" ? "live" : "recorded",
+      createdAt: new Date().toISOString()
+    };
+    const updated = await updateCourse(id, {
+      ...(course ? {} : { title: courseTitle, category: courseCategory, description: courseDescription }),
+      resources: [...(course?.resources || []), resource]
+    });
+    res.status(201).json({ success: true, resource, course: updated });
+  } catch (error) {
+    console.error("[Course Resource Save Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to save course resource." });
+  }
+});
+
+router.get("/courses/:id/resources/:resourceId/download", authenticate, requireRole(["admin"]), async (req, res) => {
+  try {
+    const allCourses = await getAllCourses();
+    const course = allCourses.find((item) => String(item.slug || item._id || item.id) === req.params.id);
+    const resource = course?.resources?.find((item) => item.id === req.params.resourceId);
+    if (!resource?.pathname) return res.status(404).json({ success: false, message: "Resource not found." });
+    const result = await getBlob(resource.pathname, { access: "private" });
+    if (!result) return res.status(404).json({ success: false, message: "Resource not found." });
+    res.setHeader("Content-Type", result.blob.contentType || "application/octet-stream");
+    res.setHeader("Content-Disposition", `attachment; filename="${String(resource.filename).replace(/[\\"\\r\\n]/g, "_")}"`);
+    res.setHeader("Cache-Control", "private, no-store");
+    Readable.fromWeb(result.stream).pipe(res);
+  } catch (error) {
+    console.error("[Course Resource Download Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to download course resource." });
+  }
+});
+
+router.delete("/courses/:id/resources/:resourceId", authenticate, requireRole(["admin"]), async (req, res) => {
+  try {
+    const allCourses = await getAllCourses();
+    const course = allCourses.find((item) => String(item.slug || item._id || item.id) === req.params.id);
+    const resource = course?.resources?.find((item) => item.id === req.params.resourceId);
+    if (!resource) return res.status(404).json({ success: false, message: "Resource not found." });
+    await deleteBlob(resource.url);
+    const resources = course.resources.filter((item) => item.id !== req.params.resourceId);
+    const updated = await updateCourse(req.params.id, { resources });
+    res.json({ success: true, course: updated });
+  } catch (error) {
+    console.error("[Course Resource Delete Error]:", error);
+    res.status(500).json({ success: false, message: "Unable to delete course resource." });
+  }
+});
 
 router.get("/courses", async (req, res) => {
   const courses = await getAllCourses();

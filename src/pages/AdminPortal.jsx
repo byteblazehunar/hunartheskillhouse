@@ -61,6 +61,7 @@ import CertificateManager from "../components/admin/CertificateManager";
 import SitePagesManager from "../components/admin/SitePagesManager";
 import ExtraSubviews from "../components/admin/ExtraSubviews";
 import RoleManagement from "../components/admin/RoleManagement";
+import CourseResourceManager from "../components/admin/CourseResourceManager";
 import usePortalTab from "../hooks/usePortalTab";
 import { coursesData } from "../data/coursesData";
 
@@ -98,7 +99,8 @@ function courseFormFromRecord(course = {}) {
     tools: Array.isArray(course.tools) ? course.tools.join("\n") : "",
     curriculum: JSON.stringify(course.curriculum || [], null, 2),
     projects: JSON.stringify(course.projects || [], null, 2),
-    careerRoles: Array.isArray(course.careerRoles) ? course.careerRoles.join("\n") : ""
+    careerRoles: Array.isArray(course.careerRoles) ? course.careerRoles.join("\n") : "",
+    resources: Array.isArray(course.resources) ? course.resources : []
   };
 }
 
@@ -139,7 +141,8 @@ function coursePayloadFromForm(form) {
     tools: splitLines(form.tools),
     curriculum: parseJsonArray(form.curriculum, "Curriculum"),
     projects: parseJsonArray(form.projects, "Projects"),
-    careerRoles: splitLines(form.careerRoles)
+    careerRoles: splitLines(form.careerRoles),
+    resources: Array.isArray(form.resources) ? form.resources : []
   };
 }
 
@@ -293,7 +296,8 @@ export default function AdminPortal() {
     tools: "",
     curriculum: "[]",
     projects: "[]",
-    careerRoles: ""
+    careerRoles: "",
+    resources: []
   });
 
   const [batchForm, setBatchForm] = useState({
@@ -5718,6 +5722,17 @@ export default function AdminPortal() {
                   ))}
                 </div>
               </details>
+
+              {modalType === "edit_course" && (
+                <CourseResourceManager
+                  courseId={editingItem?.slug || editingItem?._id || editingItem?.id}
+                  course={courseForm}
+                  resources={courseForm.resources}
+                  onResourcesChange={(resources) => setCourseForm((current) => ({ ...current, resources }))}
+                  getAuthHeaders={getAuthHeaders}
+                  showToast={showToast}
+                />
+              )}
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "12px" }}>
                 <button
