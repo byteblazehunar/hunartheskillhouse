@@ -1214,6 +1214,47 @@ body {
   overflow-x: hidden;
 }
 
+/* CRM workspace refresh */
+.admin-control-center {
+  --color-background: #101413;
+  --color-bg: #101413;
+  --color-surface: #171d1a;
+  --color-surface-secondary: #1d2521;
+  --color-border: #2b3731;
+  --color-text-primary: #e8efeb;
+  --color-text-secondary: #9baaa2;
+  --color-text-muted: #718078;
+  --color-brand: #b4f36b;
+  --color-brand-hover: #c8ff86;
+  --color-brand-on: #15200e;
+  --color-brand-text: #b4f36b;
+  --color-success: #72d7a0;
+  background: #101413 !important;
+  color: #e8efeb !important;
+}
+.admin-control-center .admin-sidebar { background: #141a17 !important; border-color: #29342e !important; }
+.admin-control-center .admin-sidebar > div:first-child { background: #141a17; }
+.admin-control-center header { background: rgba(16,20,19,.92) !important; border-color: #29342e !important; backdrop-filter: blur(18px); }
+.admin-control-center .hunar-card,
+.admin-control-center [class*="card"] { border-color: #2b3731; }
+.admin-control-center .admin-main-body { background: #101413; }
+.admin-control-center button:hover { filter: brightness(1.08); }
+.admin-control-center .admin-crm-welcome {
+  position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  padding: clamp(24px, 4vw, 42px); border: 1px solid #34463a; border-radius: 22px;
+  background: radial-gradient(ellipse at 92% 8%, rgba(180,243,107,.16), transparent 38%), linear-gradient(125deg,#1c2921,#17201c 58%,#19241c);
+}
+.admin-control-center .admin-crm-welcome::after { content:""; position:absolute; width:280px; height:280px; right:7%; top:-190px; border:1px solid rgba(180,243,107,.18); border-radius:50%; box-shadow:0 0 0 26px rgba(180,243,107,.025),0 0 0 54px rgba(180,243,107,.02); pointer-events:none; }
+.admin-control-center .admin-crm-welcome h2 { color:#f2f7f3; font-size:clamp(1.5rem,3vw,2.3rem); margin:8px 0; }
+.admin-control-center .admin-crm-welcome p { color:#9eaea4; margin:0; }
+.admin-control-center .crm-eyebrow { color:#b4f36b; font-size:.72rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+.admin-control-center .crm-address { color:#c3cec7; font-size:.78rem; max-width:300px; text-align:right; }
+@media(max-width:700px) {
+ .admin-control-center .admin-crm-welcome { align-items:flex-start; flex-direction:column; }
+ .admin-control-center .crm-address { text-align:left; }
+ .admin-control-center .admin-main-body { padding:16px !important; }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    SEO PRERENDER — Hidden from visual view, visible to crawlers
    (React replaces this on hydration; style ensures no flash)

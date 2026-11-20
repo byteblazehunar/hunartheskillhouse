@@ -1620,11 +1620,12 @@ export default function AdminPortal() {
       style={{
         display: "flex",
         minHeight: "100vh",
-        backgroundColor: "var(--color-background)",
-        color: "var(--color-text-primary)",
+        backgroundColor: "#101413",
+        color: "#e9efeb",
         fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
         position: "relative"
       }}
+      data-crm-shell="true"
     >
       {/* ══════════════════════════════════════════════ */}
       {/* MOBILE SIDEBAR OVERLAY BACKDROP */}
@@ -2028,7 +2029,7 @@ export default function AdminPortal() {
               }}
             >
               <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981" }} />
-              <span>Mullanpur Dakha</span>
+              <span>Desraj Complex · Ludhiana</span>
             </div>
           </div>
         </header>
@@ -2040,6 +2041,14 @@ export default function AdminPortal() {
           {/* ══════════════════════════════════════════════ */}
           {activeTab === "overview" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <section className="admin-crm-welcome" aria-labelledby="crm-welcome-title">
+                <div>
+                  <span className="crm-eyebrow">Hunar · Institute CRM</span>
+                  <h2 id="crm-welcome-title">Good to see you, {adminUser?.name?.split(" ")[0] || "Admin"}</h2>
+                  <p>Admissions, academics and student success — all in one place.</p>
+                </div>
+                <address className="crm-address" style={{ fontStyle: "normal" }}>Opposite Bus Stand, Mullanpur Dakha<br />First Floor, Desraj Fruit and Juice Bar Complex<br />Ludhiana, Punjab 141101</address>
+              </section>
               {/* Metric Stat Cards */}
               <div
                 style={{
@@ -4254,7 +4263,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* ══════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════���══ */}
           {/* TAB 12: REPORTS & EXPORTS */}
           {/* ══════════════════════════════════════════════ */}
           {activeTab === "reports" && (
