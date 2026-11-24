@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
-  Star,
-  Users,
-  ShieldCheck
+  Star
 } from "lucide-react";
 import { courseCategories } from "../data/coursesData";
 import { placementsData } from "../data/placementsData";
@@ -27,12 +24,7 @@ export default function Home({ onOpenDemo }) {
   const { content } = useSiteContent();
   const { courses } = usePublicCatalog();
   const homepage = content.homepage || {};
-  const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : [
-    { label: "Industry Programs", value: "12+" },
-    { label: "Students Trained", value: "1,000+" },
-    { label: "Internship Support", value: "100%" },
-    { label: "Placement Rating", value: "4.9/5" }
-  ];
+  const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : siteConfig.stats;
 
   const filteredCourses =
     activeCategory === "All"
@@ -54,7 +46,7 @@ export default function Home({ onOpenDemo }) {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
+            gridTemplateColumns: "minmax(0, 1.08fr) minmax(280px, 0.92fr)",
             gap: "clamp(36px, 5vw, 64px)",
             alignItems: "center"
           }} className="hero-grid">
@@ -84,7 +76,7 @@ export default function Home({ onOpenDemo }) {
                   color: "var(--color-text-primary)"
                 }}
               >
-                {homepage.heroTitle || "Practical AI & Technology Courses in Mullanpur Dakha."}
+                {homepage.heroTitle || "AI, Digital Marketing & Web Development Courses in Mullanpur Dakha."}
               </motion.h1>
 
               {/* Subtitle — requirement 1: delay 0.15s */}
@@ -100,7 +92,7 @@ export default function Home({ onOpenDemo }) {
                   maxWidth: "540px"
                 }}
               >
-                {homepage.heroSubtitle || "Mullanpur Dakha's premier institute for job-ready skills. Experience 100% practical workstation labs with live ₹10,000 advertising budgets, real client repositories, and dedicated placement support across India."}
+                {homepage.heroSubtitle || "Build practical digital skills through guided projects and workstation-based learning at Hunar The Skill House in Mullanpur Dakha, Ludhiana. Explore programs and ask about a free demo."}
               </motion.p>
 
               {/* CTAs — requirement 1: delay 0.25s */}
@@ -163,11 +155,11 @@ export default function Home({ onOpenDemo }) {
             <div className="hero-media" style={{ display: "flex", justifyContent: "center" }}>
               <div className="hero-founder-container" style={{ width: "min(100%, 390px)", position: "relative" }}>
                 <img
-                  src="/founder-portrait-light.jpg"
+                  src="/assets/founder-portrait-light.jpg"
                   alt="Gurlove Malhi, Founder of Hunar The Skill House"
                   style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center top", borderRadius: "var(--radius-xl)", display: "block", border: "1px solid var(--color-border)", boxShadow: "var(--shadow-lg)" }}
                 />
-                <div className="hero-founder-badge" style={{ position: "absolute", left: "18px", right: "18px", bottom: "18px", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
+                <div className="hero-founder-badge" style={{ position: "absolute", left: "clamp(10px, 3vw, 18px)", right: "clamp(10px, 3vw, 18px)", bottom: "clamp(10px, 3vw, 18px)", padding: "14px 18px", borderRadius: "var(--radius-md)", background: "rgba(28, 29, 25, 0.9)", color: "#F5F3E9", backdropFilter: "blur(8px)" }}>
                   <strong style={{ display: "block", fontSize: "1rem" }}>Gurlove Malhi</strong>
                   <span style={{ fontSize: "0.78rem", color: "#D9D7CB" }}>Founder, Hunar The Skill House</span>
                 </div>
@@ -244,7 +236,7 @@ export default function Home({ onOpenDemo }) {
           }}>
             <div>
               <div className="eyebrow" style={{ marginBottom: "8px" }}>
-                Career-Focused Curriculum
+                Career-Focused Programs
               </div>
               <h2>Job-Ready Programs</h2>
               <p style={{ marginTop: "6px" }}>
@@ -326,7 +318,7 @@ export default function Home({ onOpenDemo }) {
                   }}
                 >
                   <img
-                    src={featuredCourse.image || "/hunar_modern_lab.jpg"}
+                    src={featuredCourse.image || "/assets/hunar_modern_lab.jpg"}
                     alt={featuredCourse.title}
                     className="course-preview-img"
                     style={{ width: "100%", height: "auto", display: "block" }}
@@ -404,24 +396,15 @@ export default function Home({ onOpenDemo }) {
                   {featuredCourse.tagline}
                 </p>
 
-                <div style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  marginBottom: "28px"
+                <p style={{
+                  fontSize: "0.92rem",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: "1.65",
+                  marginBottom: "28px",
+                  maxWidth: "58ch"
                 }}>
-                  {featuredCourse.highlights.slice(0, 5).map((point, i) => (
-                    <div key={i} style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "8px",
-                      fontSize: "0.92rem"
-                    }}>
-                      <CheckCircle2 size={16} color="var(--color-brand-text)" style={{ flexShrink: 0, marginTop: "3px" }} />
-                      <span style={{ color: "var(--color-text-primary)" }}>{point}</span>
-                    </div>
-                  ))}
-                </div>
+                  {featuredCourse.shortDesc || "A practical, mentor-led program designed to build job-ready skills."}
+                </p>
 
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <button
@@ -432,7 +415,7 @@ export default function Home({ onOpenDemo }) {
                     <ArrowRight size={16} />
                   </button>
                   <Link to={`/course/${featuredCourse.slug}`} className="btn btn-outline">
-                    View Full Syllabus
+                    View Program Details
                   </Link>
                 </div>
               </div>
@@ -481,12 +464,11 @@ export default function Home({ onOpenDemo }) {
                   lineHeight: "1.7",
                   marginBottom: "24px"
                 }}>
-                  Master 29 daily hands-on AI modules: Prompt Engineering, HeyGen avatars,
-                  Claude coding workflows, Make.com automations, and custom AI agents.
+        A practical, mentor-led introduction to modern AI tools and workflows for everyday work.
                 </p>
                 <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                   <Link to="/workshop" className="btn btn-primary">
-                    Explore Modules
+                    View Workshop
                     <ArrowRight size={16} />
                   </Link>
                   <button
@@ -715,7 +697,7 @@ export default function Home({ onOpenDemo }) {
         </div>
       </section>
 
-      {/* ═══ MENTORS — Editorial, not card-based ═════════════════════ */}
+      {/* ══��� MENTORS — Editorial, not card-based ════��═════���══════��═══ */}
       <section className="section bg-section-alt" style={{
         borderTop: "1px solid var(--color-border)"
       }}>
@@ -758,10 +740,10 @@ export default function Home({ onOpenDemo }) {
                     color: "var(--color-brand-text)",
                     marginBottom: "16px"
                   }}>
-                    PS
+                    MN
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    {content.faculty?.leadInstructor || "Paramjit Singh"}
+                    {content.faculty?.webInstructor || "Ms. Nishika"}
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",
@@ -769,7 +751,7 @@ export default function Home({ onOpenDemo }) {
                     fontSize: "0.82rem",
                     marginBottom: "10px"
                   }}>
-                    {content.faculty?.domains || "Teacher — Web Dev, AI & Digital Marketing"}
+                    {content.faculty?.webTitle || "Teacher — Full Stack & Web Development"}
                   </div>
                   <p style={{
                     fontSize: "0.88rem",
@@ -777,10 +759,10 @@ export default function Home({ onOpenDemo }) {
                     lineHeight: "1.65",
                     marginBottom: "12px"
                   }}>
-                    {content.faculty?.pedagogy || "Lead faculty member dedicated to hands-on student mastery across Web Development, Artificial Intelligence (AI), and Digital Marketing."}
+                    {content.faculty?.webPedagogy || "Guides students through full stack and web development with hands-on projects, code reviews, and practical portfolio work."}
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {(content.faculty?.domains || "Web Development, Artificial Intelligence (AI), Digital Marketing")
+                    {(content.faculty?.webDomains || "Full Stack Web Development, Web Development")
                       .split(",")
                       .map((domain) => domain.trim())
                       .filter(Boolean)
@@ -813,10 +795,10 @@ export default function Home({ onOpenDemo }) {
                     color: "var(--color-brand-text)",
                     marginBottom: "16px"
                   }}>
-                    LS
+                    US
                   </div>
                   <h3 style={{ fontSize: "1.15rem", marginBottom: "4px" }}>
-                    Lakshay Sharma
+                    Mr. Umang Shukla
                   </h3>
                   <div style={{
                     color: "var(--color-brand-text)",
@@ -824,15 +806,14 @@ export default function Home({ onOpenDemo }) {
                     fontSize: "0.82rem",
                     marginBottom: "10px"
                   }}>
-                    Lead Creative & Motion Graphics Mentor
+                    Teacher — Graphic Design & Video Editing
                   </div>
                   <p style={{
                     fontSize: "0.88rem",
                     color: "var(--color-text-secondary)",
                     lineHeight: "1.65"
                   }}>
-                    Specialist in brand identity, video editing, After Effects typography,
-                    and AI visual workflows for commercial campaigns.
+                    Specialist in brand identity, Photoshop, video editing, and After Effects typography for commercial campaigns.
                   </p>
                 </div>
               </ScrollItem>

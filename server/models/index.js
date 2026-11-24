@@ -106,7 +106,8 @@ const CourseSchema = new mongoose.Schema(
     tools: [{ type: String }],
     curriculum: [{ type: mongoose.Schema.Types.Mixed }],
     projects: [{ type: mongoose.Schema.Types.Mixed }],
-    careerRoles: [{ type: String }]
+    careerRoles: [{ type: String }],
+    resources: [{ type: mongoose.Schema.Types.Mixed }]
   },
   { timestamps: true }
 );

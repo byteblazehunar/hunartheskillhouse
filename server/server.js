@@ -36,9 +36,13 @@ app.use(
         frameAncestors: ["'none'"],
         frameSrc: ["'self'", "https://docs.google.com", "https://forms.google.com"],
         baseUri: ["'self'"],
-        formAction: ["'self'"]
+        formAction: ["'self'"],
+        upgradeInsecureRequests: []
       }
     },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    noSniff: true,
+    frameguard: { action: "sameorigin" },
     crossOriginEmbedderPolicy: false,
     hsts: process.env.NODE_ENV === "production"
       ? { maxAge: 31536000, includeSubDomains: true, preload: true }

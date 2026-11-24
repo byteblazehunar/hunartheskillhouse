@@ -1,7 +1,7 @@
 # Hunar The Skill House — Full LMS, Security & Technical Reference
 
-Canonical website: https://www.hunar.courses/
-Short overview: https://www.hunar.courses/llms.txt
+Canonical website: https://hunar.courses/
+Short overview: https://hunar.courses/llms.txt
 Last updated: 2026-10-16
 
 ---
@@ -13,7 +13,7 @@ Last updated: 2026-10-16
 - Location: First Floor, UCO Bank, Ferozpur Road, Mullanpur Dakha, Ludhiana, Punjab 141101, India
 - Phone: +91 94637-95116
 - Email: byteblaze.hunar@gmail.com
-- Website: https://www.hunar.courses/
+- Website: https://hunar.courses/
 - Founder: Gurlove Malhi
 - Accreditations: ISO 9001:2015, DPIIT #startupindia, MSME Registered
 
@@ -286,7 +286,7 @@ Custom roles can be created by admin with granular permissions from the permissi
 ### Security Headers (Helmet / Express, API responses)
 - Content-Security-Policy (enabled, configured per environment)
 - HSTS (production only, includeSubDomains + preload)
-- CORS: locked to https://hunar.courses and https://www.hunar.courses
+- CORS: locked to https://hunar.courses and https://hunar.courses
 
 ### Known Security Fixes Applied
 - Admin email no longer hardcoded in authMiddleware — reads from INITIAL_ADMIN_EMAIL env var
@@ -384,7 +384,7 @@ SMTP_PASS                   Google App Password
 SMTP_FROM                   Display name + email
 INQUIRY_NOTIFICATION_EMAIL  Where enquiry emails go
 NODE_ENV                    production
-ALLOWED_ORIGINS             https://hunar.courses,https://www.hunar.courses
+ALLOWED_ORIGINS             https://hunar.courses,https://hunar.courses
 ```
 
 ---
@@ -461,18 +461,18 @@ API: api/index.js (Vercel serverless function)
 
 ## 13. Course Catalog
 
-- [Diploma in Digital Marketing](https://www.hunar.courses/course/diploma-in-digital-marketing): SEO, social media, Meta/Google Ads, analytics, ₹10,000 live ad budget.
-- [30 Days AI Workshop](https://www.hunar.courses/course/30-days-ai-workshop): 29 daily modules, HeyGen, ElevenLabs, Make.com, Claude, prompt engineering.
-- [Full Stack Web Development](https://www.hunar.courses/course/full-stack-web-dev): HTML, CSS, JS, React, Node.js, MongoDB, deployment.
-- [Graphic Designing (AI-Powered)](https://www.hunar.courses/course/graphic-designing-ai): Photoshop, Illustrator, Canva, AI image tools, brand identity.
-- [Video Editing & Motion Graphics](https://www.hunar.courses/course/video-editing-motion-graphics): Premiere Pro, After Effects, motion typography.
-- [AI-Powered Front-End Development](https://www.hunar.courses/course/ai-powered-front-end-development): front-end with AI coding assistants.
-- [Back-End Development](https://www.hunar.courses/course/back-end-development): Node.js, Express, databases, APIs.
-- [Performance Marketing](https://www.hunar.courses/course/performance-marketing): paid ad strategy, ROAS, funnel optimization.
-- [Social Media Growth Mastery](https://www.hunar.courses/course/social-media-growth-mastery): organic growth, content strategy, reels.
-- [Google Growth Mastery](https://www.hunar.courses/course/google-growth-mastery): Google Ads, SEO, Google Analytics.
-- [Digital Marketing with AI](https://www.hunar.courses/course/digital-marketing-ai): AI-powered marketing workflows.
-- [Basic Computer Course](https://www.hunar.courses/course/basic-computer-course): MS Office, internet, typing, fundamentals.
+- [Diploma in Digital Marketing](https://hunar.courses/course/diploma-in-digital-marketing): SEO, social media, Meta/Google Ads, analytics, ₹10,000 live ad budget.
+- [30 Days AI Workshop](https://hunar.courses/course/30-days-ai-workshop): 29 daily modules, HeyGen, ElevenLabs, Make.com, Claude, prompt engineering.
+- [Full Stack Web Development](https://hunar.courses/course/full-stack-web-dev): HTML, CSS, JS, React, Node.js, MongoDB, deployment.
+- [Graphic Designing (AI-Powered)](https://hunar.courses/course/graphic-designing-ai): Photoshop, Illustrator, Canva, AI image tools, brand identity.
+- [Video Editing & Motion Graphics](https://hunar.courses/course/video-editing-motion-graphics): Premiere Pro, After Effects, motion typography.
+- [AI-Powered Front-End Development](https://hunar.courses/course/ai-powered-front-end-development): front-end with AI coding assistants.
+- [Back-End Development](https://hunar.courses/course/back-end-development): Node.js, Express, databases, APIs.
+- [Performance Marketing](https://hunar.courses/course/performance-marketing): paid ad strategy, ROAS, funnel optimization.
+- [Social Media Growth Mastery](https://hunar.courses/course/social-media-growth-mastery): organic growth, content strategy, reels.
+- [Google Growth Mastery](https://hunar.courses/course/google-growth-mastery): Google Ads, SEO, Google Analytics.
+- [Digital Marketing with AI](https://hunar.courses/course/digital-marketing-ai): AI-powered marketing workflows.
+- [Basic Computer Course](https://hunar.courses/course/basic-computer-course): MS Office, internet, typing, fundamentals.
 
 ---
 

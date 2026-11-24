@@ -195,7 +195,7 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-              {[
+              {(Array.isArray(content.navigation?.footer) && content.navigation.footer.length ? content.navigation.footer.map((link) => ({ to: link.href, label: link.label })) : [
                 { to: "/", label: "Home" },
                 { to: "/courses", label: "All Programs" },
                 { to: "/workshop", label: "30 Days AI Workshop" },
@@ -206,7 +206,7 @@ export default function Footer() {
                 { to: "/contact", label: "Contact" },
                 { to: "/enroll", label: "Enroll" },
                 { to: "/verify", label: "Verify Certificate" }
-              ].map((item) => (
+              ]).map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
@@ -224,6 +224,8 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li><Link to="/course-fees-ludhiana" style={{ color: "var(--color-text-secondary)", fontSize: "0.88rem", padding: "4px 0", display: "inline-block" }}>Course Fees</Link></li>
+              <li><Link to="/digital-marketing-course-ludhiana" style={{ color: "var(--color-text-secondary)", fontSize: "0.88rem", padding: "4px 0", display: "inline-block" }}>Digital Marketing in Ludhiana</Link></li>
             </ul>
           </div>
 

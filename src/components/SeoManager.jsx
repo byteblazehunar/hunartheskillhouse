@@ -32,11 +32,11 @@ export default function SeoManager() {
 
     document.title = page.title;
     setMeta("name", "description", page.description);
-    setMeta("name", "keywords", page.keywords || "Hunar The Skill House, Mullanpur Dakha, Ludhiana");
     setMeta("name", "robots", robots);
     setMeta("property", "og:title", page.title);
     setMeta("property", "og:description", page.description);
     setMeta("property", "og:type", page.type || "website");
+    setMeta("property", "og:locale", "en_IN");
     setMeta("property", "og:url", canonicalUrl);
     setMeta("property", "og:image", image);
     setMeta("property", "og:image:alt", page.title);

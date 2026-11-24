@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "../context/ThemeContext";
 
 export default function CinematicIntro() {
-  const [show, setShow] = useState(false); // Start hidden — homepage shows immediately
+  const { theme } = useTheme();
+  const [show, setShow] = useState(true);
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     // Respect user's motion preference
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    // Disable cinematic intro on mobile — logo and content must appear instantly
-    if (window.innerWidth < 768) {
-      sessionStorage.setItem("hasSeenHunarIntro_v4", "true");
+      setShow(false);
       return;
     }
 
     // Check if we've already shown the intro this session
     const hasSeenIntro = sessionStorage.getItem("hasSeenHunarIntro_v4");
     if (hasSeenIntro) {
+      setShow(false);
       return;
     }
 
-    // Delay intro so homepage + logo are visible first (800ms head start)
     const tStart = setTimeout(() => {
       setShow(true);
       document.body.style.overflow = "hidden";
@@ -45,9 +42,16 @@ export default function CinematicIntro() {
         clearTimeout(t4); clearTimeout(t5);
       };
 
-      window.addEventListener("click", handleSkip);
-      window.addEventListener("keydown", handleSkip);
-    }, 800);
+      window.addEventListener("click", handleSkip, { once: true });
+      window.addEventListener("keydown", handleSkip, { once: true });
+
+      return () => {
+        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+        clearTimeout(t4); clearTimeout(t5);
+        window.removeEventListener("click", handleSkip);
+        window.removeEventListener("keydown", handleSkip);
+      };
+    }, 0);
 
     return () => {
       clearTimeout(tStart);
@@ -76,7 +80,16 @@ export default function CinematicIntro() {
         perspective: "1000px"
       }}
     >
-      <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img
+            src={theme === "light" ? "/logo-light.png" : "/logo-dark.png"}
+            alt="Hunar The Skill House"
+            width="240"
+            height="80"
+            fetchPriority="high"
+            decoding="async"
+            style={{ position: "absolute", width: "min(52vw, 240px)", height: "auto", opacity: phase >= 2 ? 0 : 1, transform: phase >= 2 ? "scale(1.08)" : "scale(1)", transition: "opacity 0.5s ease, transform 0.8s ease", objectFit: "contain" }}
+          />
         
         {/* Text Reveal Container */}
         <div

@@ -30,4 +30,4 @@ Disallow: /admin
 Disallow: /operations
 Disallow: /activate/
 
-Sitemap: https://www.hunar.courses/sitemap.xml
+Sitemap: https://hunar.courses/sitemap.xml

@@ -15,7 +15,7 @@ export const coursesData = [
     shortDesc: "Complete industry diploma covering SEO, SMM, Meta & Google Ads, AI tools, and a real ₹10,000 live advertising budget for students.",
     tagline: "Run real ads with a dedicated ₹10,000 live budget. Don't just learn theory — drive real conversions.",
     mentor: {
-      name: "Paramjit Singh",
+      name: "Mr. Umang Shukla",
       role: "Teacher — Digital Marketing",
       exp: "Performance Marketing & Growth Mentor"
     },
@@ -120,7 +120,7 @@ export const coursesData = [
     shortDesc: "Accelerate your productivity and career with 29 hands-on AI modules: Prompt Engineering, Custom GPTs, HeyGen video, automation & no-code AI apps.",
     tagline: "Master the AI tools that top 1% professionals use daily. One transformative practical tool every single day.",
     mentor: {
-      name: "Paramjit Singh",
+      name: "Mr. Umang Shukla",
       role: "Teacher — Artificial Intelligence (AI)",
       exp: "Practical AI & Automation Mentor"
     },
@@ -209,9 +209,9 @@ export const coursesData = [
     shortDesc: "Master end-to-end web engineering: HTML5, modern CSS, JavaScript (ES6+), React.js, Node.js, Express, MongoDB, and production cloud deployment.",
     tagline: "Build production-ready, scalable web applications from scratch with clean code architecture and real GitHub commits.",
     mentor: {
-      name: "Paramjit Singh",
-      role: "Teacher — Web Development",
-      exp: "Full-Stack Web Engineering Mentor"
+      name: "Ms. Nishika",
+      role: "Teacher — Full Stack & Web Development",
+      exp: "Full-Stack Web Engineering Instructor"
     },
     highlights: [
       "Full-stack MERN (MongoDB, Express, React, Node.js) stack architecture",
@@ -297,9 +297,9 @@ export const coursesData = [
     shortDesc: "Master industry design standards with Photoshop, Illustrator, Canva Pro, Figma, combined with cutting-edge AI image generation workflows.",
     tagline: "Transform creative passion into high-paying commercial design skills. Build commercial branding, packaging, and digital ads.",
     mentor: {
-      name: "Lakshay Sharma",
-      role: "Lead Creative Mentor & Visual Designer",
-      exp: "Specialist in Brand Identity & AI Art"
+      name: "Mr. Umang Shukla",
+      role: "Teacher — Graphic Design & Photoshop",
+      exp: "Graphic Design and Visual Editing Instructor"
     },
     highlights: [
       "Adobe Photoshop: advanced compositing, retouching, color grading",
@@ -385,9 +385,9 @@ export const coursesData = [
     shortDesc: "Master video storytelling, viral short-form editing, cinematic color grading, sound design, and 2D motion graphics in Premiere Pro and After Effects.",
     tagline: "Turn raw footage into viral, cinematic storytelling. Master the tools powering YouTube, Instagram Reels, and commercial cinema.",
     mentor: {
-      name: "Lakshay Sharma",
-      role: "Lead Visual & Motion Mentor",
-      exp: "Commercial Video Producer"
+      name: "Mr. Umang Shukla",
+role: "Teacher — Video Editing & Motion Graphics",
+  exp: "Commercial Video Producer"
     },
     highlights: [
       "Adobe Premiere Pro from basic timeline cuts to multi-cam editing",
@@ -472,9 +472,9 @@ export const coursesData = [
     shortDesc: "Master modern user interface engineering with HTML5, CSS3, modern JavaScript, React.js, Tailwind CSS, and AI code pairing tools.",
     tagline: "Build lightning-fast, ultra-responsive web applications using modern React and AI developer productivity workflows.",
     mentor: {
-      name: "Paramjit Singh",
-      role: "Teacher — Web Development",
-      exp: "Frontend Architecture & UI Engineering"
+name: "Ms. Nishika",
+  role: "Teacher — Full Stack & Web Development",
+  exp: "Full Stack & Web Development Instructor"
     },
     highlights: [
       "Modern component-driven development with React.js",
@@ -511,22 +511,22 @@ export const coursesData = [
   },
   {
     id: "13",
-    slug: "back-end-development",
-    title: "Back-End Development",
-    category: "Tech & Development",
-    badge: "API & Cloud Track",
-    duration: "4 Months",
-    mode: "Offline Lab",
-    level: "Intermediate",
-    featured: false,
-    rating: 4.82,
-    reviewsCount: 39,
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
-    shortDesc: "Architect robust server-side applications, secure APIs, and relational/NoSQL databases with Node.js, Express, MongoDB, and Next.js.",
-    tagline: "Power the logic behind modern digital platforms. Learn database modeling, microservices, and server security.",
-    mentor: {
-      name: "Paramjit Singh",
-      role: "Teacher — Web Development",
+slug: "back-end-development",
+  title: "Back-End Development",
+  category: "Tech & Development",
+  badge: "API & Cloud Track",
+  duration: "4 Months",
+  mode: "Offline Lab",
+  level: "Intermediate",
+  featured: false,
+  rating: 4.82,
+  reviewsCount: 39,
+  image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop",
+  shortDesc: "Architect robust server-side applications, secure APIs, and relational/NoSQL databases with Node.js, Express, MongoDB, and Next.js.",
+  tagline: "Power the logic behind modern digital platforms. Learn database modeling, microservices, and server security.",
+  mentor: {
+      name: "Ms. Nishika",
+      role: "Teacher — Full Stack & Web Development",
       exp: "Backend Systems & Database Architecture"
     },
     highlights: [
@@ -578,7 +578,7 @@ export const coursesData = [
     shortDesc: "Master data-driven advertising across Shopify, Meta Ads, Google Ads, TikTok, GA4, UGC creative frameworks, and AI ad optimizers.",
     tagline: "Drive measurable, scalable return on ad spend (ROAS) for direct-to-consumer (D2C) brands and tech companies.",
     mentor: {
-      name: "Paramjit Singh",
+      name: "Mr. Umang Shukla",
       role: "Teacher — Digital Marketing",
       exp: "Performance Marketing & ROAS Specialist"
     },
@@ -626,7 +626,7 @@ export const coursesData = [
     shortDesc: "Build loyal audiences and viral reach across Instagram, Meta, LinkedIn, YouTube, and WhatsApp using proven creative frameworks and automation.",
     tagline: "Turn social profiles into lead machines. Master algorithmic distribution, community building, and content engines.",
     mentor: {
-      name: "Lakshay Sharma",
+      name: "Mr. Umang Shukla",
       role: "Content & Community Strategist",
       exp: "Built 100k+ organic creator followings"
     },
@@ -674,7 +674,7 @@ export const coursesData = [
     shortDesc: "Dominate search engine results with WordPress SEO, Local Google Maps ranking, Search Console audits, Google Ads, and AI search workflows.",
     tagline: "Capture high-intent buyers exactly when they search. Rank websites on Page 1 and generate continuous free organic traffic.",
     mentor: {
-      name: "Paramjit Singh",
+      name: "Mr. Umang Shukla",
       role: "Teacher — Digital Marketing",
       exp: "Search Engine Optimization & Google Growth"
     },
@@ -722,7 +722,7 @@ export const coursesData = [
     shortDesc: "Learn full-spectrum modern digital marketing supercharged by AI tools: automated copy, algorithmic targeting, predictive analytics, and live campaigns.",
     tagline: "Don't write ads manually — orchestrate AI to produce 10x the creative variations and maximize ROI.",
     mentor: {
-      name: "Paramjit Singh",
+      name: "Mr. Umang Shukla",
       role: "Teacher — Digital Marketing",
       exp: "AI-Powered Growth & Performance Marketing"
     },
