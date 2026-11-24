@@ -6,12 +6,11 @@ import {
   CheckCircle2,
   ArrowRight,
   ChevronDown,
-  ChevronUp,
-  Phone
+  ChevronUp
 } from "lucide-react";
 import usePublicCatalog from "../hooks/usePublicCatalog";
 import { siteConfig } from "../data/siteConfig";
-import CourseCard from "../components/CourseCard";
+import { getCourseFaqs } from "../data/seoMetadata";
 
 export default function CourseDetail({ onOpenDemo }) {
   const { slug } = useParams();
@@ -335,7 +334,7 @@ export default function CourseDetail({ onOpenDemo }) {
 
               {/* Career Roles */}
               {course.careerRoles && (
-                <div>
+                <div style={{ marginBottom: "40px" }}>
                   <h2 style={{ fontSize: "1.35rem", marginBottom: "14px" }}>
                     Career Roles
                   </h2>
@@ -359,6 +358,20 @@ export default function CourseDetail({ onOpenDemo }) {
                   </div>
                 </div>
               )}
+
+              <section aria-labelledby="course-faq-heading" style={{ marginTop: "40px" }}>
+                <h2 id="course-faq-heading" style={{ fontSize: "1.35rem", marginBottom: "16px" }}>
+                  Questions about this course
+                </h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {getCourseFaqs(course).map((faq) => (
+                    <article key={faq.question} style={{ padding: "18px", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", background: "var(--color-surface)" }}>
+                      <h3 style={{ fontSize: "1rem", marginBottom: "8px" }}>{faq.question}</h3>
+                      <p style={{ fontSize: "0.9rem", lineHeight: "1.7", color: "var(--color-text-secondary)" }}>{faq.answer}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
             </div>
 
             {/* Right Sticky Sidebar */}

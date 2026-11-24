@@ -24,12 +24,7 @@ export default function Home({ onOpenDemo }) {
   const { content } = useSiteContent();
   const { courses } = usePublicCatalog();
   const homepage = content.homepage || {};
-  const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : [
-    { label: "Industry Programs", value: "12+" },
-    { label: "Students Trained", value: "1,000+" },
-    { label: "Internship Support", value: "100%" },
-    { label: "Placement Rating", value: "4.9/5" }
-  ];
+  const homepageStats = Array.isArray(homepage.stats) ? homepage.stats : siteConfig.stats;
 
   const filteredCourses =
     activeCategory === "All"
@@ -81,7 +76,7 @@ export default function Home({ onOpenDemo }) {
                   color: "var(--color-text-primary)"
                 }}
               >
-                {homepage.heroTitle || "Practical AI & Technology Courses in Mullanpur Dakha."}
+                {homepage.heroTitle || "AI, Digital Marketing & Web Development Courses in Mullanpur Dakha."}
               </motion.h1>
 
               {/* Subtitle — requirement 1: delay 0.15s */}
@@ -97,7 +92,7 @@ export default function Home({ onOpenDemo }) {
                   maxWidth: "540px"
                 }}
               >
-                {homepage.heroSubtitle || "Mullanpur Dakha's premier institute for job-ready skills. Experience 100% practical workstation labs with live ₹10,000 advertising budgets, real client repositories, and dedicated placement support across India."}
+                {homepage.heroSubtitle || "Build practical digital skills through guided projects and workstation-based learning at Hunar The Skill House in Mullanpur Dakha, Ludhiana. Explore programs and ask about a free demo."}
               </motion.p>
 
               {/* CTAs — requirement 1: delay 0.25s */}

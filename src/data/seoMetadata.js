@@ -1,6 +1,7 @@
 import { blogData } from "./blogData.js";
 import { coursesData } from "./coursesData.js";
 import { faqData } from "./faqData.js";
+import { seoLandingPages } from "./seoLandingPages.js";
 import { siteConfig } from "./siteConfig.js";
 
 export const SITE_URL = "https://hunar.courses";
@@ -9,59 +10,59 @@ const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 export const pageMetadata = {
   "/": {
-    title: "Skill Courses in Mullanpur Dakha | Hunar The Skill House",
-    description: "Hunar The Skill House offers practical AI, digital marketing, web development and design courses in Mullanpur Dakha, Ludhiana. ISO 9001:2015 certified. ₹10,000 live ad budget per student. 100% workstation-based training.",
+    title: "AI, Digital Marketing & Web Courses | Hunar Ludhiana",
+    description: "Learn AI, digital marketing, web development and design at Hunar The Skill House in Mullanpur Dakha, Ludhiana. Explore courses and book a free demo.",
     keywords: "skill development institute Mullanpur, computer courses Mullanpur Dakha, AI course Ludhiana, web development course Ludhiana, digital marketing course Ludhiana, Hunar The Skill House"
   },
   "/courses": {
-    title: "AI, Technology & Digital Skills Courses in Ludhiana | Hunar",
-    description: "Hunar offers 12 job-ready courses in Mullanpur Dakha: AI, full-stack web development, digital marketing, graphic design and video editing. Each course includes individual workstation access and 1-on-1 mentor guidance.",
+    title: "Skill Development Courses in Ludhiana | Hunar",
+    description: "Explore 12 practical courses in AI, web development, digital marketing, design and more at Hunar's Mullanpur Dakha campus. Compare programs and book a demo.",
     keywords: "courses in Ludhiana, computer institute Mullanpur, AI training Ludhiana, digital marketing course, web development course, graphic design course Ludhiana"
   },
   "/workshop": {
-    title: "30 Days AI Workshop in Mullanpur Dakha | Hunar",
-    description: "Hunar's 30 Days AI Workshop covers 29 hands-on modules: prompt engineering, HeyGen avatars, Make.com automations, Claude coding and AI agents. No coding required. ISO-certified certificate included.",
+    title: "30-Day AI Workshop in Ludhiana | Hunar",
+    description: "Explore Hunar's hands-on 30-day AI workshop in Mullanpur Dakha, covering prompt writing, AI media and automation. Ask about the next batch.",
     keywords: "AI workshop Mullanpur, 30 days AI workshop Ludhiana, practical artificial intelligence training, AI tools course Punjab"
   },
   "/about": {
-    title: "About Hunar The Skill House | Mullanpur Dakha, Ludhiana",
-    description: "Hunar The Skill House is a DPIIT-recognized, ISO 9001:2015 certified skill training institute in Mullanpur Dakha, Ludhiana. Founded by Gurlove Malhi, powered by Byteblaze Technologies. Individual workstations, live ad budgets, mentor-led learning.",
+    title: "About Hunar The Skill House | Ludhiana",
+    description: "Meet Hunar The Skill House, a practical skills institute in Mullanpur Dakha, Ludhiana. Learn about our campus, training approach and programs.",
     keywords: "Hunar The Skill House about, skill institute Mullanpur Dakha, Gurlove Malhi founder, DPIIT recognized institute Ludhiana"
   },
   "/testimonials": {
-    title: "Student Reviews & Experiences | Hunar The Skill House",
-    description: "Read verified student reviews from Hunar The Skill House, Mullanpur Dakha. Students share their experiences in digital marketing, AI, web development and design training. 4.9/5 average rating.",
+    title: "Student Experiences | Hunar The Skill House",
+    description: "Read student experiences with digital marketing, AI, web development and design training at Hunar The Skill House in Mullanpur Dakha, Ludhiana.",
     keywords: "Hunar student reviews, Hunar testimonials Ludhiana, skill courses Mullanpur review, Hunar The Skill House rating"
   },
   "/faq": {
-    title: "Courses, Fees & Admission FAQs | Hunar The Skill House",
-    description: "Common questions about Hunar The Skill House: What courses are available? How much do they cost? Is placement support provided? What is the certificate? Find answers here.",
+    title: "Course, Fees & Admission FAQs | Hunar",
+    description: "Find answers about Hunar courses, fees, batch timings, practical training and certificates. Contact our Mullanpur Dakha team for current details.",
     keywords: "Hunar admissions FAQ, course fees Ludhiana, Hunar placement support, skill course certificate Mullanpur, Hunar contact"
   },
   "/blog": {
-    title: "AI, Web Dev & Digital Marketing Articles | Hunar The Skill House",
-    description: "Practical career and learning articles from Hunar The Skill House faculty in Mullanpur Dakha. Topics include AI tools for beginners, job-ready web development, and digital marketing with AI.",
+    title: "AI, Marketing & Career Articles | Hunar",
+    description: "Explore practical learning and career articles from Hunar The Skill House faculty in Mullanpur Dakha, Ludhiana.",
     keywords: "AI learning articles Ludhiana, web development career guide, digital marketing AI tips, Hunar blog"
   },
   "/careers": {
-    title: "Careers at Hunar The Skill House | Join Our Team",
-    description: "Explore career opportunities at Hunar The Skill House. Join our team of educators, mentors, creators and operators in Mullanpur Dakha, Ludhiana.",
+    title: "Careers at Hunar The Skill House | Ludhiana",
+    description: "Explore career opportunities with Hunar The Skill House's educators, mentors and team in Mullanpur Dakha, Ludhiana.",
     keywords: "Hunar careers, jobs at Hunar The Skill House, teaching jobs Ludhiana, mentor jobs Mullanpur Dakha"
   },
   "/contact": {
-    title: "Contact Hunar The Skill House | Mullanpur Dakha, Ludhiana",
-    description: "Contact Hunar The Skill House at Opposite Bus Stand, First Floor, Desraj Fruit and Juice Bar Complex, Mullanpur Dakha, Ludhiana, Punjab 141101. Call +91 94637-95116 to book a campus visit or demo class.",
+    title: "Contact Hunar The Skill House | Ludhiana",
+    description: `Visit Hunar The Skill House in Mullanpur Dakha, Ludhiana. Call ${siteConfig.phone} to ask about courses, current fees or a campus visit.`,
     keywords: "contact Hunar Mullanpur, Hunar phone number, skill institute address Ludhiana, book demo class Hunar"
   },
   "/verify": {
-    title: "Verify a Hunar Certificate | Hunar The Skill House",
-    description: "Verify the authenticity of a Hunar The Skill House certificate online. Enter the certificate verification code to confirm the holder's name, course, and completion date.",
+    title: "Verify a Hunar Certificate | Online",
+    description: "Check a Hunar The Skill House certificate using its verification code. Contact the institute if you need help confirming certificate details.",
     keywords: "verify Hunar certificate, Hunar certificate verification, ISO certified course certificate Ludhiana"
   },
   "/enroll": {
-    title: "Course Enquiry & Enrollment | Hunar The Skill House",
-    description: "Enquire about enrolling in a practical skill course at Hunar The Skill House, Mullanpur Dakha. Fill the form or call +91 94637-95116 for course details, batch schedules and fees.",
-    keywords: "enroll skill course Ludhiana, Hunar admission enquiry, course fees Mullanpur, Hunar batch schedule"
+    title: "Course Enquiry & Enrollment | Hunar",
+    description: "Ask about courses, batch schedules and current fees at Hunar The Skill House in Mullanpur Dakha, Ludhiana.",
+    noindex: true
   },
   "/login": {
     title: "Sign In | Hunar The Skill House",
@@ -70,18 +71,24 @@ export const pageMetadata = {
   },
   "/page/privacy-policy": {
     title: "Privacy Policy | Hunar The Skill House",
-    description: "Read how Hunar The Skill House collects, uses and protects your personal information submitted through our website forms and student portal.",
+    description: "Learn how Hunar The Skill House handles information submitted through its website forms and student portal.",
     keywords: "Hunar privacy policy, data protection Hunar"
   },
   "/page/terms-conditions": {
     title: "Terms & Conditions | Hunar The Skill House",
-    description: "Read the terms and conditions governing use of the Hunar The Skill House website, courses, certificates and student services.",
+    description: "Review the terms for using the Hunar The Skill House website, courses, certificates and student services.",
     keywords: "Hunar terms and conditions, Hunar website terms"
-  }
+  },
+  ...Object.fromEntries(Object.entries(seoLandingPages).map(([pathname, page]) => [pathname, {
+    title: page.title,
+    description: page.description,
+    keywords: page.keywords || ""
+  }]))
 };
 
 export const privateSeoPaths = [
   "/login",
+  "/enroll",
   "/admin",
   "/portal/student",
   "/portal/staff",
@@ -92,6 +99,7 @@ export const privateSeoPaths = [
 
 export function isPrivateSeoPath(pathname) {
   return pathname === "/login" ||
+    pathname === "/enroll" ||
     pathname === "/admin" ||
     pathname.startsWith("/admin/") ||
     pathname.startsWith("/portal/") ||
@@ -130,23 +138,61 @@ export function organizationSchema() {
   };
 }
 
-export function getPageMetadata(pathname) {
+export function getCourseFaqs(course) {
+  return [
+    {
+      question: `How long is the ${course.title} course?`,
+      answer: `The published duration is ${course.duration}. Contact Hunar to confirm the schedule and current batch availability.`
+    },
+    {
+      question: `What does the ${course.title} course cover?`,
+      answer: `${course.title} covers practical topics including ${(course.highlights || []).slice(0, 3).join(", ")}. Review the course page for its full curriculum and project details.`
+    },
+    {
+      question: `What are the fees for the ${course.title} course?`,
+      answer: `Fees vary by program and batch. Contact Hunar at ${siteConfig.phone} to request current fee details and ask about any installment options before enrolling.`
+    },
+    {
+      question: `Where is the ${course.title} course held?`,
+      answer: `Hunar The Skill House is located at ${siteConfig.location}. Ask the team to confirm the learning mode for your chosen batch.`
+    }
+  ];
+}
+
+function getRawPageMetadata(pathname) {
   if (pathname.startsWith("/course/")) {
     const slug = pathname.slice("/course/".length);
     const course = coursesData.find((item) => item.slug === slug);
     if (course) {
+      const description = `${course.title} training in Mullanpur Dakha, Ludhiana. ${course.duration}, practical projects and mentor guidance. Explore the curriculum and ask about a demo.`;
+      const faqs = getCourseFaqs(course);
       return {
-        title: `${course.title} Course in Ludhiana | Hunar The Skill House`,
-        description: `${course.title} course at Hunar The Skill House, Mullanpur Dakha, Ludhiana. ${course.shortDesc} Duration: ${course.duration}. Mode: ${course.mode}. ISO 9001:2015 certified. Book a free demo class.`,
-        keywords: `${course.title} course Ludhiana, ${course.category} course Mullanpur Dakha, ${course.title} training Punjab, ${course.category} training Ludhiana, Hunar ${course.title}`,
+        title: `${course.title} Course | Hunar Ludhiana`,
+        description,
+        image: new URL(course.image, SITE_URL).href,
+        keywords: `${course.title} course Ludhiana, ${course.category} course Mullanpur Dakha, ${course.title} training Punjab`,
         schema: {
           "@context": "https://schema.org",
           "@type": "Course",
           name: course.title,
           description: course.shortDesc,
           provider: { "@id": ORGANIZATION_ID },
-          url: `${SITE_URL}${pathname}`
-        }
+          url: `${SITE_URL}${pathname}`,
+          inLanguage: "en-IN",
+          educationalLevel: course.level,
+          courseMode: "onsite",
+          teaches: (course.highlights || []).slice(0, 6)
+        },
+        additionalSchemas: [{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map(({ question, answer }) => ({
+            "@type": "Question",
+            name: question,
+            acceptedAnswer: { "@type": "Answer", text: answer }
+          }))
+        }],
+        faqs
       };
     }
   }
@@ -157,7 +203,7 @@ export function getPageMetadata(pathname) {
     if (post) {
       return {
         title: `${post.title} | Hunar The Skill House`,
-        description: `${post.excerpt} Published by ${post.author} (${post.authorRole}) at Hunar The Skill House, Mullanpur Dakha. ${post.readTime}.`,
+        description: post.excerpt,
         keywords: [...new Set([post.category, post.title, ...(post.tags || []), "Hunar The Skill House blog", post.author])].join(", "),
         type: "article",
         image: new URL(post.image, SITE_URL).href,
@@ -168,12 +214,36 @@ export function getPageMetadata(pathname) {
           description: post.excerpt,
           image: new URL(post.image, SITE_URL).href,
           author: { "@type": "Person", name: post.author },
-          datePublished: post.date,
           publisher: { "@id": ORGANIZATION_ID },
           mainEntityOfPage: `${SITE_URL}${pathname}`
         }
       };
     }
+  }
+
+  const landingPage = seoLandingPages[pathname];
+  if (landingPage) {
+    const page = { ...pageMetadata[pathname] };
+    page.schema = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: landingPage.h1,
+      description: landingPage.description,
+      url: `${SITE_URL}${pathname}`,
+      inLanguage: "en-IN",
+      publisher: { "@id": ORGANIZATION_ID }
+    };
+    page.additionalSchemas = [{
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: landingPage.faqs.map(({ question, answer }) => ({
+        "@type": "Question",
+        name: question,
+        acceptedAnswer: { "@type": "Answer", text: answer }
+      }))
+    }];
+    page.faqs = landingPage.faqs;
+    return page;
   }
 
   const metadata = pageMetadata[pathname];
@@ -214,6 +284,56 @@ export function getPageMetadata(pathname) {
   return page;
 }
 
+function limitMetadataText(value, limit) {
+  const text = String(value || "").trim();
+  if (text.length <= limit) return text;
+  const shortened = text.slice(0, limit - 1);
+  const lastSpace = shortened.lastIndexOf(" ");
+  return `${shortened.slice(0, lastSpace > 0 ? lastSpace : shortened.length)}…`;
+}
+
+function getBreadcrumbSchema(pathname, pageTitle) {
+  if (pathname === "/") return null;
+  const parts = pathname.split("/").filter(Boolean);
+  const items = [{ name: "Home", url: SITE_URL }];
+
+  if (parts[0] === "course" && parts[1]) {
+    const course = coursesData.find((item) => item.slug === parts[1]);
+    items.push({ name: "Courses", url: `${SITE_URL}/courses` });
+    items.push({ name: course?.title || pageTitle, url: `${SITE_URL}${pathname}` });
+  } else if (parts[0] === "blog" && parts[1]) {
+    const post = blogData.find((item) => item.slug === parts[1]);
+    items.push({ name: "Articles", url: `${SITE_URL}/blog` });
+    items.push({ name: post?.title || pageTitle, url: `${SITE_URL}${pathname}` });
+  } else {
+    items.push({ name: pageTitle, url: `${SITE_URL}${pathname}` });
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url
+    }))
+  };
+}
+
+export function getPageMetadata(pathname) {
+  const page = getRawPageMetadata(pathname);
+  const title = limitMetadataText(page.title, 65);
+  const description = limitMetadataText(page.description, 158);
+  const breadcrumb = getBreadcrumbSchema(pathname, title);
+  return {
+    ...page,
+    title,
+    description,
+    ...(breadcrumb ? { additionalSchemas: [...(page.additionalSchemas || []), breadcrumb] } : {})
+  };
+}
+
 export function getStructuredData(page) {
   if (!page.schema) return null;
 
@@ -226,12 +346,14 @@ export function getStructuredData(page) {
     publisher: { "@id": ORGANIZATION_ID },
     inLanguage: "en-IN"
   };
-  const pageSchema = page.schema["@type"] !== "EducationalOrganization"
-    ? [page.schema]
-    : [];
+  const isOrganizationSchema = page.schema["@id"] === ORGANIZATION_ID;
+  const schemas = [
+    ...(isOrganizationSchema ? [] : [page.schema]),
+    ...(page.additionalSchemas || [])
+  ];
   return {
     "@context": "https://schema.org",
-    "@graph": [organizationSchema(), websiteSchema, ...pageSchema].map((item) =>
+    "@graph": [organizationSchema(), websiteSchema, ...schemas].map((item) =>
       Object.fromEntries(Object.entries(item).filter(([key]) => key !== "@context"))
     )
   };

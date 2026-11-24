@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   DEFAULT_IMAGE,
+  getCourseFaqs,
   getPageMetadata,
   getPublicSeoPaths,
   getStructuredData,
@@ -13,6 +14,7 @@ import { blogData } from "../src/data/blogData.js";
 import { coursesData } from "../src/data/coursesData.js";
 import { faqData } from "../src/data/faqData.js";
 import { siteConfig } from "../src/data/siteConfig.js";
+import { seoLandingPages } from "../src/data/seoLandingPages.js";
 import { testimonialsData } from "../src/data/testimonialsData.js";
 
 const outputDirectory = path.resolve("dist");
@@ -47,11 +49,11 @@ function renderHomeContent() {
 
   return `<main class="seo-prerender" style="max-width:1120px;margin:0 auto;padding:48px 24px;line-height:1.7">
     <article>
-      <h1>Practical AI &amp; Technology Courses in Mullanpur Dakha</h1>
-      <p>Hunar The Skill House is a practical skill development institute in Mullanpur Dakha, Ludhiana, Punjab. We offer training in artificial intelligence, web development, digital marketing, graphic design, video editing and other technology skills. The institute focuses on guided practice and projects so learners can apply course concepts while building useful skills.</p>
-      <p>Our programs serve students, graduates, working professionals and business owners looking to develop digital capabilities. Training takes place at our campus on Ferozpur Road in Mullanpur Dakha. Course availability, duration and curriculum vary by program; review each course page or contact Hunar for current details rather than relying on outdated schedules.</p>
+      <h1>Practical AI, Digital Marketing &amp; Web Courses in Mullanpur Dakha</h1>
+      <p>Hunar The Skill House is a practical skills institute in Mullanpur Dakha, Ludhiana, Punjab. Explore programs in artificial intelligence, web development, digital marketing, graphic design, video editing and computer skills, with guided lab practice and project work.</p>
+      <p>Programs are available for learners exploring technology and digital careers. Course duration, curriculum and current batches vary by program; review each course page or contact Hunar for the latest details. Visit the campus to discuss your goals and ask about a demo class.</p>
       <h2>Explore practical skill courses</h2>
-      <p>Hunar’s course directory covers beginner-friendly and advanced learning options across technology and digital business. Topics include AI tools and workflow automation, front-end and back-end development, full-stack web projects, search engine optimization, paid advertising, social media growth, visual design and motion graphics. Program pages provide an outline of the learning areas and practical activities.</p>
+      <p>Hunar’s course directory covers beginner-friendly and advanced learning options across technology and digital business. Topics include AI tools and workflow automation, front-end and back-end development, full-stack web projects, search engine optimization, paid advertising, social media growth, visual design and motion graphics. Program pages provide an outline of the learning areas and practical activities. You can also read our <a href="/course-fees-ludhiana">course fee guide</a> and local <a href="/digital-marketing-course-ludhiana">digital marketing course overview</a>.</p>
       <ul>${courseList}</ul>
       <h2>Learn by building and practising</h2>
       <p>Practical learning at Hunar combines instructor guidance with individual workstations, lab exercises and projects. Learners work through tasks related to their chosen subject, such as building web interfaces, preparing campaign materials, exploring AI workflows or creating design and video assets. A project-led approach helps students connect concepts with examples they can explain and include in a portfolio.</p>
@@ -71,6 +73,10 @@ function renderCourseContent(course, pathname) {
   const projects = (course.projects || [])
     .map((project) => `<li><strong>${escapeHtml(project.title)}:</strong> ${escapeHtml(project.desc)}</li>`)
     .join("");
+  const curriculum = (course.curriculum || []).map((module) => `<section><h3>${escapeHtml(module.module)}: ${escapeHtml(module.title)}</h3><ul>${(module.topics || []).map((topic) => `<li>${escapeHtml(topic)}</li>`).join("")}</ul></section>`).join("");
+  const tools = (course.tools || []).map((tool) => `<li>${escapeHtml(tool)}</li>`).join("");
+  const careerRoles = (course.careerRoles || []).map((role) => `<li>${escapeHtml(role)}</li>`).join("");
+  const courseFaqs = getCourseFaqs(course).map((faq) => `<section><h3>${escapeHtml(faq.question)}</h3><p>${escapeHtml(faq.answer)}</p></section>`).join("");
   const relatedCourses = coursesData
     .filter((item) => item.slug !== course.slug)
     .slice(0, 4)
@@ -85,8 +91,12 @@ function renderCourseContent(course, pathname) {
       <p>Duration: ${escapeHtml(course.duration)}. Learning mode: ${escapeHtml(course.mode)}. Hunar The Skill House is in Mullanpur Dakha, Ludhiana. Contact the institute to confirm current batches, availability and course terms.</p>
       <h2>Topics and practical learning</h2>
       <ul>${highlights}</ul>
+      ${curriculum ? `<h2>Course curriculum</h2>${curriculum}` : ""}
+      ${tools ? `<h2>Tools and technologies</h2><ul>${tools}</ul>` : ""}
       ${projects ? `<h2>Example projects</h2><ul>${projects}</ul>` : ""}
-      <p>Explore the <a href="/courses">full course directory</a>, read the <a href="/faq">course and admissions FAQs</a>, or <a href="/contact">contact Hunar</a> to discuss this program. Course details can change; confirm the current curriculum and fees directly with the institute.</p>
+      ${careerRoles ? `<h2>Related career roles</h2><ul>${careerRoles}</ul>` : ""}
+      <h2>Course questions and answers</h2>${courseFaqs}
+      <p>Explore the <a href="/courses">full course directory</a>, compare <a href="/course-fees-ludhiana">course fees and payment questions</a>, read the <a href="/faq">course and admissions FAQs</a>, or <a href="/contact">contact Hunar</a> to discuss this program. Course details can change; confirm the current curriculum and fees directly with the institute.</p>
       <h2>Related courses</h2>
       <ul>${relatedCourses}</ul>
       <a href="/enroll?course=${escapeHtml(course.slug)}">Ask about this course</a>
@@ -94,7 +104,16 @@ function renderCourseContent(course, pathname) {
   </main>`;
 }
 
+function renderSeoLandingContent(pathname) {
+  const landingPage = seoLandingPages[pathname];
+  if (!landingPage) return "";
+  const sections = landingPage.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</section>`).join("");
+  const faqs = landingPage.faqs.map((faq) => `<section><h2>${escapeHtml(faq.question)}</h2><p>${escapeHtml(faq.answer)}</p></section>`).join("");
+  return `<main class="seo-prerender" style="max-width:900px;margin:0 auto;padding:48px 24px;line-height:1.7"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/courses">Courses</a> / ${escapeHtml(landingPage.h1)}</nav><article><h1>${escapeHtml(landingPage.h1)}</h1><p>${escapeHtml(landingPage.intro)}</p>${sections}<h2>Frequently asked questions</h2>${faqs}<p><a href="/courses">Browse all courses</a> · <a href="/contact">Contact Hunar</a></p></article></main>`;
+}
+
 function renderStaticContent(pathname, page) {
+  if (seoLandingPages[pathname]) return renderSeoLandingContent(pathname);
   if (pathname === "/") return renderHomeContent();
 
   if (pathname === "/404") {
@@ -173,11 +192,11 @@ function renderPage(pathname) {
 
   for (const [attribute, name, content] of [
     ["name", "description", page.description],
-    ["name", "keywords", page.keywords || "Hunar The Skill House, Mullanpur Dakha, Ludhiana"],
     ["name", "robots", robots],
     ["property", "og:title", page.title],
     ["property", "og:description", page.description],
     ["property", "og:type", page.type || "website"],
+    ["property", "og:locale", "en_IN"],
     ["property", "og:url", canonicalUrl],
     ["property", "og:image", image],
     ["property", "og:image:alt", page.title],
@@ -231,7 +250,7 @@ const sitemapEntries = publicPaths
     const isHome = pathname === "/";
     const isCourse = pathname.startsWith("/course/");
     const isBlog = pathname.startsWith("/blog/");
-    const isHighPriority = isHome || pathname === "/courses" || pathname === "/workshop";
+    const isHighPriority = isHome || pathname === "/courses" || pathname === "/workshop" || pathname === "/digital-marketing-course-ludhiana";
 
     const priority = isHome ? "1.0"
       : isHighPriority ? "0.9"

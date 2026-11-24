@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -39,6 +39,7 @@ import OperationsPanel from "./pages/OperationsPanel";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import NotFound from "./pages/NotFound";
+import SeoLandingPage from "./pages/SeoLandingPage";
 
 function AppContent() {
   const [demoModalOpen, setDemoModalOpen] = useState(false);
@@ -107,6 +108,8 @@ function AppContent() {
                 <Route path="/" element={<Home onOpenDemo={handleOpenDemo} />} />
                 <Route path="/courses" element={<Courses onOpenDemo={handleOpenDemo} />} />
                 <Route path="/course/:slug" element={<CourseDetail onOpenDemo={handleOpenDemo} />} />
+                <Route path="/course-fees-ludhiana" element={<SeoLandingPage />} />
+                <Route path="/digital-marketing-course-ludhiana" element={<SeoLandingPage />} />
                 <Route path="/workshop" element={<Workshop onOpenDemo={handleOpenDemo} />} />
                 <Route path="/about" element={<About onOpenDemo={handleOpenDemo} />} />
                 <Route path="/testimonials" element={<TestimonialsPage onOpenDemo={handleOpenDemo} />} />

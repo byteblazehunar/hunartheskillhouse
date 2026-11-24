@@ -224,6 +224,8 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <li><Link to="/course-fees-ludhiana" style={{ color: "var(--color-text-secondary)", fontSize: "0.88rem", padding: "4px 0", display: "inline-block" }}>Course Fees</Link></li>
+              <li><Link to="/digital-marketing-course-ludhiana" style={{ color: "var(--color-text-secondary)", fontSize: "0.88rem", padding: "4px 0", display: "inline-block" }}>Digital Marketing in Ludhiana</Link></li>
             </ul>
           </div>
 
