@@ -1,3 +1,6 @@
+import { coursesData } from "./coursesData.js";
+import { siteConfig } from "./siteConfig.js";
+
 export const faqCategories = [
   "All",
   "Admissions & Enrollment",
@@ -11,66 +14,72 @@ export const faqData = [
     id: "f1",
     category: "Courses & Learning",
     question: "Is the training practical or theory-based?",
-    answer: "All our programs are 100% practical and project-based. Students work on real-world projects, live assignments, and industry-style tasks throughout their course. For instance, in our Digital Marketing diploma, students receive a dedicated ₹10,000 live advertising budget to run and optimize actual campaigns."
+    answer: "Programs include practical exercises and project work as described in each course curriculum. The Digital Marketing diploma listing describes supervised campaign practice using a ₹10,000 live advertising budget; ask the admissions team to confirm the current terms for your batch."
+  },
+  {
+    id: "f12",
+    category: "Courses & Learning",
+    question: "What courses and programs does Hunar offer?",
+    answer: `The current catalog lists ${coursesData.length} programs: ${coursesData.map((course) => course.title).join(", ")}. Course availability and batch schedules can change, so contact the team to confirm the latest options.`
   },
   {
     id: "f2",
     category: "Certificates & Placement",
     question: "Will I get a certificate after completing the course?",
-    answer: "Yes. Every student who successfully completes their program receives an industry-recognized certificate issued by Hunar The Skill House, backed by Byteblaze Technologies (ISO 9001:2015 Certified, MSME & DPIIT Registered). Every certificate includes a unique verification code that employers can verify online."
+    answer: "Certificate eligibility and completion requirements depend on the program. Hunar provides an online certificate verification page; ask the admissions team to confirm the certificate terms and verification process for your course."
   },
   {
     id: "f3",
     category: "Certificates & Placement",
     question: "Do you guarantee placement?",
-    answer: "Placement support is offered on a merit and project basis depending on your portfolio quality and assessment performance. We provide dedicated interview prep, resume optimization, mock interviews, and direct placement drives with companies across India. We believe in transparent, honest education: your portfolio gets you hired."
+    answer: "Career and placement preparation may be available depending on the program. Ask the admissions team what support is currently included in your chosen course. Training and placement support do not guarantee a job; outcomes depend on your skills, portfolio and employer requirements."
   },
   {
     id: "f4",
     category: "Admissions & Enrollment",
     question: "What are the batch timings?",
-    answer: "We run flexible morning, afternoon, and evening batches from Monday to Saturday to accommodate college students, working professionals, and business owners. Contact our counseling desk at +91 94637-95116 for the current schedule and available seats."
+    answer: `Batch timings and availability vary. Contact our admissions team at ${siteConfig.phone} to confirm the current schedule for your chosen program.`
   },
   {
     id: "f5",
     category: "Courses & Learning",
     question: "Is the 30 Days AI Workshop suitable for beginners?",
-    answer: "Absolutely. The AI Workshop is specifically designed for beginners, professionals, and business owners alike. No coding or prior technical background is required. We start with foundational prompting concepts and step-by-step progress to advanced tools."
+    answer: "The workshop listing describes the program as open to all levels and focuses on practical AI tools. Review the current workshop outline and ask the admissions team whether any specific prerequisites apply to your batch."
   },
   {
     id: "f6",
     category: "Admissions & Enrollment",
     question: "Is there an entrance test for admission?",
-    answer: "No entrance test is required. All programs are open to dedicated beginners, students, graduates, and working professionals who want to develop modern, high-income digital skills."
+    answer: "No entrance test is listed as a requirement. Ask the admissions team whether your chosen program has any prerequisites or recommended experience before you enroll."
   },
   {
     id: "f7",
     category: "Courses & Learning",
     question: "Are classes online or offline?",
-    answer: "Classes are conducted primarily offline at our state-of-the-art campus in Mullanpur Dakha, Ludhiana, ensuring high-speed workstation access, in-person mentor guidance, and an immersive lab environment. Hybrid assistance is also available upon request."
+    answer: `Course listings show the learning mode for each program. Hunar's campus is at ${siteConfig.location}; contact the team to confirm the delivery mode and facilities for your chosen batch.`
   },
   {
     id: "f8",
     category: "Fees & Payment",
     question: "Can I pay the course fee in installments?",
-    answer: "Yes. We believe quality education should be accessible. We offer flexible, interest-free monthly installment options. Please speak with our admissions counselor to set up a convenient installment schedule."
+    answer: "Installment availability and terms can depend on the course and batch. Ask the admissions team for current eligibility, payment dates and any additional charges, and confirm the terms in writing before enrolling."
   },
   {
     id: "f9",
     category: "Fees & Payment",
     question: "How do I find out the exact course fees?",
-    answer: "Fees vary depending on the program track (short bootcamps vs comprehensive multi-month diplomas). You can click 'Book Free Demo', submit the inquiry form, or message us on WhatsApp at +91 94637-95116 to receive the complete, transparent fee structure."
+    answer: `Fees vary by program and batch. Use Book Free Demo or contact Hunar on WhatsApp at ${siteConfig.phone} to request current fee details and confirm any additional charges before enrolling.`
   },
   {
     id: "f10",
     category: "Certificates & Placement",
     question: "How can an employer or student verify a Hunar certificate?",
-    answer: "Every Hunar certificate bears a unique verification serial number (e.g., HNR-2026-A1B2C3D4). Anyone can visit the Verify Certificate page on this website, enter the code, and instantly verify student credentials, completion date, and course grade."
+    answer: "Use the Verify Certificate page and enter the verification code printed on the certificate. If you need help or the record cannot be found, contact Hunar using the details on the Contact page."
   },
   {
     id: "f11",
     category: "Admissions & Enrollment",
     question: "How do I book a free demo session?",
-    answer: "Click the 'Book Free Demo' button found on any page, select your program of interest, and choose your preferred timing. Our counselor will confirm your demo slot within 24 hours."
+    answer: "Use the Book Free Demo button to submit your program of interest and preferred timing. The admissions team will contact you to confirm availability."
   }
 ];
